@@ -1,0 +1,239 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(uuid())
+  name      String
+  email     String    @unique
+  password  String
+  role      Role      @default(RECEPTIONIST)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  photo     String?
+  expenses  Expense[]
+  payments  Payment[]
+  invoices  Invoice[]
+  audits    PaymentAudit[]
+  sales     Sale[]
+}
+
+model Member {
+  id             String       @id @default(uuid())
+  name           String
+  phone          String       @unique
+  birthDate      DateTime
+  gender         Gender
+  photo          String?
+  planId         String?
+  startDate      DateTime?
+  expirationDate DateTime?
+  status         MemberStatus @default(INACTIVE)
+  notes          String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  checkins       Checkin[]
+  plan           Plan?        @relation(fields: [planId], references: [id])
+  payments       Payment[]
+
+  @@index([status])
+  @@index([expirationDate])
+}
+
+model Plan {
+  id           String    @id @default(uuid())
+  name         String
+  price        Decimal   @db.Decimal(10, 2)
+  durationDays Int
+  description  String?
+  status       Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  members      Member[]
+  payments     Payment[]
+}
+
+model Payment {
+  id              String           @id @default(uuid())
+  receiptNumber   Int              @unique @default(autoincrement())
+  memberId        String
+  planId          String
+  amount          Decimal          @db.Decimal(10, 2)
+  paymentMethod   PaymentMethod
+  paymentDate     DateTime         @default(now())
+  processedBy     String
+  refunded        Boolean          @default(false)
+  refundedAt      DateTime?
+  refundReason    String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  member          Member           @relation(fields: [memberId], references: [id])
+  plan            Plan             @relation(fields: [planId], references: [id])
+  user            User             @relation(fields: [processedBy], references: [id])
+  invoice         Invoice?
+  audits          PaymentAudit[]
+
+  @@index([memberId])
+  @@index([paymentDate])
+  @@index([receiptNumber])
+}
+
+model Invoice {
+  id              String           @id @default(uuid())
+  invoiceNumber   Int              @unique
+  paymentId       String           @unique
+  payment         Payment          @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  status          InvoiceStatus    @default(ISSUED)
+  issuedAt        DateTime         @default(now())
+  issuedBy        String
+  issuer          User             @relation(fields: [issuedBy], references: [id])
+  cancelledAt     DateTime?
+  cancelReason    String?
+  pdfStoragePath  String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@index([invoiceNumber])
+  @@index([status])
+  @@index([issuedAt])
+}
+
+model PaymentAudit {
+  id              String           @id @default(uuid())
+  paymentId       String
+  payment         Payment          @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  action          AuditAction
+  details         String?
+  performedBy     String
+  user            User             @relation(fields: [performedBy], references: [id])
+  createdAt       DateTime         @default(now())
+
+  @@index([paymentId])
+  @@index([action])
+  @@index([createdAt])
+}
+
+model Expense {
+  id          String   @id @default(uuid())
+  description String
+  amount      Decimal  @db.Decimal(10, 2)
+  category    String
+  date        DateTime @default(now())
+  processedBy String
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [processedBy], references: [id])
+
+  @@index([date])
+  @@index([category])
+}
+
+model Checkin {
+  id              String   @id @default(uuid())
+  memberId        String
+  checkinDatetime DateTime @default(now())
+  member          Member   @relation(fields: [memberId], references: [id])
+
+  @@index([memberId])
+  @@index([checkinDatetime])
+}
+
+model Setting {
+  key   String @id
+  value String
+}
+
+enum Role {
+  ADMIN
+  RECEPTIONIST
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum MemberStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum PaymentMethod {
+  CASH
+  MPESA
+  EMOLA
+  TRANSFER
+  MKESH
+  POS
+  CONTAMOVEL
+  BIM
+  BCI
+}
+
+enum InvoiceStatus {
+  ISSUED
+  CANCELLED
+  REFUNDED
+}
+
+enum AuditAction {
+  CREATED
+  ISSUED
+  CANCELLED
+  REFUNDED
+}
+
+enum ExpenseCategory {
+  SALARIES
+  RENT
+  ELECTRICITY
+  WATER
+  EQUIPMENT
+  MARKETING
+  MAINTENANCE
+  TAXES
+  OTHER
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  price       Decimal  @db.Decimal(10, 2)
+  stock       Int      @default(0)
+  category       String?
+  commercialName String?
+  packageSize    String?
+  sku            String?
+  photo          String?
+  status         Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  sales       Sale[]
+
+  @@index([status])
+  @@index([category])
+}
+
+model Sale {
+  id            String   @id @default(uuid())
+  productId     String
+  quantity      Int
+  totalAmount   Decimal  @db.Decimal(10, 2)
+  paymentMethod String
+  processedBy   String
+  saleDate      DateTime @default(now())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  product       Product  @relation(fields: [productId], references: [id])
+  seller        User     @relation(fields: [processedBy], references: [id])
+
+  @@index([productId])
+  @@index([saleDate])
+  @@index([processedBy])
+}

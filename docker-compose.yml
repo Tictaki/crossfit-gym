@@ -1,0 +1,87 @@
+version: "3.8"
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: crossfit_gym_db
+    environment:
+      POSTGRES_USER: ${DB_USER:-user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+      POSTGRES_DB: ${DB_NAME:-crossfit_gym}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - crossfit_network
+
+  # Node.js Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: crossfit_gym_backend
+    ports:
+      - "3001:3001"
+    environment:
+      DATABASE_URL: postgresql://${DB_USER:-user}:${DB_PASSWORD:-password}@postgres:5432/${DB_NAME:-crossfit_gym}
+      JWT_SECRET: ${JWT_SECRET:-your-secret-key-change-in-production}
+      USE_PYTHON_PDF_SERVICE: ${USE_PYTHON_PDF_SERVICE:-true}
+      PYTHON_PDF_SERVICE_URL: http://pdf-generator:3002
+    depends_on:
+      postgres:
+        condition: service_healthy
+      pdf-generator:
+        condition: service_started
+    restart: unless-stopped
+    volumes:
+      - ./backend/uploads:/app/uploads
+    networks:
+      - crossfit_network
+
+  # Python PDF Generator Service
+  pdf-generator:
+    build:
+      context: .
+      dockerfile: Dockerfile.pdf
+    container_name: crossfit_gym_pdf
+    ports:
+      - "3002:3002"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3002/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - crossfit_network
+
+  # Next.js Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: crossfit_gym_frontend
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://backend:3001
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - crossfit_network
+
+volumes:
+  postgres_data:
+
+networks:
+  crossfit_network:
+    driver: bridge

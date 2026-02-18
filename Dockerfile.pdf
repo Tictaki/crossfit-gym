@@ -1,0 +1,32 @@
+# Multi-stage build for PDF Generator Service
+FROM python:3.11-slim as builder
+
+WORKDIR /app
+
+# Install dependencies in virtual environment
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Runtime stage
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Copy venv from builder
+COPY --from=builder /opt/venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Copy application
+COPY pdf_generator_v2.py .
+COPY pdf_generator_v2.py pdf_generator.py
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python -c "import requests; requests.get('http://localhost:3002/health')" || exit 1
+
+EXPOSE 3002
+
+CMD ["uvicorn", "pdf_generator:app", "--host", "0.0.0.0", "--port", "3002"]
