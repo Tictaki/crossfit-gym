@@ -1,0 +1,11 @@
+backend/
+pdf-service/
+.agent/
+.venv/
+venv/
+__pycache__/
+scripts/
+*.ps1
+*.py
+docker-compose.yml
+Dockerfile.pdf

@@ -7,7 +7,8 @@ Write-Host "🔧 Configurando PDF Generator Service..." -ForegroundColor Cyan
 try {
     $pythonVersion = python --version 2>&1
     Write-Host "✅ Python encontrado: $pythonVersion" -ForegroundColor Green
-} catch {
+}
+catch {
     Write-Host "❌ Python não encontrado! Instale Python 3.10+" -ForegroundColor Red
     Write-Host "Baixe em: https://www.python.org/downloads/" -ForegroundColor Yellow
     exit 1
@@ -29,13 +30,14 @@ Write-Host "🔌 Ativando ambiente virtual..." -ForegroundColor Cyan
 
 # Instalar/atualizar dependências
 Write-Host "📥 Instalando dependências..." -ForegroundColor Cyan
-pip install -r requirements.txt --quiet
+pip install -r pdf-service\requirements.txt --quiet
 
 # Verificar se foi bem instalado
 $reportlab = pip show reportlab 2>$null
 if ($reportlab) {
     Write-Host "✅ Dependências instaladas com sucesso!" -ForegroundColor Green
-} else {
+}
+else {
     Write-Host "⚠️  Problema ao instalar dependências. Tente:" -ForegroundColor Yellow
     Write-Host "   pip install -r requirements.txt" -ForegroundColor Yellow
 }
@@ -58,4 +60,4 @@ Write-Host "" -ForegroundColor White
 Write-Host "Pressione Ctrl+C para parar o serviço" -ForegroundColor Yellow
 Write-Host "" -ForegroundColor White
 
-python main.py
+python pdf-service\main.py

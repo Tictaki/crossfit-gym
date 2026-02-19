@@ -38,7 +38,8 @@ if ($Mode -eq "docker") {
         Write-Host "`n⚙️  Creating .env file..." -ForegroundColor Cyan
         copy .env.example .env
         Write-Host "✓ Created .env - Update with your values!" -ForegroundColor Green
-    } else {
+    }
+    else {
         Write-Host "✓ .env already exists - skipping" -ForegroundColor Green
     }
     
@@ -73,7 +74,8 @@ if ($Mode -eq "docker") {
                 $psqlReady = $true
                 Write-Host "✓ Database ready" -ForegroundColor Green
             }
-        } catch {}
+        }
+        catch {}
         
         if (-not $psqlReady) {
             $attempt++
@@ -169,7 +171,7 @@ elseif ($Mode -eq "local-dev") {
     }
     
     &".\venv\Scripts\Activate.ps1"
-    pip install -r requirements.txt
+    pip install -r pdf-service\requirements.txt
     Write-Host "✓ Python dependencies installed" -ForegroundColor Green
     
     Write-Host "`n✅ Local Development Ready!" -ForegroundColor Green
@@ -177,7 +179,7 @@ elseif ($Mode -eq "local-dev") {
 Start services in separate terminals:
 
 Terminal 1 (PDF Service):
-  python main.py
+  python pdf-service\main.py
 
 Terminal 2 (Backend):
   cd backend
@@ -206,7 +208,8 @@ elseif ($Mode -eq "test") {
     
     if ($LASTEXITCODE -eq 0) {
         Write-Host "`n✅ Tests passed!" -ForegroundColor Green
-    } else {
+    }
+    else {
         Write-Host "`n✗ Tests failed" -ForegroundColor Red
     }
 }
