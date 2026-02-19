@@ -7,7 +7,12 @@ import planRoutes from './routes/plans.routes.js';
 import paymentRoutes from './routes/payments.routes.js';
 import checkinRoutes from './routes/checkins.routes.js';
 import dashboardRoutes from './routes/dashboard.routes.js';
-import reportRoutes from './routes/reports.routes.js';
+import notificationRoutes from './routes/notifications.routes.js';
+
+// ... other imports
+
+// Routes
+app.use('/api/notifications', notificationRoutes);
 import userRoutes from './routes/users.routes.js';
 import expenseRoutes from './routes/expenses.routes.js';
 import accountingRoutes from './routes/accounting.routes.js';

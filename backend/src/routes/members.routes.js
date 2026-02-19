@@ -4,7 +4,87 @@ import multer from 'multer';
 import path from 'path';
 import QRCode from 'qrcode';
 import { authenticate } from '../middleware/auth.js';
-import { updateMemberStatuses } from '../utils/autoUpdateStatus.js';
+import { notify } from '../utils/notifier.js';
+
+// ... (imports)
+
+// Create member
+router.post('/', authenticate, upload.single('photo'), async (req, res) => {
+  try {
+    // ... (existing logic)
+    
+    // After creating member
+    await notify({
+      action: 'CREATE',
+      message: `Novo membro registado: ${member.name}`,
+      actorId: req.user.id,
+      entity: 'MEMBER',
+      entityId: member.id
+    });
+    
+    res.status(201).json(member);
+  } catch (error) {
+    // ...
+  }
+});
+
+// Update member
+router.put('/:id', authenticate, upload.single('photo'), async (req, res) => {
+  try {
+    // ... (existing logic)
+
+    await notify({
+      action: 'UPDATE',
+      message: `Dados do membro atualizados: ${member.name}`,
+      actorId: req.user.id,
+      entity: 'MEMBER',
+      entityId: member.id
+    });
+    
+    res.json(member);
+  } catch (error) {
+    // ...
+  }
+});
+
+// Suspend member
+router.put('/:id/suspend', authenticate, async (req, res) => {
+  try {
+    // ... (existing logic)
+
+    await notify({
+      action: 'WARNING',
+      message: `Membro suspenso: ${member.name}`,
+      actorId: req.user.id,
+      entity: 'MEMBER',
+      entityId: member.id
+    });
+    
+    res.json(member);
+  } catch (error) {
+    // ...
+  }
+});
+
+// Activate/Reactivate member
+router.put('/:id/activate', authenticate, async (req, res) => {
+  try {
+    // ... (existing logic)
+
+    await notify({
+      action: 'UPDATE',
+      message: `Membro reativado: ${updatedMember.name}`,
+      actorId: req.user.id,
+      entity: 'MEMBER',
+      entityId: updatedMember.id
+    });
+    
+    res.json(updatedMember);
+  } catch (error) {
+    // ...
+  }
+});
+
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -140,13 +220,21 @@ router.post('/', authenticate, upload.single('photo'), async (req, res) => {
         gender,
         photo: req.file ? `/uploads/members/${req.file.filename}` : null,
         notes,
-        status: 'INACTIVE'
+        status: 'INACTIVE' // Initial status is INACTIVE until plan/payment added
       },
       include: {
         plan: true
       }
     });
     
+    await notify({
+      action: 'CREATE',
+      message: `Novo membro registado: ${member.name}`,
+      actorId: req.user.id,
+      entity: 'MEMBER',
+      entityId: member.id
+    });
+
     res.status(201).json(member);
   } catch (error) {
     console.error('Error creating member:', error);
@@ -179,6 +267,14 @@ router.put('/:id', authenticate, upload.single('photo'), async (req, res) => {
       }
     });
     
+    await notify({
+      action: 'UPDATE',
+      message: `Dados do membro atualizados: ${member.name}`,
+      actorId: req.user.id,
+      entity: 'MEMBER',
+      entityId: member.id
+    });
+
     res.json(member);
   } catch (error) {
     console.error('Error updating member:', error);
@@ -195,6 +291,14 @@ router.put('/:id/suspend', authenticate, async (req, res) => {
       include: { plan: true }
     });
     
+    await notify({
+      action: 'WARNING',
+      message: `Membro suspenso: ${member.name}`,
+      actorId: req.user.id,
+      entity: 'MEMBER',
+      entityId: member.id
+    });
+
     res.json(member);
   } catch (error) {
     console.error('Error suspending member:', error);
@@ -222,6 +326,14 @@ router.put('/:id/activate', authenticate, async (req, res) => {
       include: { plan: true }
     });
     
+    await notify({
+      action: 'UPDATE',
+      message: `Membro reativado: ${updatedMember.name}`,
+      actorId: req.user.id,
+      entity: 'MEMBER',
+      entityId: updatedMember.id
+    });
+
     res.json(updatedMember);
   } catch (error) {
     console.error('Error activating member:', error);

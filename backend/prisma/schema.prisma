@@ -21,6 +21,8 @@ model User {
   invoices  Invoice[]
   audits    PaymentAudit[]
   sales     Sale[]
+  notificationsSent Notification[]
+  notificationsReceived NotificationRecipient[]
 }
 
 model Member {
@@ -236,4 +238,32 @@ model Sale {
   @@index([productId])
   @@index([saleDate])
   @@index([processedBy])
+}
+
+model Notification {
+  id          String   @id @default(uuid())
+  message     String
+  type        String   @default("INFO") // INFO, CREATE, UPDATE, DELETE, WARNING
+  entity      String?  // MEMBER, PLAN, PAYMENT, SALE
+  entityId    String?
+  performedBy String
+  user        User     @relation(fields: [performedBy], references: [id])
+  createdAt   DateTime @default(now())
+  recipients  NotificationRecipient[]
+
+  @@index([createdAt])
+  @@index([performedBy])
+}
+
+model NotificationRecipient {
+  id             String       @id @default(uuid())
+  notificationId String
+  userId         String
+  read           Boolean      @default(false)
+  notification   Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([notificationId, userId])
+  @@index([userId])
+  @@index([read])
 }

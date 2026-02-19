@@ -4,6 +4,7 @@ import xlsx from 'xlsx';
 import jwt from 'jsonwebtoken';
 import { authenticate } from '../middleware/auth.js';
 import { generateReceiptPDF } from '../utils/pdfGenerator.js';
+import { notify } from '../utils/notifier.js';
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -203,6 +204,15 @@ router.post('/', authenticate, async (req, res) => {
       payment: result.payment,
       invoice: result.invoice,
       message: 'Payment registered successfully'
+    });
+
+    // Notify about new payment
+    await notify({
+      action: 'CREATE',
+      message: `Pagamento recebido: ${finalAmount} MZN - ${result.member.name} (${result.plan.name})`,
+      actorId: req.user.id,
+      entity: 'PAYMENT',
+      entityId: result.payment.id
     });
   } catch (error) {
     console.error('Error creating payment:', error);
@@ -547,6 +557,15 @@ router.post('/:id/refund', authenticate, async (req, res) => {
       refund,
       message: 'Refund processed successfully'
     });
+
+    // Notify about refund
+    await notify({
+      action: 'WARNING',
+      message: `Reembolso processado: ${payment.amount} MZN - ${payment.member.name}`,
+      actorId: req.user.id,
+      entity: 'PAYMENT',
+      entityId: req.params.id
+    });
   } catch (error) {
     console.error('Error processing refund:', error);
     res.status(500).json({ error: 'Failed to process refund' });
@@ -607,6 +626,15 @@ router.post('/:id/cancel-invoice', authenticate, async (req, res) => {
     res.json({
       invoice: cancelled,
       message: 'Invoice cancelled successfully'
+    });
+
+    // Notify about cancellation
+    await notify({
+      action: 'WARNING',
+      message: `Fatura cancelada: #${payment.receiptNumber} - ${payment.member.name}`,
+      actorId: req.user.id,
+      entity: 'PAYMENT',
+      entityId: req.params.id
     });
   } catch (error) {
     console.error('Error cancelling invoice:', error);

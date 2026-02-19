@@ -1,6 +1,7 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import { authenticate, requireAdmin } from '../middleware/auth.js';
+import { notify } from '../utils/notifier.js';
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -45,6 +46,14 @@ router.post('/', authenticate, requireAdmin, async (req, res) => {
     });
     
     res.status(201).json(plan);
+
+    await notify({
+      action: 'CREATE',
+      message: `Novo plano criado: ${plan.name}`,
+      actorId: req.user.id,
+      entity: 'PLAN',
+      entityId: plan.id
+    });
   } catch (error) {
     console.error('Error creating plan:', error);
     res.status(500).json({ error: 'Failed to create plan' });
@@ -68,6 +77,14 @@ router.put('/:id', authenticate, requireAdmin, async (req, res) => {
     });
     
     res.json(plan);
+
+    await notify({
+      action: 'UPDATE',
+      message: `Plano atualizado: ${plan.name}`,
+      actorId: req.user.id,
+      entity: 'PLAN',
+      entityId: plan.id
+    });
   } catch (error) {
     console.error('Error updating plan:', error);
     res.status(500).json({ error: 'Failed to update plan' });

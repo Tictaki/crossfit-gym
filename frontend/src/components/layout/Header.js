@@ -10,6 +10,7 @@ import {
   Bars3Icon
 } from '@heroicons/react/24/outline';
 import { UPLOAD_URL } from '@/lib/api';
+import NotificationBell from './NotificationBell';
 
 export default function Header({ user, setSidebarOpen }) {
   const router = useRouter();
@@ -53,6 +54,8 @@ export default function Header({ user, setSidebarOpen }) {
         </div>
 
         <div className="flex items-center gap-4 relative" ref={dropdownRef}>
+          <NotificationBell />
+          
           <button 
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             className="flex items-center gap-3 p-1 rounded-2xl hover:bg-white/40 dark:hover:bg-dark-800/40 transition-all duration-300 group"
