@@ -5,9 +5,9 @@
   "scripts": {
     "dev": "next dev -p 3000",
     "build": "next build",
-    "build:cf": "npx @opennextjs/cloudflare",
-    "preview": "npx wrangler pages dev .open-next/assets",
-    "deploy": "npx wrangler pages deploy .open-next/assets",
+    "build:cf": "npx @cloudflare/next-on-pages",
+    "preview": "npx wrangler pages dev .vercel/output/static",
+    "deploy": "npx wrangler pages deploy .vercel/output/static",
     "start": "next start",
     "lint": "next lint"
   },
@@ -27,7 +27,6 @@
     "socket.io-client": "^4.8.3"
   },
   "devDependencies": {
-    "@opennextjs/cloudflare": "^1.16.5",
     "autoprefixer": "^10.4.17",
     "eslint": "^8.56.0",
     "eslint-config-next": "14.1.0",
