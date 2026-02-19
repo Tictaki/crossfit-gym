@@ -21,5 +21,5 @@ COPY src ./src
 # Expose port
 EXPOSE 3001
 
-# Wait for database and start
-CMD ["npm", "run", "dev"]
+# Start in production mode
+CMD ["npm", "start"]

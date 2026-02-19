@@ -2,6 +2,15 @@
 
 Sistema completo de gestão para ginásio CrossFit em Moçambique.
 
+---
+
+### 📊 Estado do Projeto
+✅ **Core Services running** (Frontend: 3000, Backend: 3001, PDF Service: 3002)  
+✅ **Database Migrations Complete**  
+✅ **Auth & RBAC Active**
+
+---
+
 ## 🚀 Tecnologias
 
 ### Backend

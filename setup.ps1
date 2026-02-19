@@ -177,7 +177,7 @@ elseif ($Mode -eq "local-dev") {
 Start services in separate terminals:
 
 Terminal 1 (PDF Service):
-  python pdf_generator_v2.py
+  python main.py
 
 Terminal 2 (Backend):
   cd backend

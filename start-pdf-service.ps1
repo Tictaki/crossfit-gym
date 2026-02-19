@@ -58,4 +58,4 @@ Write-Host "" -ForegroundColor White
 Write-Host "Pressione Ctrl+C para parar o serviço" -ForegroundColor Yellow
 Write-Host "" -ForegroundColor White
 
-python pdf_generator.py
+python main.py

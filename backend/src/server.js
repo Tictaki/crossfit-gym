@@ -51,11 +51,12 @@ io.on('connection', (socket) => {
 });
 
 // Middleware
+const allowedOrigin = process.env.FRONTEND_URL || '*';
 app.use(cors({
-  origin: '*',
+  origin: allowedOrigin,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: false
+  credentials: true
 }));
 
 // Special middleware for PDF endpoints - ensure headers are set FIRST
