@@ -15,6 +15,8 @@ import {
   XMarkIcon
 } from '@heroicons/react/24/outline';
 
+export const runtime = 'edge';
+
 export default function EditMemberPage({ params }) {
   const router = useRouter();
   const { id } = params;

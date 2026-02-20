@@ -27,6 +27,8 @@ import {
 import { useToast } from '@/context/ToastContext';
 import { useConfirm } from '@/context/ConfirmModalContext';
 
+export const runtime = 'edge';
+
 export default function MemberDetailsPage({ params }) {
   const toast = useToast();
   const { confirm } = useConfirm();
