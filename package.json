@@ -10,5 +10,9 @@
   },
   "dependencies": {
     "wrangler": "^4.66.0"
-  }
+  },
+  "workspaces": [
+    "backend",
+    "frontend"
+  ]
 }
