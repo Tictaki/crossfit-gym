@@ -5,6 +5,7 @@ Sistema completo de gestão para ginásio CrossFit em Moçambique.
 ---
 
 ### 📊 Estado do Projeto
+
 ✅ **Core Services running** (Frontend: 3000, Backend: 3001, PDF Service: 3002)  
 ✅ **Database Migrations Complete**  
 ✅ **Auth & RBAC Active**
@@ -51,7 +52,7 @@ npm install
 cp .env.example .env
 
 # Editar .env com as credenciais do PostgreSQL
-# DATABASE_URL="postgresql://user:password@localhost:5432/crossfit_gym?schema=public"
+# DATABASE_URL="postgresql://user:password@localhost:5432/crosstraininggym?schema=public"
 # JWT_SECRET="your-secret-key-change-this"
 
 # Criar diretório de uploads

@@ -36,7 +36,7 @@ if ($Mode -eq "docker") {
     # Setup environment
     if (!(Test-Path ".env")) {
         Write-Host "`n⚙️  Creating .env file..." -ForegroundColor Cyan
-        copy .env.example .env
+        Copy-Item .env.example .env
         Write-Host "✓ Created .env - Update with your values!" -ForegroundColor Green
     }
     else {
@@ -108,7 +108,7 @@ Useful Commands:
   View logs:        docker-compose logs -f backend
   Stop services:    docker-compose down
   Restart service:  docker-compose restart backend
-  Database shell:   docker-compose exec postgres psql -U user -d crossfit_gym
+  Database shell:   docker-compose exec postgres psql -U user -d crosstraininggym
 
 Next Steps:
   1. Open http://localhost:3000 in browser
@@ -145,23 +145,23 @@ elseif ($Mode -eq "local-dev") {
     # Setup environment
     if (!(Test-Path ".env")) {
         Write-Host "`n⚙️  Creating .env file..." -ForegroundColor Cyan
-        copy .env.example .env
+        Copy-Item .env.example .env
         Write-Host "✓ Created .env" -ForegroundColor Green
     }
     
     # Install backend deps
     Write-Host "`n📦 Installing backend dependencies..." -ForegroundColor Cyan
-    cd backend
+    Set-Location backend
     npm install
     Write-Host "✓ Backend dependencies installed" -ForegroundColor Green
-    cd ..
+    Set-Location ..
     
     # Install frontend deps
     Write-Host "`n📦 Installing frontend dependencies..." -ForegroundColor Cyan
-    cd frontend
+    Set-Location frontend
     npm install
     Write-Host "✓ Frontend dependencies installed" -ForegroundColor Green
-    cd ..
+    Set-Location ..
     
     # Setup Python venv
     Write-Host "`n🐍 Setting up Python virtual environment..." -ForegroundColor Cyan

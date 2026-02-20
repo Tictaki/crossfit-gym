@@ -8,11 +8,7 @@ import paymentRoutes from './routes/payments.routes.js';
 import checkinRoutes from './routes/checkins.routes.js';
 import dashboardRoutes from './routes/dashboard.routes.js';
 import notificationRoutes from './routes/notifications.routes.js';
-
-// ... other imports
-
-// Routes
-app.use('/api/notifications', notificationRoutes);
+import reportRoutes from './routes/reports.routes.js';
 import userRoutes from './routes/users.routes.js';
 import expenseRoutes from './routes/expenses.routes.js';
 import accountingRoutes from './routes/accounting.routes.js';
@@ -87,6 +83,7 @@ app.use('/api/payments', paymentRoutes);
 app.use('/api/checkins', checkinRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/reports', reportRoutes);
+app.use('/api/notifications', notificationRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/accounting', accountingRoutes);

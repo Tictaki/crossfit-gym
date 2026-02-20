@@ -6,86 +6,6 @@ import QRCode from 'qrcode';
 import { authenticate } from '../middleware/auth.js';
 import { notify } from '../utils/notifier.js';
 
-// ... (imports)
-
-// Create member
-router.post('/', authenticate, upload.single('photo'), async (req, res) => {
-  try {
-    // ... (existing logic)
-    
-    // After creating member
-    await notify({
-      action: 'CREATE',
-      message: `Novo membro registado: ${member.name}`,
-      actorId: req.user.id,
-      entity: 'MEMBER',
-      entityId: member.id
-    });
-    
-    res.status(201).json(member);
-  } catch (error) {
-    // ...
-  }
-});
-
-// Update member
-router.put('/:id', authenticate, upload.single('photo'), async (req, res) => {
-  try {
-    // ... (existing logic)
-
-    await notify({
-      action: 'UPDATE',
-      message: `Dados do membro atualizados: ${member.name}`,
-      actorId: req.user.id,
-      entity: 'MEMBER',
-      entityId: member.id
-    });
-    
-    res.json(member);
-  } catch (error) {
-    // ...
-  }
-});
-
-// Suspend member
-router.put('/:id/suspend', authenticate, async (req, res) => {
-  try {
-    // ... (existing logic)
-
-    await notify({
-      action: 'WARNING',
-      message: `Membro suspenso: ${member.name}`,
-      actorId: req.user.id,
-      entity: 'MEMBER',
-      entityId: member.id
-    });
-    
-    res.json(member);
-  } catch (error) {
-    // ...
-  }
-});
-
-// Activate/Reactivate member
-router.put('/:id/activate', authenticate, async (req, res) => {
-  try {
-    // ... (existing logic)
-
-    await notify({
-      action: 'UPDATE',
-      message: `Membro reativado: ${updatedMember.name}`,
-      actorId: req.user.id,
-      entity: 'MEMBER',
-      entityId: updatedMember.id
-    });
-    
-    res.json(updatedMember);
-  } catch (error) {
-    // ...
-  }
-});
-
-
 const router = express.Router();
 const prisma = new PrismaClient();
 
@@ -115,14 +35,29 @@ const upload = multer({
   }
 });
 
+// Auto-update statuses based on expiration date
+async function updateMemberStatuses() {
+  try {
+    const today = new Date();
+    await prisma.member.updateMany({
+      where: {
+        status: 'ACTIVE',
+        expirationDate: { lt: today }
+      },
+      data: { status: 'INACTIVE' }
+    });
+  } catch (error) {
+    console.error('Error auto-updating member statuses:', error);
+  }
+}
+
 // List members with filters
 router.get('/', authenticate, async (req, res) => {
   try {
     console.log(`[Members] List request from user ${req.user.id}. Query:`, req.query);
-    await updateMemberStatuses(); // Auto-update statuses
+    await updateMemberStatuses();
     
     const { search, status, page = 1, limit = 20 } = req.query;
-    
     const where = {};
     
     if (search) {
@@ -141,9 +76,7 @@ router.get('/', authenticate, async (req, res) => {
     const [members, total] = await Promise.all([
       prisma.member.findMany({
         where,
-        include: {
-          plan: true
-        },
+        include: { plan: true },
         orderBy: { createdAt: 'desc' },
         skip,
         take: parseInt(limit)
@@ -216,15 +149,13 @@ router.post('/', authenticate, upload.single('photo'), async (req, res) => {
       data: {
         name,
         phone,
-        birthDate: new Date(birthDate),
+        birthDate: birthDate ? new Date(birthDate) : null,
         gender,
         photo: req.file ? `/uploads/members/${req.file.filename}` : null,
         notes,
-        status: 'INACTIVE' // Initial status is INACTIVE until plan/payment added
+        status: 'INACTIVE'
       },
-      include: {
-        plan: true
-      }
+      include: { plan: true }
     });
     
     await notify({
@@ -262,9 +193,7 @@ router.put('/:id', authenticate, upload.single('photo'), async (req, res) => {
     const member = await prisma.member.update({
       where: { id: req.params.id },
       data: updateData,
-      include: {
-        plan: true
-      }
+      include: { plan: true }
     });
     
     await notify({
