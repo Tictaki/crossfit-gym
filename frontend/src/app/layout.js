@@ -14,6 +14,9 @@ export const metadata = {
     statusBarStyle: 'black-translucent',
     title: 'Crosstraining Gym',
   },
+  other: {
+    'mobile-web-app-capable': 'yes'
+  },
   formatDetection: {
     telephone: false,
   },
