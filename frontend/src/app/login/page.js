@@ -12,13 +12,14 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleQuickLogin = async (quickEmail, quickPassword) => {
+    setEmail(quickEmail);
+    setPassword(quickPassword);
     setError('');
     setLoading(true);
 
     try {
-      const response = await authAPI.login(email, password);
+      const response = await authAPI.login(quickEmail, quickPassword);
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
       router.push('/dashboard');
@@ -27,6 +28,11 @@ export default function LoginPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    handleQuickLogin(email, password);
   };
 
   return (
@@ -184,13 +190,15 @@ export default function LoginPage() {
               <p className="text-xs font-bold text-gray-400 uppercase tracking-wider text-center mb-3">Acesso Rápido</p>
               <div className="flex gap-3">
                 <button 
-                  onClick={() => {setEmail('gerente@crosstraininggym.com'); setPassword('Admin#Master2026')}}
+                  type="button"
+                  onClick={() => handleQuickLogin('gerente@crosstraininggym.com', 'Admin#Master2026')}
                   className="flex-1 py-2.5 px-4 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 rounded-xl text-blue-300 text-xs font-bold uppercase tracking-wider transition-all hover:scale-105"
                 >
                   Admin
                 </button>
                 <button 
-                  onClick={() => {setEmail('equipa@crosstraininggym.com'); setPassword('Staff@Gym2026')}}
+                  type="button"
+                  onClick={() => handleQuickLogin('equipa@crosstraininggym.com', 'Staff@Gym2026')}
                   className="flex-1 py-2.5 px-4 bg-yellow-500/10 hover:bg-yellow-500/20 border border-yellow-500/30 rounded-xl text-yellow-300 text-xs font-bold uppercase tracking-wider transition-all hover:scale-105"
                 >
                   Receção
