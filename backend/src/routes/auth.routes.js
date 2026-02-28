@@ -16,25 +16,33 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ error: 'Email and password are required' });
     }
 
+    console.log('Login attempt for email:', email);
     const user = await prisma.user.findUnique({
       where: { email }
     });
 
     if (!user) {
+      console.log('User not found:', email);
       return res.status(401).json({ error: 'Invalid credentials' });
     }
+    console.log('User found:', user.email, 'Role:', user.role);
 
+    console.log('Validating password...');
     const isValidPassword = await bcrypt.compare(password, user.password);
 
     if (!isValidPassword) {
+      console.log('Invalid password for user:', email);
       return res.status(401).json({ error: 'Invalid credentials' });
     }
+    console.log('Password valid!');
 
+    console.log('Signing token...');
     const token = jwt.sign(
       { userId: user.id, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
     );
+    console.log('Token signed successfully');
 
     res.json({
       token,
@@ -47,8 +55,8 @@ router.post('/login', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('Login error detail:', error);
+    res.status(500).json({ error: 'Internal server error', details: error.message });
   }
 });
 
