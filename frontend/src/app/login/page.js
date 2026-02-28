@@ -23,7 +23,8 @@ export default function LoginPage() {
       localStorage.setItem('user', JSON.stringify(response.data.user));
       router.push('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.error || 'Erro ao fazer login');
+      console.error('Login error:', err);
+      setError(err.response?.data?.error || err.message || 'Erro ao fazer login');
     } finally {
       setLoading(false);
     }
