@@ -11,7 +11,11 @@ const prisma = new PrismaClient();
 // Configure multer for product photo upload
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/products');
+    const dir = 'uploads/products';
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    cb(null, dir);
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -88,8 +92,8 @@ router.post('/', authenticate, requireAdmin, upload.single('photo'), async (req,
         name,
         commercialName,
         description,
-        price,
-        stock: parseInt(stock) || 0,
+        price: (price !== undefined && price !== '') ? parseFloat(price) : 0,
+        stock: (stock !== undefined && stock !== '') ? parseInt(stock) : 0,
         category,
         packageSize,
         sku,
@@ -98,8 +102,11 @@ router.post('/', authenticate, requireAdmin, upload.single('photo'), async (req,
     });
     res.status(201).json(product);
   } catch (error) {
-    console.error('Error creating product:', error);
-    res.status(500).json({ error: 'Failed to create product' });
+    console.error('CRITICAL: Error creating product:', error);
+    res.status(500).json({ 
+      error: 'Erro ao criar produto',
+      message: error.message
+    });
   }
 });
 
@@ -112,8 +119,8 @@ router.put('/:id', authenticate, requireAdmin, upload.single('photo'), async (re
       name,
       commercialName,
       description,
-      price,
-      stock: stock !== undefined ? parseInt(stock) : undefined,
+      price: (price !== undefined && price !== '') ? parseFloat(price) : undefined,
+      stock: (stock !== undefined && stock !== '') ? parseInt(stock) : undefined,
       category,
       packageSize,
       sku,
@@ -130,8 +137,11 @@ router.put('/:id', authenticate, requireAdmin, upload.single('photo'), async (re
     });
     res.json(product);
   } catch (error) {
-    console.error('Error updating product:', error);
-    res.status(500).json({ error: 'Failed to update product' });
+    console.error('CRITICAL: Error updating product:', error);
+    res.status(500).json({ 
+      error: 'Erro ao atualizar produto',
+      message: error.message
+    });
   }
 });
 

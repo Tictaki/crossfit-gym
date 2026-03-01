@@ -40,6 +40,7 @@ export default function ProductsPage() {
   const [sessionId, setSessionId] = useState('');
   const [localIp, setLocalIp] = useState('localhost');
   const [editingProduct, setEditingProduct] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [userRole, setUserRole] = useState(null);
   const [formData, setFormData] = useState({
@@ -135,7 +136,8 @@ export default function ProductsPage() {
         stock: '',
         category: '',
         packageSize: '',
-        sku: ''
+        sku: '',
+        status: true
       });
     }
     setImagePreview(product?.photo ? `${UPLOAD_URL}${product.photo}` : null);
@@ -145,6 +147,7 @@ export default function ProductsPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     try {
       const data = new FormData();
       Object.keys(formData).forEach(key => {
@@ -163,7 +166,10 @@ export default function ProductsPage() {
       loadData();
       toast.success(editingProduct ? 'Produto atualizado com sucesso!' : 'Produto criado com sucesso!');
     } catch (error) {
-      toast.error('Erro ao salvar produto');
+      console.error('Error saving product:', error);
+      toast.error(error.response?.data?.error || 'Erro ao salvar produto');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -639,9 +645,17 @@ export default function ProductsPage() {
                 </button>
                 <button 
                   type="submit" 
-                  className="btn-primary flex-1 py-4 shadow-glow"
+                  disabled={isSubmitting}
+                  className="btn-primary flex-1 py-4 shadow-glow disabled:opacity-70"
                 >
-                  {editingProduct ? 'Guardar Alterações' : 'Criar Produto'}
+                  {isSubmitting ? (
+                    <div className="flex items-center justify-center gap-2">
+                       <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                       <span>A guardar...</span>
+                    </div>
+                  ) : (
+                    editingProduct ? 'Guardar Alterações' : 'Criar Produto'
+                  )}
                 </button>
               </div>
             </form>

@@ -14,11 +14,13 @@ import {
   CheckIcon,
   XMarkIcon
 } from '@heroicons/react/24/outline';
+import { useToast } from '@/context/ToastContext';
 
 export const runtime = 'edge';
 
 export default function EditMemberPage({ params }) {
   const router = useRouter();
+  const toast = useToast();
   const { id } = params;
   const fileInputRef = useRef(null);
 
@@ -101,6 +103,7 @@ export default function EditMemberPage({ params }) {
 
       await membersAPI.update(id, submitData);
       setSuccess(true);
+      toast.success('Dados atualizados com sucesso!');
       
       // Redirect after a short delay
       setTimeout(() => {
@@ -109,7 +112,9 @@ export default function EditMemberPage({ params }) {
 
     } catch (err) {
       console.error('Error updating member:', err);
-      setError(err.response?.data?.error || 'Erro ao atualizar dados do membro.');
+      const msg = err.response?.data?.error || 'Erro ao atualizar dados do membro.';
+      setError(msg);
+      toast.error(msg);
     } finally {
       setSaving(false);
     }

@@ -93,7 +93,7 @@ export default function PlansPage() {
       toast.success(editingPlan ? 'Plano atualizado com sucesso!' : 'Plano criado com sucesso!');
     } catch (error) {
       console.error('Error saving plan:', error);
-      toast.error('Erro ao guardar plano. Verifique os dados introduzidos.');
+      toast.error(error.response?.data?.error || 'Erro ao guardar plano. Verifique os dados introduzidos.');
     } finally {
       setIsSubmitting(false);
     }

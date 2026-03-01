@@ -2,6 +2,7 @@ import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import multer from 'multer';
 import path from 'path';
+import fs from 'fs';
 import QRCode from 'qrcode';
 import { authenticate } from '../middleware/auth.js';
 import { notify } from '../utils/notifier.js';
@@ -12,7 +13,11 @@ const prisma = new PrismaClient();
 // Configure multer for photo upload
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/members');
+    const dir = 'uploads/members';
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    cb(null, dir);
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -126,8 +131,11 @@ router.get('/:id', authenticate, async (req, res) => {
     
     res.json(member);
   } catch (error) {
-    console.error('Error fetching member:', error);
-    res.status(500).json({ error: 'Failed to fetch member' });
+    console.error('CRITICAL: Error fetching member:', error);
+    res.status(500).json({ 
+      error: 'Erro ao carregar membro',
+      message: error.message
+    });
   }
 });
 

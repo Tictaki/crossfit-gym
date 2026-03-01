@@ -38,8 +38,8 @@ router.post('/', authenticate, requireAdmin, async (req, res) => {
     const plan = await prisma.plan.create({
       data: {
         name,
-        price: parseFloat(price),
-        durationDays: parseInt(durationDays),
+        price: (price !== undefined && price !== '') ? parseFloat(price) : 0,
+        durationDays: (durationDays !== undefined && durationDays !== '') ? parseInt(durationDays) : 30,
         description,
         status: true
       }
@@ -69,8 +69,8 @@ router.put('/:id', authenticate, requireAdmin, async (req, res) => {
       where: { id: req.params.id },
       data: {
         name,
-        price: price ? parseFloat(price) : undefined,
-        durationDays: durationDays ? parseInt(durationDays) : undefined,
+        price: (price !== undefined && price !== '') ? parseFloat(price) : undefined,
+        durationDays: (durationDays !== undefined && durationDays !== '') ? parseInt(durationDays) : undefined,
         description,
         status: status !== undefined ? status : undefined
       }
