@@ -99,85 +99,82 @@ export default function PaymentsPage() {
     <div className="space-y-8 animate-fade-in pb-10">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-dark-900 dark:text-white">Pagamentos</h1>
-          <p className="text-gray-500 dark:text-dark-300 dark:text-dark-400 mt-1">Histórico de transações e relatórios financeiros</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-dark-900 dark:text-white">Pagamentos</h1>
+          <p className="text-dark-500 dark:text-dark-300 mt-1 text-sm md:text-base">Relatórios financeiros</p>
         </div>
         <button 
           onClick={handleExportExcel}
-          className="btn-secondary"
+          className="btn-secondary !py-2.5 !px-4 md:!py-3 md:!px-6 group active:scale-95"
         >
-          <ArrowDownTrayIcon className="h-5 w-5" />
-          Exportar Excel
+          <ArrowDownTrayIcon className="h-5 w-5 group-hover:-translate-y-0.5 transition-transform" />
+          <span className="text-sm">Exportar Excel</span>
         </button>
       </div>
 
       {/* Stats Summary */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-        <div className="stat-card group p-4 md:p-6">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-          <div className="flex items-center gap-3 md:gap-4 relative z-10">
-            <div className="stat-card-icon h-10 w-10 md:h-12 md:w-12">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
+        <div className="stat-card group !p-4 md:!p-6">
+          <div className="flex flex-col md:flex-row md:items-start justify-between gap-2">
+            <div>
+              <p className="text-[10px] md:text-sm font-semibold text-dark-500 dark:text-dark-300 uppercase tracking-wider">Receita Hoje</p>
+              <h3 className="text-base md:text-2xl font-bold text-dark-900 dark:text-white mt-1">{formatCurrency(dailyStats?.total)}</h3>
+              <p className="text-[10px] md:text-xs text-green-600 dark:text-green-400 font-bold mt-1">+{dailyStats?.count || 0} transaç.</p>
+            </div>
+            <div className="stat-card-icon h-10 w-10 md:h-12 md:w-12 !p-2 md:!p-3">
               <BanknotesIcon className="h-5 w-5 md:h-6 md:w-6" />
             </div>
-            <div>
-              <p className="text-[10px] md:text-sm font-semibold text-dark-500 dark:text-dark-200 dark:text-dark-400 uppercase tracking-wider">Receita Hoje</p>
-              <h3 className="text-xl md:text-2xl font-bold text-dark-900 dark:text-white">{formatCurrency(dailyStats?.total)}</h3>
-              <p className="text-[10px] md:text-xs text-green-600 dark:text-green-400 font-bold mt-1">+{dailyStats?.count || 0} transações</p>
-            </div>
           </div>
         </div>
 
-        <div className="stat-card group p-4 md:p-6">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-          <div className="flex items-center gap-3 md:gap-4 relative z-10">
-            <div className="stat-card-icon h-10 w-10 md:h-12 md:w-12 bg-blue-500 shadow-blue-500/30">
+        <div className="stat-card group !p-4 md:!p-6">
+          <div className="flex flex-col md:flex-row md:items-start justify-between gap-2">
+            <div>
+              <p className="text-[10px] md:text-sm font-semibold text-dark-500 dark:text-dark-300 uppercase tracking-wider">Mês Actual</p>
+              <h3 className="text-base md:text-2xl font-bold text-dark-900 dark:text-white mt-1">{formatCurrency(monthlyStats?.total)}</h3>
+              <p className="text-[10px] md:text-xs text-dark-400 dark:text-dark-300 mt-1">{monthlyStats?.count || 0} transaç.</p>
+            </div>
+            <div className="stat-card-icon h-10 w-10 md:h-12 md:w-12 !p-2 md:!p-3 bg-blue-500 shadow-blue-500/30">
               <CurrencyDollarIcon className="h-5 w-5 md:h-6 md:w-6" />
             </div>
-            <div>
-              <p className="text-[10px] md:text-sm font-semibold text-dark-500 dark:text-dark-200 dark:text-dark-400 uppercase tracking-wider">Mês Actual</p>
-              <h3 className="text-xl md:text-2xl font-bold text-dark-900 dark:text-white">{formatCurrency(monthlyStats?.total)}</h3>
-              <p className="text-[10px] md:text-xs text-dark-400 dark:text-dark-300 mt-1">{monthlyStats?.count || 0} transações</p>
-            </div>
           </div>
         </div>
 
-        <div className="stat-card group p-4 md:p-6 sm:col-span-2 lg:col-span-1">
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-          <div className="flex items-center gap-3 md:gap-4 relative z-10">
-            <div className="stat-card-icon h-10 w-10 md:h-12 md:w-12 bg-purple-500 shadow-purple-500/30">
-              <CreditCardIcon className="h-5 w-5 md:h-6 md:w-6" />
-            </div>
+        <div className="stat-card group !p-4 md:!p-6 col-span-2 lg:col-span-1">
+          <div className="flex flex-col md:flex-row md:items-start justify-between gap-2">
             <div>
-              <p className="text-[10px] md:text-sm font-semibold text-dark-500 dark:text-dark-200 dark:text-dark-300 uppercase tracking-wider">Ticket Médio</p>
-              <h3 className="text-xl md:text-2xl font-bold text-dark-900 dark:text-white">
+              <p className="text-[10px] md:text-sm font-semibold text-dark-500 dark:text-dark-300 uppercase tracking-wider">Ticket Médio</p>
+              <h3 className="text-base md:text-2xl font-bold text-dark-900 dark:text-white mt-1">
                 {formatCurrency(monthlyStats?.total / Math.max(1, monthlyStats?.count))}
               </h3>
-              <p className="text-[10px] md:text-xs text-dark-300 mt-1">Estimativa mensal</p>
+              <p className="text-[10px] md:text-xs text-dark-400 dark:text-dark-300 mt-1">Média mensal</p>
+            </div>
+            <div className="stat-card-icon h-10 w-10 md:h-12 md:w-12 !p-2 md:!p-3 bg-purple-500 shadow-purple-500/30">
+              <CreditCardIcon className="h-5 w-5 md:h-6 md:w-6" />
             </div>
           </div>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="card-glass p-4 md:p-6 relative z-30">
+      <div className="card-glass !p-4 md:!p-6 relative z-30">
         <div className="flex flex-col lg:flex-row gap-4">
-          <div className="flex-1 relative">
-            <MagnifyingGlassIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-dark-300" />
+          <div className="flex-1 relative group">
+            <MagnifyingGlassIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-dark-300 group-focus-within:text-primary-500 transition-colors" />
             <input 
               type="text" 
-              placeholder="Pesquisar por membro..." 
-              className="input pl-12 bg-white/50 dark:bg-dark-800/50 text-sm h-11"
+              placeholder="Pesquisar..." 
+              className="input pl-11 bg-white/50 dark:bg-dark-800/50 text-sm h-11 rounded-2xl border-none"
               value={memberId}
               onChange={(e) => setMemberId(e.target.value)}
             />
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
             <div className="relative">
               <CalendarIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-dark-300 pointer-events-none" />
               <input 
                 type="date" 
-                className="input pl-12 text-sm bg-white/50 dark:bg-dark-800/50 h-11"
+                className="input pl-11 text-sm bg-white/50 dark:bg-dark-800/50 h-11 rounded-2xl border-none w-full"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
               />
@@ -186,7 +183,7 @@ export default function PaymentsPage() {
               <CalendarIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-dark-300 pointer-events-none" />
               <input 
                 type="date" 
-                className="input pl-12 text-sm bg-white/50 dark:bg-dark-800/50 h-11"
+                className="input pl-11 text-sm bg-white/50 dark:bg-dark-800/50 h-11 rounded-2xl border-none w-full"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
               />
@@ -195,17 +192,20 @@ export default function PaymentsPage() {
             <div className="relative" id="payment-method-dropdown" ref={dropdownRef}>
               <button 
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="input text-sm bg-white/50 dark:bg-dark-800/50 flex items-center justify-between group h-11"
+                className="input text-xs sm:text-sm bg-white/50 dark:bg-dark-800/50 flex items-center justify-between group h-11 rounded-2xl border-none w-full active:scale-95"
               >
-                <span className={paymentMethod ? 'text-dark-900 dark:text-white' : 'text-dark-300'}>
-                  {paymentMethod ? paymentMethod.charAt(0) + paymentMethod.slice(1).toLowerCase() : 'Todos Métodos'}
-                </span>
+                <div className="flex items-center gap-2">
+                  <FunnelIcon className="h-4 w-4 text-dark-300" />
+                  <span className={paymentMethod ? 'text-dark-900 dark:text-white font-bold' : 'text-dark-300'}>
+                    {paymentMethod ? paymentMethod : 'Método'}
+                  </span>
+                </div>
                 <ChevronDownIcon className={`h-4 w-4 text-dark-300 transition-transform duration-300 ${dropdownOpen ? 'rotate-180' : ''}`} />
               </button>
 
               {dropdownOpen && (
-                <div className="absolute top-full left-0 right-0 mt-2 dropdown-glass z-50 animate-fade-in overflow-hidden">
-                  <div className="p-1">
+                <div className="absolute top-full left-0 right-0 mt-2 dropdown-glass z-50 animate-fade-in overflow-hidden shadow-glass-premium">
+                  <div className="p-1 max-h-60 overflow-y-auto no-scrollbar">
                     {[
                       { label: 'Todos Métodos', value: '' },
                       { label: 'Dinheiro', value: 'CASH' },
@@ -222,7 +222,7 @@ export default function PaymentsPage() {
                           setPaymentMethod(option.value);
                           setDropdownOpen(false);
                         }}
-                        className={`w-full text-left px-4 py-2 text-sm rounded-xl transition-all duration-200 ${
+                        className={`w-full text-left px-4 py-3 text-xs sm:text-sm rounded-xl transition-all duration-200 ${
                           paymentMethod === option.value 
                             ? 'bg-primary-500 text-white font-bold' 
                             : 'text-dark-600 dark:text-dark-300 hover:bg-white/40 dark:hover:bg-dark-700/40'
@@ -243,9 +243,9 @@ export default function PaymentsPage() {
                 setEndDate('');
                 setPaymentMethod('');
               }}
-              className="btn-secondary text-sm md:btn-ghost h-11 justify-center"
+              className="btn-secondary !p-0 h-11 flex items-center justify-center rounded-2xl border-none bg-dark-500/10 text-dark-600 dark:text-dark-300 active:scale-95 group"
             >
-              Limpar
+              <span className="text-xs font-bold group-hover:scale-110 transition-transform">Limpar</span>
             </button>
           </div>
         </div>
@@ -282,17 +282,19 @@ export default function PaymentsPage() {
                   payments.map((payment) => (
                     <tr key={payment.id} className="group hover:bg-white/40 dark:hover:bg-dark-700/30 transition-all duration-300">
                       <td className="px-6 py-4" data-label="Membro">
-                        <p className="font-bold text-dark-900 dark:text-white leading-tight">{payment.member?.name}</p>
-                        <p className="text-[10px] text-dark-400 font-bold uppercase tracking-tighter">{payment.member?.phone}</p>
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-1">
+                          <p className="font-bold text-dark-900 dark:text-white leading-tight">{payment.member?.name}</p>
+                          <span className="text-[10px] text-dark-400 font-bold uppercase tracking-tighter bg-secondary-100 dark:bg-dark-800 px-1.5 py-0.5 rounded-md w-fit">{payment.member?.phone}</span>
+                        </div>
                       </td>
                       <td className="px-6 py-4 text-dark-700 dark:text-dark-300" data-label="Plano">
-                        <span className="text-xs font-medium">{payment.plan?.name}</span>
+                        <span className="text-xs font-bold px-2 py-1 bg-primary-500/5 text-primary-600 rounded-lg">{payment.plan?.name}</span>
                       </td>
                       <td className="px-6 py-4 text-right font-bold text-dark-900 dark:text-white" data-label="Valor">
-                        {formatCurrency(payment.amount)}
+                        <span className="text-sm md:text-base">{formatCurrency(payment.amount)}</span>
                       </td>
                       <td className="px-6 py-4 text-dark-600 dark:text-dark-200" data-label="Data">
-                        <span className="text-xs">{format(new Date(payment.paymentDate), 'dd/MM/yyyy HH:mm', { locale: pt })}</span>
+                        <span className="text-[10px] md:text-xs font-medium">{format(new Date(payment.paymentDate), 'dd/MM/yyyy HH:mm', { locale: pt })}</span>
                       </td>
                       <td className="px-6 py-4" data-label="Método">
                         <span className="text-[10px] px-2.5 py-1 bg-white/50 dark:bg-dark-800/50 text-dark-600 dark:text-dark-200 rounded-lg font-bold border border-white/40 dark:border-dark-700/50 uppercase tracking-tighter">
@@ -300,6 +302,7 @@ export default function PaymentsPage() {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-center" data-label="Ações">
+                        <div className="flex items-center justify-center gap-3 sm:gap-2">
                           <button
                             onClick={() => {
                               const token = localStorage.getItem('token');
@@ -308,18 +311,19 @@ export default function PaymentsPage() {
                               const phone = (payment.member?.phone || '').replace(/[^0-9]/g, '');
                               window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
                             }}
-                            className="p-2 bg-green-500/10 text-green-600 hover:bg-green-500 hover:text-white rounded-xl transition-all shadow-sm group"
+                            className="p-3 sm:p-2 bg-green-500/10 text-green-600 hover:bg-green-500 hover:text-white rounded-2xl transition-all shadow-sm active:scale-90"
                             title="Partilhar WhatsApp"
                           >
-                            <ShareIcon className="h-5 w-5" />
+                            <ShareIcon className="h-6 w-6 sm:h-5 sm:w-5" />
                           </button>
                           <button 
                             onClick={() => handleDownloadReceipt(payment)}
-                            className="p-2 bg-primary-500/10 text-primary-600 hover:bg-primary-500 hover:text-white rounded-xl transition-all shadow-sm group"
+                            className="p-3 sm:p-2 bg-primary-500/10 text-primary-600 hover:bg-primary-500 hover:text-white rounded-2xl transition-all shadow-sm active:scale-90"
                             title="Ver Fatura"
                           >
-                            <EyeIcon className="h-5 w-5" />
+                            <EyeIcon className="h-6 w-6 sm:h-5 sm:w-5" />
                           </button>
+                        </div>
                       </td>
                     </tr>
                   ))

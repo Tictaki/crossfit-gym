@@ -25,6 +25,12 @@
     margin: 0;
     padding: 0;
     background-color: #000000 !important;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+
+  body::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
   }
 
 
@@ -358,5 +364,13 @@
   }
   .pt-safe {
     padding-top: env(safe-area-inset-top);
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 }
