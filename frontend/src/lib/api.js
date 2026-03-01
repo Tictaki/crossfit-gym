@@ -87,12 +87,8 @@ export const authAPI = {
 export const membersAPI = {
   list: (params) => api.get('/members', { params }),
   get: (id) => api.get(`/members/${id}`),
-  create: (data) => api.post('/members', data, {
-    headers: { 'Content-Type': 'multipart/form-data' }
-  }),
-  update: (id, data) => api.put(`/members/${id}`, data, {
-    headers: { 'Content-Type': 'multipart/form-data' }
-  }),
+  create: (data) => api.post('/members', data),
+  update: (id, data) => api.put(`/members/${id}`, data),
   suspend: (id) => api.put(`/members/${id}/suspend`),
   activate: (id) => api.put(`/members/${id}/activate`),
   getQRCode: (id) => api.get(`/members/${id}/qrcode`),
@@ -141,9 +137,7 @@ export const usersAPI = {
   list: () => api.get('/users'),
   create: (data) => api.post('/users', data),
   update: (id, data) => api.put(`/users/${id}`, data),
-  updateProfile: (data) => api.put('/users/profile', data, {
-    headers: { 'Content-Type': 'multipart/form-data' }
-  }),
+  updateProfile: (data) => api.put('/users/profile', data),
   delete: (id) => api.delete(`/users/${id}`),
 };
 
@@ -163,21 +157,15 @@ export const accountingAPI = {
 // Settings API
 export const settingsAPI = {
   get: () => api.get('/settings'),
-  updateBackground: (data) => api.post('/settings/background', data, {
-    headers: { 'Content-Type': 'multipart/form-data' }
-  }),
+  updateBackground: (data) => api.post('/settings/background', data),
   removeBackground: (key = 'background_image') => api.delete(`/settings/background?key=${key}`),
 };
 
 // Products API
 export const productsAPI = {
   list: (params) => api.get('/products', { params }),
-  create: (data) => api.post('/products', data, {
-    headers: { 'Content-Type': 'multipart/form-data' }
-  }),
-  update: (id, data) => api.put(`/products/${id}`, data, {
-    headers: { 'Content-Type': 'multipart/form-data' }
-  }),
+  create: (data) => api.post('/products', data),
+  update: (id, data) => api.put(`/products/${id}`, data),
   delete: (id) => api.delete(`/products/${id}`),
   recordSale: (data) => api.post('/products/sales', data),
   listSales: () => api.get('/products/sales'),

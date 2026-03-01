@@ -13,7 +13,11 @@ const prisma = new PrismaClient();
 // Multer config for profile photos
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/profiles'); // Multer will create this directory if it doesn't exist
+    const dir = 'uploads/profiles';
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    cb(null, dir);
   },
   filename: (req, file, cb) => {
     cb(null, `profile-${req.user.id}-${Date.now()}${path.extname(file.originalname)}`);
@@ -61,9 +65,9 @@ router.put('/profile', authenticate, upload.single('photo'), async (req, res) =>
   } catch (error) {
     console.error('CRITICAL: Error updating profile:', error);
     res.status(500).json({ 
-      error: 'Failed to update profile',
-      details: error.message,
-      code: error.code 
+      error: 'Erro ao atualizar perfil',
+      message: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
   }
 });
