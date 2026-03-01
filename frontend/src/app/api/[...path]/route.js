@@ -9,16 +9,19 @@ async function handler(request, { params }) {
   const query = searchParams.toString();
   const targetUrl = `${RAILWAY_API}/${path}${query ? `?${query}` : ''}`;
 
+  // Forward ALL headers from the request
   const headers = new Headers();
-  // Forward relevant headers
-  const auth = request.headers.get('Authorization');
-  const contentType = request.headers.get('Content-Type');
-  if (auth) headers.set('Authorization', auth);
-  if (contentType) headers.set('Content-Type', contentType);
+  request.headers.forEach((value, key) => {
+    // Skip host header to avoid issues with target server
+    if (key.toLowerCase() !== 'host') {
+      headers.set(key, value);
+    }
+  });
 
   let body;
   if (!['GET', 'HEAD'].includes(request.method)) {
-    body = await request.text();
+    // For uploads and binary data, read as arrayBuffer instead of text
+    body = await request.arrayBuffer();
   }
 
   try {
@@ -26,6 +29,8 @@ async function handler(request, { params }) {
       method: request.method,
       headers,
       body,
+      // Prevents issues with redirects
+      redirect: 'manual',
     });
 
     const data = await response.text();
