@@ -24,7 +24,21 @@ const getBaseURL = () => {
 };
 
 const API_URL = getBaseURL();
-const ROOT_URL = API_URL.replace('/api', '');
+
+// Upload URL must always be the absolute Railway backend root (not relative)
+const getUploadURL = () => {
+  if (typeof window !== 'undefined') {
+    const { hostname } = window.location;
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return 'http://localhost:3001';
+    }
+    // In production: always point directly to the Railway backend
+    return 'https://crossfit-gym-production-944c.up.railway.app';
+  }
+  return 'http://localhost:3001';
+};
+
+const ROOT_URL = getUploadURL();
 
 const api = axios.create({
   baseURL: API_URL,

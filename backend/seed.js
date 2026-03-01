@@ -14,7 +14,7 @@ async function seed() {
 
     const admin = await prisma.user.upsert({
       where: { email: 'gerente@crosstraininggym.com' },
-      update: {},
+      update: { password: adminPassword },
       create: {
         name: 'Gerente',
         email: 'gerente@crosstraininggym.com',
@@ -25,7 +25,7 @@ async function seed() {
 
     const receptionist = await prisma.user.upsert({
       where: { email: 'equipa@crosstraininggym.com' },
-      update: {},
+      update: { password: receptionistPassword },
       create: {
         name: 'Equipa',
         email: 'equipa@crosstraininggym.com',
