@@ -11,16 +11,28 @@ async function handler(request, { params }) {
 
   // Forward filtered headers from the request
   const headers = new Headers();
-  const restrictedRequestHeaders = ['host', 'connection', 'content-length'];
+  const restrictedHeaders = [
+    'host',
+    'connection',
+    'content-length',
+    'transfer-encoding',
+    'keep-alive',
+    'proxy-authenticate',
+    'proxy-authorization',
+    'te',
+    'trailer',
+    'upgrade'
+  ];
+
   request.headers.forEach((value, key) => {
-    if (!restrictedRequestHeaders.includes(key.toLowerCase())) {
+    if (!restrictedHeaders.includes(key.toLowerCase())) {
       headers.set(key, value);
     }
   });
 
   let body;
   if (!['GET', 'HEAD'].includes(request.method)) {
-    // For uploads and binary data, read as arrayBuffer instead of text
+    // For uploads and binary data, read as arrayBuffer
     body = await request.arrayBuffer();
   }
 
@@ -37,9 +49,8 @@ async function handler(request, { params }) {
     
     // Forward filtered headers from backend response
     const responseHeaders = new Headers();
-    const restrictedResponseHeaders = ['transfer-encoding', 'content-encoding', 'content-length'];
     response.headers.forEach((value, key) => {
-      if (!restrictedResponseHeaders.includes(key.toLowerCase())) {
+      if (!restrictedHeaders.includes(key.toLowerCase())) {
         responseHeaders.set(key, value);
       }
     });

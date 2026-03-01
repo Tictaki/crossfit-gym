@@ -39,6 +39,15 @@ const upload = multer({
   }
 });
 
+// Helper to safely parse numbers and avoid NaN for Prisma
+const parseNumber = (value, isInt = false) => {
+  if (value === null || value === undefined || value === '' || value === 'null' || value === 'undefined') {
+    return isInt ? 0 : 0.0;
+  }
+  const parsed = isInt ? parseInt(value) : parseFloat(value);
+  return isNaN(parsed) ? 0 : parsed;
+};
+
 // --- Product Management ---
 
 // Get local IP for remote scanner pairing
@@ -93,8 +102,8 @@ router.post('/', authenticate, requireAdmin, upload.single('photo'), async (req,
         name,
         commercialName,
         description,
-        price: (price !== undefined && price !== '') ? parseFloat(price) : 0,
-        stock: (stock !== undefined && stock !== '') ? parseInt(stock) : 0,
+        price: parseNumber(price),
+        stock: parseNumber(stock, true),
         category,
         packageSize,
         sku,
@@ -120,13 +129,14 @@ router.put('/:id', authenticate, requireAdmin, upload.single('photo'), async (re
       name,
       commercialName,
       description,
-      price: (price !== undefined && price !== '') ? parseFloat(price) : undefined,
-      stock: (stock !== undefined && stock !== '') ? parseInt(stock) : undefined,
       category,
       packageSize,
       sku,
       status: status === 'true' || status === true
     };
+
+    if (price !== undefined) updateData.price = parseNumber(price);
+    if (stock !== undefined) updateData.stock = parseNumber(stock, true);
 
     if (req.file) {
       updateData.photo = `/uploads/products/${req.file.filename}`;
