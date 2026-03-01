@@ -79,17 +79,17 @@ export default function MembersPage() {
             <MagnifyingGlassIcon className="h-5 w-5 absolute left-4 top-1/2 transform -translate-y-1/2 text-dark-400 dark:text-dark-300 group-focus-within:text-primary-500 transition-colors" />
             <input
               type="text"
-              placeholder="Buscar por nome ou telefone..."
+              placeholder="Buscar..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="input pl-12 text-sm h-12 bg-white/50 dark:bg-dark-800/50 border-none"
+              className="input pl-11 text-sm h-11 bg-white/50 dark:bg-dark-800/50 border-none rounded-2xl"
             />
           </div>
           <div className="relative group">
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
-              className="input text-sm h-12 bg-white/50 dark:bg-dark-800/50 border-none appearance-none cursor-pointer"
+              className="input text-sm h-11 bg-white/50 dark:bg-dark-800/50 border-none appearance-none cursor-pointer rounded-2xl"
             >
               <option value="">Todos os Status</option>
               <option value="ACTIVE">Ativos</option>
@@ -145,7 +145,7 @@ export default function MembersPage() {
             )}
           </div>
         ) : (
-          <div className="table-container pt-4">
+          <div className="table-container pt-0">
             <table className="table min-w-full table-responsive-cards">
               <thead className="bg-dark-900 dark:bg-black">
                 <tr>
@@ -187,34 +187,34 @@ export default function MembersPage() {
                       </div>
                     </td>
                     <td className="py-4" data-label="Status">{getStatusBadge(member.status)}</td>
-                    <td className="py-4 pr-8 text-right" data-label="Ações">
-                      <div className="flex items-center justify-end gap-2">
+                    <td className="py-4 pr-8 text-right flex-actions" data-label="Ações">
+                      <div className="flex items-center justify-end gap-2 sm:gap-1">
                         <button
                           onClick={() => {
                             const message = `Olá *${member.name}*! 💪\n\nAqui é da *Crosstraining Gym*. Gostaríamos de entrar em contacto.`;
                             const phone = member.phone.replace(/[^0-9]/g, '');
                             window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
                           }}
-                          className="p-2 rounded-xl bg-green-500/10 text-green-600 hover:bg-green-500 hover:text-white transition-all shadow-sm group"
+                          className="p-3 sm:p-2 rounded-2xl bg-green-500/10 text-green-600 hover:bg-green-500 hover:text-white transition-all shadow-sm active:scale-90"
                           title="WhatsApp"
                         >
-                          <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                          <svg className="h-6 w-6 sm:h-5 sm:w-5" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.085.005.213.005.324.249l.454 1.109c.045.11.076.223.008.355-.077.15-.115.247-.231.38-.116.133-.242.297-.346.399-.113.111-.23.232-.1.455.13.223.578.953 1.24 1.541.856.762 1.577 1.001 1.808 1.112.23.111.364.093.5-.06.136-.153.579-.673.733-.903.154-.23.308-.192.52-.115.212.077 1.341.633 1.572.748.23.115.385.173.442.271.058.099.058.569-.086.974z"/>
                           </svg>
                         </button>
                         <Link 
                           href={`/dashboard/members/${member.id}`}
-                          className="p-2 rounded-xl bg-primary-500/10 text-primary-600 hover:bg-primary-500 hover:text-white transition-all shadow-sm"
+                          className="p-3 sm:p-2 rounded-2xl bg-primary-500/10 text-primary-600 hover:bg-primary-500 hover:text-white transition-all shadow-sm active:scale-90"
                           title="Ver Detalhes"
                         >
-                          <EyeIcon className="h-5 w-5" />
+                          <EyeIcon className="h-6 w-6 sm:h-5 sm:w-5" />
                         </Link>
                         <Link 
                           href={`/dashboard/members/${member.id}/edit`}
-                          className="p-2 rounded-xl bg-dark-500/10 text-dark-600 dark:text-dark-400 dark:hover:bg-dark-700 hover:bg-dark-600 hover:text-white transition-all shadow-sm"
+                          className="p-3 sm:p-2 rounded-2xl bg-dark-500/10 text-dark-600 dark:text-dark-400 dark:hover:bg-dark-700 hover:bg-dark-600 hover:text-white transition-all shadow-sm active:scale-90"
                           title="Editar"
                         >
-                          <PencilSquareIcon className="h-5 w-5" />
+                          <PencilSquareIcon className="h-6 w-6 sm:h-5 sm:w-5" />
                         </Link>
                       </div>
                     </td>

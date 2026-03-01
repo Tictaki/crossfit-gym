@@ -67,83 +67,83 @@ export default function DashboardPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="stat-card group">
-          <div className="flex items-start justify-between">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
+        <div className="stat-card group !p-4 md:!p-6">
+          <div className="flex flex-col md:flex-row md:items-start justify-between gap-2">
             <div>
-              <p className="stat-card-title text-dark-400 dark:text-dark-300">Membros Ativos</p>
-              <p className="stat-card-value">{stats?.activeMembers || 0}</p>
-              <div className="flex items-center mt-2 text-green-600 text-sm font-bold bg-green-50 px-2 py-1 rounded-full w-fit">
+              <p className="stat-card-title text-[10px] md:text-xs text-dark-400 dark:text-dark-300">Membros Ativos</p>
+              <p className="stat-card-value text-sm md:text-2xl">{stats?.activeMembers || 0}</p>
+              <div className="flex items-center mt-1 md:mt-2 text-green-600 text-[9px] md:text-sm font-bold bg-green-50 px-2 py-0.5 md:py-1 rounded-full w-fit">
                 <ArrowTrendingUpIcon className="h-3 w-3 mr-1" />
                 <span>+2.4%</span>
               </div>
             </div>
-            <div className="stat-card-icon from-blue-500 to-blue-600 shadow-blue-500/30">
-              <UsersIcon className="h-6 w-6 text-white" />
+            <div className="stat-card-icon from-blue-500 to-blue-600 shadow-blue-500/30 h-10 w-10 md:h-12 md:w-12 !p-2 md:!p-3">
+              <UsersIcon className="h-5 w-5 md:h-6 md:w-6 text-white" />
             </div>
           </div>
         </div>
 
-        <div className="stat-card group">
-           <div className="flex items-start justify-between">
+        <div className="stat-card group !p-4 md:!p-6">
+           <div className="flex flex-col md:flex-row md:items-start justify-between gap-2">
             <div>
-              <p className="stat-card-title text-dark-400 dark:text-dark-300">Receita Total (Mês)</p>
-              <p className="stat-card-value text-primary-600">
-                {(stats?.revenueThisMonth + (stats?.salesRevenueThisMonth || 0))?.toLocaleString('pt-PT', { minimumFractionDigits: 2 }) || '0.00'} <span className="text-sm text-dark-400 dark:text-dark-300 font-normal">MZN</span>
+              <p className="stat-card-title text-[10px] md:text-xs text-dark-400 dark:text-dark-300">Receita Total (Mês)</p>
+              <p className="stat-card-value text-sm md:text-2xl text-primary-600">
+                {(stats?.revenueThisMonth + (stats?.salesRevenueThisMonth || 0))?.toLocaleString('pt-PT', { minimumFractionDigits: 2 }) || '0.00'} <span className="text-[10px] md:text-sm text-dark-400 dark:text-dark-300 font-normal">MZN</span>
               </p>
-               <p className="text-xs text-dark-400 dark:text-dark-300 mt-2 font-medium">Mensalidades + Vendas</p>
+               <p className="text-[9px] md:text-xs text-dark-400 dark:text-dark-300 mt-1 md:mt-2 font-medium">Mensalidades + Vendas</p>
             </div>
-            <div className="stat-card-icon from-green-500 to-green-600 shadow-green-500/30">
-              <BanknotesIcon className="h-6 w-6 text-white" />
+            <div className="stat-card-icon from-green-500 to-green-600 shadow-green-500/30 h-10 w-10 md:h-12 md:w-12 !p-2 md:!p-3">
+              <BanknotesIcon className="h-5 w-5 md:h-6 md:w-6 text-white" />
             </div>
           </div>
         </div>
 
-         <div className="stat-card group">
-           <div className="flex items-start justify-between">
+         <div className="stat-card group !p-4 md:!p-6">
+           <div className="flex flex-col md:flex-row md:items-start justify-between gap-2">
             <div>
-              <p className="stat-card-title text-dark-400 dark:text-dark-300">Vendas Loja</p>
-              <p className="stat-card-value">{stats?.salesRevenueThisMonth?.toLocaleString('pt-PT', { minimumFractionDigits: 2 }) || '0.00'}</p>
-               <div className="flex items-center mt-2 text-orange-600 text-sm font-bold bg-orange-50 px-2 py-1 rounded-full w-fit">
+              <p className="stat-card-title text-[10px] md:text-xs text-dark-400 dark:text-dark-300">Vendas Loja</p>
+              <p className="stat-card-value text-sm md:text-2xl">{stats?.salesRevenueThisMonth?.toLocaleString('pt-PT', { minimumFractionDigits: 2 }) || '0.00'}</p>
+               <div className="flex items-center mt-1 md:mt-2 text-orange-600 text-[9px] md:text-sm font-bold bg-orange-50 px-2 py-0.5 md:py-1 rounded-full w-fit">
                 <ShoppingBagIcon className="h-3 w-3 mr-1" />
-                <span>{stats?.salesCount || 0} vendas</span>
+                <span>{stats?.salesCount || 0} v.</span>
               </div>
             </div>
-            <div className="stat-card-icon from-orange-500 to-orange-600 shadow-orange-500/30">
-              <ShoppingBagIcon className="h-6 w-6 text-white" />
+            <div className="stat-card-icon from-orange-500 to-orange-600 shadow-orange-500/30 h-10 w-10 md:h-12 md:w-12 !p-2 md:!p-3">
+              <ShoppingBagIcon className="h-5 w-5 md:h-6 md:w-6 text-white" />
             </div>
           </div>
         </div>
 
         {stats?.lowStockCount > 0 ? (
-          <div className="stat-card group border-red-200 bg-red-50/50 dark:bg-red-900/10 dark:border-red-900/50">
-            <div className="flex items-start justify-between">
+          <div className="stat-card group border-red-200 bg-red-50/50 dark:bg-red-900/10 dark:border-red-900/50 !p-4 md:!p-6">
+            <div className="flex flex-col md:flex-row md:items-start justify-between gap-2">
               <div>
-                <p className="stat-card-title text-red-600 dark:text-red-400">Alerta de Stock</p>
-                <p className="stat-card-value text-red-600">{stats?.lowStockCount}</p>
-                <div className="flex items-center mt-2 text-red-600 text-sm font-bold bg-red-100 dark:bg-red-900/30 px-2 py-1 rounded-full w-fit">
+                <p className="stat-card-title text-[10px] md:text-xs text-red-600 dark:text-red-400">Alerta Stock</p>
+                <p className="stat-card-value text-sm md:text-2xl text-red-600">{stats?.lowStockCount}</p>
+                <div className="flex items-center mt-1 md:mt-2 text-red-600 text-[9px] md:text-sm font-bold bg-red-100 dark:bg-red-900/30 px-2 py-0.5 md:py-1 rounded-full w-fit">
                   <ExclamationCircleIcon className="h-3 w-3 mr-1" />
                   <span>Produtos a acabar</span>
                 </div>
               </div>
-              <div className="stat-card-icon from-red-500 to-red-600 shadow-red-500/30">
-                <ArchiveBoxIcon className="h-6 w-6 text-white" />
+              <div className="stat-card-icon from-red-500 to-red-600 shadow-red-500/30 h-10 w-10 md:h-12 md:w-12 !p-2 md:!p-3">
+                <ArchiveBoxIcon className="h-5 w-5 md:h-6 md:w-6 text-white" />
               </div>
             </div>
           </div>
         ) : (
-          <div className="stat-card group">
-            <div className="flex items-start justify-between">
+          <div className="stat-card group !p-4 md:!p-6">
+            <div className="flex flex-col md:flex-row md:items-start justify-between gap-2">
               <div>
-                <p className="stat-card-title text-dark-400 dark:text-dark-300">Novos Membros</p>
-                <p className="stat-card-value">{stats?.newMembersThisMonth || 0}</p>
-                <div className="flex items-center mt-2 text-green-600 text-sm font-bold bg-green-50 px-2 py-1 rounded-full w-fit">
+                <p className="stat-card-title text-[10px] md:text-xs text-dark-400 dark:text-dark-300">Novos Membros</p>
+                <p className="stat-card-value text-sm md:text-2xl">{stats?.newMembersThisMonth || 0}</p>
+                <div className="flex items-center mt-1 md:mt-2 text-green-600 text-[9px] md:text-sm font-bold bg-green-50 px-2 py-0.5 md:py-1 rounded-full w-fit">
                   <ArrowTrendingUpIcon className="h-3 w-3 mr-1" />
                   <span>+12%</span>
                 </div>
               </div>
-              <div className="stat-card-icon from-purple-500 to-purple-600 shadow-purple-500/30">
-                <UserPlusIcon className="h-6 w-6 text-white" />
+              <div className="stat-card-icon from-purple-500 to-purple-600 shadow-purple-500/30 h-10 w-10 md:h-12 md:w-12 !p-2 md:!p-3">
+                <UserPlusIcon className="h-5 w-5 md:h-6 md:w-6 text-white" />
               </div>
             </div>
           </div>
@@ -200,12 +200,12 @@ export default function DashboardPage() {
                <div className="flex items-center gap-2 text-xs font-bold text-dark-500 dark:text-dark-300">
                  <span className="w-3 h-3 rounded-full bg-primary-500"></span> Total
                </div>
-               <div className="flex items-center gap-2 text-xs font-bold text-dark-500 dark:text-dark-300">
-                 <span className="w-3 h-3 rounded-full bg-orange-500"></span> Vendas
+               <div className="flex items-center gap-2 text-[10px] md:text-xs font-bold text-dark-500 dark:text-dark-300">
+                 <span className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-orange-500"></span> Vendas
                </div>
              </div>
           </div>
-          <div className="h-[250px] md:h-[300px]">
+          <div className="h-[200px] md:h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={stats?.monthlyRevenue || []}>
                 <defs>

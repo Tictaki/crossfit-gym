@@ -66,8 +66,12 @@ export default function ProductsPage() {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     setUserRole(user.role);
     
-    // Initialize Socket.io
-    const socketInstance = io(window.location.protocol + '//' + window.location.hostname + ':3001');
+    // Initialize Socket.io - Use absolute Railway URL in production
+    const socketBackendUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? `${window.location.protocol}//${window.location.hostname}:3001`
+        : UPLOAD_URL.replace(/\/api$/, '');
+    
+    const socketInstance = io(socketBackendUrl);
     const sid = user.id || Math.random().toString(36).substring(7);
     setSessionId(sid);
 
@@ -756,7 +760,10 @@ export default function ProductsPage() {
 
             <div className="bg-white p-6 rounded-3xl inline-block shadow-inner mb-8 border border-gray-100">
               <QRCodeCanvas 
-                value={`http://${localIp}:3000/dashboard/scanner?room=${sessionId}`}
+                value={typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+                  ? `http://${localIp}:3000/dashboard/scanner?room=${sessionId}`
+                  : `${window.location.origin}/dashboard/scanner?room=${sessionId}`
+                }
                 size={200}
                 level="H"
                 includeMargin={false}

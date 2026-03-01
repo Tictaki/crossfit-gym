@@ -40,16 +40,16 @@ export default function Header({ user, setSidebarOpen }) {
         <div className="flex items-center gap-3 md:gap-4">
           <button 
             onClick={() => setSidebarOpen(true)}
-            className="lg:hidden p-2.5 rounded-xl bg-white/50 dark:bg-dark-800/50 text-dark-600 dark:text-dark-300 hover:bg-white dark:hover:bg-dark-700 transition-all shadow-sm active:scale-90"
+            className="hidden lg:hidden p-2.5 rounded-xl bg-white/50 dark:bg-dark-800/50 text-dark-600 dark:text-dark-300 hover:bg-white dark:hover:bg-dark-700 transition-all shadow-sm active:scale-90"
           >
             <Bars3Icon className="h-6 w-6" />
           </button>
           
           <div className="flex flex-col">
-            <h2 className="text-xs md:text-xl font-bold text-dark-900 dark:text-white tracking-tight leading-tight">
+            <h2 className="text-sm md:text-xl font-bold text-dark-900 dark:text-white tracking-tight leading-tight">
               Olá, <span className="text-primary-600 dark:text-primary-500">{user?.name?.split(' ')[0] || 'Utilizador'}</span> 👋
             </h2>
-            <p className="text-[10px] md:text-xs font-semibold text-dark-400 dark:text-dark-200 uppercase tracking-widest opacity-80">{user?.role?.toLowerCase()}</p>
+            <p className="text-[9px] md:text-xs font-semibold text-dark-400 dark:text-dark-200 uppercase tracking-widest opacity-80">{user?.role?.toLowerCase()}</p>
           </div>
         </div>
 
@@ -58,9 +58,9 @@ export default function Header({ user, setSidebarOpen }) {
           
           <button 
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center gap-3 p-1 rounded-2xl hover:bg-white/40 dark:hover:bg-dark-800/40 transition-all duration-300 group"
+            className="flex items-center gap-2 md:gap-3 p-1 rounded-2xl hover:bg-white/40 dark:hover:bg-dark-800/40 transition-all duration-300 group"
           >
-            <div className="h-10 w-10 rounded-full bg-gradient-primary p-[2px] shadow-glow-sm">
+            <div className="h-8 w-8 md:h-10 md:w-10 rounded-full bg-gradient-primary p-[2px] shadow-glow-sm">
               <div className="h-full w-full rounded-full bg-white dark:bg-dark-800 flex items-center justify-center overflow-hidden">
                 {user?.photo ? (
                   <img 

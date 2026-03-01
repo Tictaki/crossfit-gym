@@ -5,6 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { settingsAPI, UPLOAD_URL } from '@/lib/api';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
+import BottomNav from '@/components/layout/BottomNav';
 import ThemeToggle from '@/components/layout/ThemeToggle';
 import { useTheme } from '@/context/ThemeContext';
 
@@ -111,10 +112,11 @@ export default function DashboardLayout({ children }) {
             user={user} 
             setSidebarOpen={setIsSidebarOpen} 
           />
-          <main className="flex-1 overflow-y-auto p-4 md:p-6 scroll-smooth">
+          <main className="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6 scroll-smooth">
             {children}
           </main>
         </div>
+        <BottomNav user={user} />
         <ThemeToggle />
       </div>
     </div>
