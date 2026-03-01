@@ -9,7 +9,7 @@ async function seed() {
 
     // 1. Create Users
     console.log('👥 Criando utilizadores...');
-    const adminPassword = await bcrypt.hash('Admin#Master2026', 10);
+    const adminPassword = await bcrypt.hash('Gym@93203397', 10);
     const receptionistPassword = await bcrypt.hash('Staff@Gym2026', 10);
 
     const admin = await prisma.user.upsert({
