@@ -1,28 +1,26 @@
 import axios from 'axios';
 
 const getBaseURL = () => {
-  if (process.env.NEXT_PUBLIC_API_URL) {
-    let url = process.env.NEXT_PUBLIC_API_URL;
-    // Fix missing protocol (making it relative by mistake)
-    if (!url.startsWith('http://') && !url.startsWith('https://')) {
-      url = `https://${url}`;
-    }
-    // Fix missing /api at the end
-    if (!url.endsWith('/api')) {
-      // remove trailing slash if exists before adding /api
-      url = url.replace(/\/$/, '') + '/api';
-    }
-    return url;
-  }
+  // In the browser, always use relative /api so the Next.js proxy handles it
   if (typeof window !== 'undefined') {
-    const { hostname, protocol } = window.location;
-    // Fallback to localhost if on dev, otherwise relative to current host
-    if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      return `http://localhost:3001/api`;
+    if (process.env.NEXT_PUBLIC_API_URL) {
+      let url = process.env.NEXT_PUBLIC_API_URL;
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        url = `https://${url}`;
+      }
+      if (!url.endsWith('/api')) {
+        url = url.replace(/\/$/, '') + '/api';
+      }
+      return url;
     }
-    return `${protocol}//${hostname}/api`;
+    const { hostname } = window.location;
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return 'http://localhost:3001/api';
+    }
+    // On Vercel: use relative path, the proxy route at /api/[...path] handles it
+    return '/api';
   }
-  return 'http://localhost:3001/api';
+  return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 };
 
 const API_URL = getBaseURL();
