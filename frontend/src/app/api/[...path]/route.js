@@ -33,15 +33,21 @@ async function handler(request, { params }) {
       redirect: 'manual',
     });
 
-    const data = await response.text();
+    // Read response as arrayBuffer for binary support (PDFs, images)
+    const data = await response.arrayBuffer();
+    
+    // Forward all headers from backend response
+    const responseHeaders = new Headers();
+    response.headers.forEach((value, key) => {
+      responseHeaders.set(key, value);
+    });
+    
+    // Add CORS headers
+    responseHeaders.set('Access-Control-Allow-Origin', '*');
+
     return new NextResponse(data, {
       status: response.status,
-      headers: {
-        'Content-Type': response.headers.get('Content-Type') || 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-      },
+      headers: responseHeaders
     });
   } catch (error) {
     console.error('Proxy error:', error);
