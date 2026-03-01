@@ -9,11 +9,11 @@ async function handler(request, { params }) {
   const query = searchParams.toString();
   const targetUrl = `${RAILWAY_API}/${path}${query ? `?${query}` : ''}`;
 
-  // Forward ALL headers from the request
+  // Forward filtered headers from the request
   const headers = new Headers();
+  const restrictedRequestHeaders = ['host', 'connection', 'content-length'];
   request.headers.forEach((value, key) => {
-    // Skip host header to avoid issues with target server
-    if (key.toLowerCase() !== 'host') {
+    if (!restrictedRequestHeaders.includes(key.toLowerCase())) {
       headers.set(key, value);
     }
   });
@@ -29,20 +29,22 @@ async function handler(request, { params }) {
       method: request.method,
       headers,
       body,
-      // Prevents issues with redirects
       redirect: 'manual',
     });
 
-    // Read response as arrayBuffer for binary support (PDFs, images)
+    // Read response binary data
     const data = await response.arrayBuffer();
     
-    // Forward all headers from backend response
+    // Forward filtered headers from backend response
     const responseHeaders = new Headers();
+    const restrictedResponseHeaders = ['transfer-encoding', 'content-encoding', 'content-length'];
     response.headers.forEach((value, key) => {
-      responseHeaders.set(key, value);
+      if (!restrictedResponseHeaders.includes(key.toLowerCase())) {
+        responseHeaders.set(key, value);
+      }
     });
     
-    // Add CORS headers
+    // Ensure CORS and basic security
     responseHeaders.set('Access-Control-Allow-Origin', '*');
 
     return new NextResponse(data, {
@@ -51,7 +53,11 @@ async function handler(request, { params }) {
     });
   } catch (error) {
     console.error('Proxy error:', error);
-    return NextResponse.json({ error: 'Proxy request failed', details: error.message }, { status: 502 });
+    return NextResponse.json({ 
+      error: 'Proxy request failed', 
+      details: error.message,
+      target: targetUrl 
+    }, { status: 502 });
   }
 }
 
