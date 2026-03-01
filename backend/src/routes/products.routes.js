@@ -2,6 +2,7 @@ import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import multer from 'multer';
 import path from 'path';
+import fs from 'fs';
 import { authenticate, requireAdmin } from '../middleware/auth.js';
 import { networkInterfaces } from 'os';
 
