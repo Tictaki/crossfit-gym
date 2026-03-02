@@ -60,16 +60,20 @@ export default function Header({ user, setSidebarOpen }) {
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             className="flex items-center gap-2 md:gap-3 p-1 rounded-2xl hover:bg-white/40 dark:hover:bg-dark-800/40 transition-all duration-300 group"
           >
-            <div className="h-8 w-8 md:h-10 md:w-10 rounded-full bg-gradient-primary p-[2px] shadow-glow-sm">
+            <div className="h-9 w-9 md:h-11 md:w-11 rounded-full p-[2px] bg-gradient-to-br from-primary-400 to-primary-600 shadow-premium overflow-hidden transition-transform duration-300 group-active:scale-90">
               <div className="h-full w-full rounded-full bg-white dark:bg-dark-800 flex items-center justify-center overflow-hidden">
                 {user?.photo ? (
                   <img 
                     src={`${UPLOAD_URL}${user.photo}`} 
                     alt="Profile" 
                     className="w-full h-full object-cover" 
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.parentElement.innerHTML = `<span class="font-bold text-primary-600 dark:text-primary-500 text-lg">${user?.name?.[0] || 'U'}</span>`;
+                    }}
                   />
                 ) : (
-                  <span className="font-bold text-primary-600 dark:text-primary-500 text-lg">
+                  <span className="font-bold text-primary-600 dark:text-primary-500 text-base md:text-lg">
                     {user?.name?.[0] || 'U'}
                   </span>
                 )}

@@ -28,11 +28,21 @@ const API_URL = getBaseURL();
 // Upload URL must always be the absolute Railway backend root (not relative)
 const getUploadURL = () => {
   if (typeof window !== 'undefined') {
-    const { hostname } = window.location;
+    const { hostname, protocol } = window.location;
+    
+    // If we're on localhost, use local backend
     if (hostname === 'localhost' || hostname === '127.0.0.1') {
       return 'http://localhost:3001';
     }
-    // In production: always point directly to the Railway backend
+    
+    // If we're on a local IP (e.g. 192.168.x.x), use that same IP for backend
+    // This allows mobile devices on the same network to see images
+    if (/^(\d{1,3}\.){3}\d{1,3}$/.test(hostname)) {
+      return `${protocol}//${hostname}:3001`;
+    }
+
+    // If we're on Vercel or any other production domain
+    // Always point directly to the Railway backend
     return 'https://crossfit-gym-production-944c.up.railway.app';
   }
   return 'http://localhost:3001';

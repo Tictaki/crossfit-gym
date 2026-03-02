@@ -135,13 +135,19 @@ export default function CheckinPanel({ isOpen, onClose }) {
                       onClick={() => handleSelectMember(member)}
                       className="w-full flex items-center p-3 rounded-2xl hover:bg-gray-50 dark:hover:bg-dark-800 border border-transparent hover:border-gray-200 dark:hover:border-dark-700 transition-all text-left group"
                     >
-                      <div className="h-12 w-12 rounded-full overflow-hidden bg-gray-100 dark:bg-dark-800 mr-4 shadow-inner">
+                      <div className="h-12 w-12 rounded-full overflow-hidden bg-gray-100 dark:bg-dark-800 mr-4 shadow-inner border border-gray-200 dark:border-dark-700 flex items-center justify-center text-gray-400 font-bold">
                         {member.photo ? (
-                          <img src={`${UPLOAD_URL}${member.photo}`} alt={member.name} className="h-full w-full object-cover" />
+                          <img 
+                            src={`${UPLOAD_URL}${member.photo}`} 
+                            alt={member.name} 
+                            className="h-full w-full object-cover" 
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                              e.target.parentElement.innerHTML = `<span>${member.name.charAt(0)}</span>`;
+                            }}
+                          />
                         ) : (
-                          <div className="h-full w-full flex items-center justify-center text-gray-400 font-bold">
-                            {member.name.charAt(0)}
-                          </div>
+                          member.name.charAt(0)
                         )}
                       </div>
                       <div className="flex-1">
@@ -160,13 +166,19 @@ export default function CheckinPanel({ isOpen, onClose }) {
               {selectedMember && (
                 <div className="animate-fade-in space-y-6">
                   <div className="p-6 rounded-3xl bg-gray-50 dark:bg-dark-800 border border-gray-100 dark:border-dark-700 text-center">
-                    <div className="h-24 w-24 rounded-full overflow-hidden mx-auto mb-4 border-4 border-white dark:border-dark-700 shadow-xl">
+                    <div className="h-28 w-28 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-3xl font-bold mx-auto mb-4 border-4 border-white dark:border-dark-700 shadow-2xl overflow-hidden relative">
                       {selectedMember.photo ? (
-                        <img src={`${UPLOAD_URL}${selectedMember.photo}`} alt={selectedMember.name} className="h-full w-full object-cover" />
+                        <img 
+                          src={`${UPLOAD_URL}${selectedMember.photo}`} 
+                          alt={selectedMember.name} 
+                          className="h-full w-full object-cover" 
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            e.target.parentElement.innerHTML = `<span class="flex items-center justify-center w-full h-full">${selectedMember.name.charAt(0)}</span>`;
+                          }}
+                        />
                       ) : (
-                        <div className="h-full w-full bg-gradient-primary flex items-center justify-center text-white text-3xl font-bold">
-                          {selectedMember.name.charAt(0)}
-                        </div>
+                        <span className="flex items-center justify-center w-full h-full">{selectedMember.name.charAt(0)}</span>
                       )}
                     </div>
                     <h3 className="text-xl font-bold text-dark-900 dark:text-white">{selectedMember.name}</h3>

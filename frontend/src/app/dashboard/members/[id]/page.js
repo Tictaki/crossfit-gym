@@ -228,11 +228,19 @@ export default function MemberDetailsPage({ params }) {
           {/* Profile Card */}
           <div className="card-glass overflow-hidden">
             <div className="flex flex-col items-center text-center p-6 bg-gradient-to-b from-primary-500/5 to-transparent">
-              <div className="h-32 w-32 rounded-full bg-gradient-primary flex items-center justify-center text-white text-5xl font-bold mb-4 shadow-xl shadow-primary-500/20 border-4 border-white dark:border-dark-800">
+              <div className="h-40 w-40 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-6xl font-bold mb-4 shadow-2xl shadow-primary-500/20 border-4 border-white dark:border-dark-700 overflow-hidden relative">
                 {member.photo ? (
-                  <img src={`${UPLOAD_URL}${member.photo}`} alt={member.name} className="h-full w-full rounded-full object-cover" />
+                  <img 
+                    src={`${UPLOAD_URL}${member.photo}`} 
+                    alt={member.name} 
+                    className="h-full w-full object-cover" 
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.parentElement.innerHTML = `<span class="flex items-center justify-center w-full h-full">${member.name.charAt(0)}</span>`;
+                    }}
+                  />
                 ) : (
-                  member.name.charAt(0)
+                  <span className="flex items-center justify-center w-full h-full">{member.name.charAt(0)}</span>
                 )}
               </div>
               <h2 className="text-xl font-bold text-dark-900 dark:text-white">{member.name}</h2>

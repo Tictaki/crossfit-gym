@@ -277,18 +277,24 @@ export default function ProductsPage() {
           {products.map((product) => (
             <div key={product.id} className="card-glass group overflow-hidden border-none shadow-premium hover:shadow-glow-sm transition-all duration-500 hover:-translate-y-1">
               <div className="p-6">
-                  <div className="h-40 w-full bg-gray-100 dark:bg-dark-800 flex items-center justify-center overflow-hidden rounded-2xl mb-4 relative">
+                  <div className="aspect-square w-full bg-gray-100 dark:bg-dark-900 flex items-center justify-center overflow-hidden rounded-2xl mb-4 relative shadow-inner">
                     {product.photo ? (
                       <img 
                         src={`${UPLOAD_URL}${product.photo}`} 
                         alt={product.name} 
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.parentElement.innerHTML = '<div class="flex flex-col items-center gap-2"><svg class="h-10 w-10 text-dark-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg></div>';
+                        }}
                       />
                     ) : (
-                      <ShoppingBagIcon className="h-12 w-12 text-dark-300 dark:text-dark-700" />
+                      <div className="flex flex-col items-center gap-2">
+                        <ShoppingBagIcon className="h-10 w-10 text-dark-300 dark:text-dark-700" />
+                      </div>
                     )}
-                    <div className="absolute top-2 left-2 p-2 bg-white/80 dark:bg-dark-900/80 backdrop-blur-md rounded-xl shadow-sm">
-                      <ShoppingBagIcon className="h-5 w-5 text-primary-500" />
+                    <div className="absolute top-3 left-3 p-2 bg-white/90 dark:bg-dark-800/90 backdrop-blur-md rounded-xl shadow-sm border border-white/20">
+                      <ShoppingBagIcon className="h-4 w-4 text-primary-500" />
                     </div>
                   </div>
                   {userRole === 'ADMIN' && (

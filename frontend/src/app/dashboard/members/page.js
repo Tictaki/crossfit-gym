@@ -161,11 +161,18 @@ export default function MembersPage() {
                   <tr key={member.id} className="hover:bg-white/20 dark:hover:bg-dark-800/10 transition-colors">
                     <td className="py-4 pl-8" data-label="Membro">
                       <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-full bg-gradient-primary flex items-center justify-center text-white font-bold text-sm shadow-glow-sm flex-shrink-0 border-2 border-white dark:border-dark-800">
+                        <div className="h-11 w-11 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-bold text-sm shadow-premium flex-shrink-0 border-2 border-white dark:border-dark-700 overflow-hidden relative group-hover:scale-105 transition-transform duration-300">
                           {member.photo ? (
-                            <img src={`${UPLOAD_URL}${member.photo}`} alt={member.name} className="h-full w-full rounded-full object-cover" />
+                            <img 
+                              src={`${UPLOAD_URL}${member.photo}`} 
+                              alt={member.name} 
+                              className="h-full w-full object-cover"
+                              onError={(e) => {
+                                e.target.parentElement.innerHTML = `<span class="flex items-center justify-center w-full h-full">${member.name.charAt(0)}</span>`;
+                              }}
+                            />
                           ) : (
-                            member.name.charAt(0)
+                            <span className="flex items-center justify-center text-lg">{member.name.charAt(0)}</span>
                           )}
                         </div>
                         <div>
