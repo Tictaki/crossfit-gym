@@ -517,7 +517,7 @@ export default function ProductsPage() {
                         value={formData.name}
                         onChange={(e) => setFormData({...formData, name: e.target.value})}
                         placeholder="Ex: Whey Protein"
-                        className="input"
+                        className="input-glass"
                       />
                     </div>
                     <div>
@@ -530,7 +530,7 @@ export default function ProductsPage() {
                         value={formData.commercialName}
                         onChange={(e) => setFormData({...formData, commercialName: e.target.value})}
                         placeholder="Ex: Gold Standard"
-                        className="input"
+                        className="input-glass"
                       />
                     </div>
                   </div>
@@ -547,7 +547,7 @@ export default function ProductsPage() {
                   value={formData.description}
                   onChange={(e) => setFormData({...formData, description: e.target.value})}
                   placeholder="Detalhes adicionais sobre o produto..."
-                  className="input min-h-[100px] resize-none py-3"
+                  className="input-glass min-h-[100px] resize-none py-3"
                 />
               </div>
 
@@ -565,7 +565,7 @@ export default function ProductsPage() {
                       value={formData.price}
                       onChange={(e) => setFormData({...formData, price: e.target.value})}
                       placeholder="0.00 MZN"
-                      className="input pl-12"
+                      className="input-glass pl-12"
                     />
                   </div>
                 </div>
@@ -581,7 +581,7 @@ export default function ProductsPage() {
                       value={formData.stock}
                       onChange={(e) => setFormData({...formData, stock: e.target.value})}
                       placeholder="Quantidade inicial"
-                      className="input pl-12"
+                      className="input-glass pl-12"
                     />
                   </div>
                 </div>
@@ -598,7 +598,7 @@ export default function ProductsPage() {
                       value={formData.category}
                       onChange={(e) => setFormData({...formData, category: e.target.value})}
                       placeholder="Suplementos"
-                      className="input"
+                      className="input-glass"
                     />
                   </div>
                   <div>
@@ -608,7 +608,7 @@ export default function ProductsPage() {
                       value={formData.packageSize}
                       onChange={(e) => setFormData({...formData, packageSize: e.target.value})}
                       placeholder="900g, 500ml"
-                      className="input"
+                      className="input-glass"
                     />
                   </div>
                   <div>
@@ -619,7 +619,7 @@ export default function ProductsPage() {
                         value={formData.sku}
                         onChange={(e) => setFormData({...formData, sku: e.target.value})}
                         placeholder="Opcional"
-                        className="input pr-12"
+                        className="input-glass pr-12"
                       />
                       <div className="flex gap-2">
                         <button

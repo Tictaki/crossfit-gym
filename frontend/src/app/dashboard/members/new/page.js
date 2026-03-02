@@ -130,7 +130,7 @@ export default function NewMemberPage() {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className="input h-14"
+                  className="input-glass h-14"
                   placeholder="Ex: João Silva"
                   required
                 />
@@ -143,7 +143,7 @@ export default function NewMemberPage() {
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
-                  className="input h-14"
+                  className="input-glass h-14"
                   placeholder="+258 XX XXX XXXX"
                   required
                 />
@@ -157,7 +157,7 @@ export default function NewMemberPage() {
                     name="birthDate"
                     value={formData.birthDate}
                     onChange={handleChange}
-                    className="input h-14"
+                    className="input-glass h-14"
                     required
                   />
                 </div>
@@ -168,11 +168,11 @@ export default function NewMemberPage() {
                     name="gender"
                     value={formData.gender}
                     onChange={handleChange}
-                    className="input h-14"
+                    className="input-glass h-14 appearance-none"
                     required
                   >
-                    <option value="MALE">Masculino</option>
-                    <option value="FEMALE">Feminino</option>
+                    <option value="MALE" className="bg-dark-900">Masculino</option>
+                    <option value="FEMALE" className="bg-dark-900">Feminino</option>
                   </select>
                 </div>
               </div>
@@ -218,7 +218,7 @@ export default function NewMemberPage() {
                   name="notes"
                   value={formData.notes}
                   onChange={handleChange}
-                  className="input min-h-[100px] py-4"
+                  className="input-glass min-h-[100px] py-4"
                   placeholder="Alguma condição médica ou detalhe importante..."
                 />
               </div>
