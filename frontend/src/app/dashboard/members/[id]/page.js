@@ -215,7 +215,25 @@ export default function MemberDetailsPage({ params }) {
               Suspender
             </button>
           )}
-          <button className="btn-secondary text-red-600 hover:bg-red-50 border-red-100">
+          <button 
+            onClick={async () => {
+              if (await confirm({
+                title: 'Eliminar Membro?',
+                message: 'Tem a certeza que deseja eliminar este membro permanentemente? Esta ação não pode ser desfeita.',
+                confirmText: 'Eliminar',
+                variant: 'danger'
+              })) {
+                try {
+                  await membersAPI.delete(id);
+                  toast.success('Membro eliminado com sucesso');
+                  router.push('/dashboard/members');
+                } catch (err) {
+                  toast.error('Erro ao eliminar membro');
+                }
+              }
+            }}
+            className="btn-secondary text-red-600 hover:bg-red-50 border-red-100"
+          >
             <TrashIcon className="h-5 w-5" />
             Apagar
           </button>

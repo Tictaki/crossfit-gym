@@ -142,7 +142,7 @@ router.get('/:id', authenticate, async (req, res) => {
 // Create member
 router.post('/', authenticate, upload.single('photo'), async (req, res) => {
   try {
-    const { name, phone, birthDate, gender, notes } = req.body;
+    const { name, phone, birthDate, gender, notes, planId, paymentMethod } = req.body;
     
     // Check if phone already exists
     const existingMember = await prisma.member.findUnique({
@@ -150,19 +150,91 @@ router.post('/', authenticate, upload.single('photo'), async (req, res) => {
     });
     
     if (existingMember) {
-      return res.status(400).json({ error: 'Phone number already registered' });
+      return res.status(400).json({ error: 'Este número de telefone já está registado' });
+    }
+
+    const today = new Date();
+    let memberData = {
+      name,
+      phone,
+      birthDate: birthDate ? new Date(birthDate) : null,
+      gender,
+      photo: req.file ? `/uploads/members/${req.file.filename}` : null,
+      notes,
+      status: 'INACTIVE'
+    };
+
+    // If planId is provided, perform everything in a transaction
+    if (planId) {
+      const plan = await prisma.plan.findUnique({ where: { id: planId } });
+      if (!plan) {
+        return res.status(404).json({ error: 'Plano não encontrado' });
+      }
+
+      const result = await prisma.$transaction(async (tx) => {
+        // 1. Create member as ACTIVE
+        const expirationDate = new Date(today);
+        expirationDate.setDate(expirationDate.getDate() + plan.durationDays);
+
+        const newMember = await tx.member.create({
+          data: {
+            ...memberData,
+            planId,
+            startDate: today,
+            expirationDate,
+            status: 'ACTIVE'
+          },
+          include: { plan: true }
+        });
+
+        // 2. Create payment
+        const payment = await tx.payment.create({
+          data: {
+            memberId: newMember.id,
+            planId,
+            amount: plan.price,
+            paymentMethod: paymentMethod || 'CASH',
+            processedBy: req.user.id
+          }
+        });
+
+        // 3. Create invoice
+        await tx.invoice.create({
+          data: {
+            paymentId: payment.id,
+            invoiceNumber: payment.receiptNumber,
+            issuedBy: req.user.id,
+            status: 'ISSUED'
+          }
+        });
+
+        // 4. Create audit log
+        await tx.paymentAudit.create({
+          data: {
+            paymentId: payment.id,
+            action: 'CREATED',
+            details: `Registo inicial com plano ${plan.name}`,
+            performedBy: req.user.id
+          }
+        });
+
+        return newMember;
+      });
+
+      await notify({
+        action: 'CREATE',
+        message: `Novo membro registado com plano: ${result.name}`,
+        actorId: req.user.id,
+        entity: 'MEMBER',
+        entityId: result.id
+      });
+
+      return res.status(201).json(result);
     }
     
+    // Regular creation without plan
     const member = await prisma.member.create({
-      data: {
-        name,
-        phone,
-        birthDate: birthDate ? new Date(birthDate) : null,
-        gender,
-        photo: req.file ? `/uploads/members/${req.file.filename}` : null,
-        notes,
-        status: 'INACTIVE'
-      },
+      data: memberData,
       include: { plan: true }
     });
     
@@ -177,7 +249,7 @@ router.post('/', authenticate, upload.single('photo'), async (req, res) => {
     res.status(201).json(member);
   } catch (error) {
     console.error('Error creating member:', error);
-    res.status(500).json({ error: 'Failed to create member' });
+    res.status(500).json({ error: 'Erro ao criar membro' });
   }
 });
 
@@ -300,6 +372,44 @@ router.get('/:id/qrcode', authenticate, async (req, res) => {
   } catch (error) {
     console.error('Error generating QR code:', error);
     res.status(500).json({ error: 'Failed to generate QR code' });
+  }
+});
+
+// Delete member
+router.delete('/:id', authenticate, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Perform deletion in a transaction to handle related records
+    await prisma.$transaction(async (tx) => {
+      // 1. Delete Checkins
+      await tx.checkin.deleteMany({
+        where: { memberId: id }
+      });
+
+      // 2. Delete Payments (Cascade deletes Invoices and Audits in Prisma schema)
+      await tx.payment.deleteMany({
+        where: { memberId: id }
+      });
+
+      // 3. Delete Member
+      await tx.member.delete({
+        where: { id }
+      });
+    });
+
+    await notify({
+      action: 'DELETE',
+      message: `Membro eliminado permanentemente: ID #${id.substring(0, 8)}`,
+      actorId: req.user.id,
+      entity: 'MEMBER',
+      entityId: id
+    });
+
+    res.json({ message: 'Membro eliminado com sucesso' });
+  } catch (error) {
+    console.error('Error deleting member:', error);
+    res.status(500).json({ error: 'Erro ao eliminar membro' });
   }
 });
 

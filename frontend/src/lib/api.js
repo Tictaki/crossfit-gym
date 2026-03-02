@@ -102,6 +102,7 @@ export const membersAPI = {
   suspend: (id) => api.put(`/members/${id}/suspend`),
   activate: (id) => api.put(`/members/${id}/activate`),
   getQRCode: (id) => api.get(`/members/${id}/qrcode`),
+  delete: (id) => api.delete(`/members/${id}`),
 };
 
 // Plans API
