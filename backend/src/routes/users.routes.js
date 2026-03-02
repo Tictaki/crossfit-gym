@@ -7,34 +7,22 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 
+import { profileStorage } from '../utils/cloudinaryConfig.js';
+
 const router = express.Router();
 const prisma = new PrismaClient();
 
-// Multer config for profile photos
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const dir = 'uploads/profiles';
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-    cb(null, dir);
-  },
-  filename: (req, file, cb) => {
-    cb(null, `profile-${req.user.id}-${Date.now()}${path.extname(file.originalname)}`);
-  }
-});
-
 const upload = multer({
-  storage,
+  storage: profileStorage,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
   fileFilter: (req, file, cb) => {
-    const allowedTypes = /jpeg|jpg|png/;
+    const allowedTypes = /jpeg|jpg|png|webp/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = allowedTypes.test(file.mimetype);
     if (extname && mimetype) {
       return cb(null, true);
     }
-    cb(new Error('Somente imagens (jpg, jpeg, png) são permitidas'));
+    cb(new Error('Somente imagens (jpg, jpeg, png, webp) são permitidas'));
   }
 });
 
@@ -47,7 +35,7 @@ router.put('/profile', authenticate, upload.single('photo'), async (req, res) =>
     if (name) updateData.name = name;
     if (email) updateData.email = email;
     if (password) updateData.password = await bcrypt.hash(password, 10);
-    if (req.file) updateData.photo = `/uploads/profiles/${req.file.filename}`;
+    if (req.file) updateData.photo = req.file.path;
     
     const user = await prisma.user.update({
       where: { id: req.user.id },

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { settingsAPI, UPLOAD_URL } from '@/lib/api';
+import { settingsAPI, UPLOAD_URL, getImageUrl } from '@/lib/api';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
 import BottomNav from '@/components/layout/BottomNav';
@@ -23,7 +23,7 @@ export default function DashboardLayout({ children }) {
       try {
         const response = await settingsAPI.get();
         if (response.data.background_image) {
-          setBackgroundImage(`${UPLOAD_URL}${response.data.background_image}`);
+          setBackgroundImage(getImageUrl(response.data.background_image));
         }
       } catch (error) {
         console.error('Error fetching settings:', error);

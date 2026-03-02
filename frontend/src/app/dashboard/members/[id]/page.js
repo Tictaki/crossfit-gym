@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { membersAPI, plansAPI, paymentsAPI, UPLOAD_URL } from '@/lib/api';
+import { membersAPI, plansAPI, paymentsAPI, UPLOAD_URL, getImageUrl } from '@/lib/api';
 import PlanCard from '@/components/dashboard/PlanCard';
 import {
   UserIcon,
@@ -249,7 +249,7 @@ export default function MemberDetailsPage({ params }) {
               <div className="h-40 w-40 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-6xl font-bold mb-4 shadow-2xl shadow-primary-500/20 border-4 border-white dark:border-dark-700 overflow-hidden relative">
                 {member.photo ? (
                   <img 
-                    src={`${UPLOAD_URL}${member.photo}`} 
+                    src={getImageUrl(member.photo)} 
                     alt={member.name} 
                     className="h-full w-full object-cover" 
                     onError={(e) => {

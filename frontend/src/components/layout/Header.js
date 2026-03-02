@@ -9,7 +9,7 @@ import {
   Cog6ToothIcon,
   Bars3Icon
 } from '@heroicons/react/24/outline';
-import { UPLOAD_URL } from '@/lib/api';
+import { UPLOAD_URL, getImageUrl } from '@/lib/api';
 import NotificationBell from './NotificationBell';
 
 export default function Header({ user, setSidebarOpen }) {
@@ -64,7 +64,7 @@ export default function Header({ user, setSidebarOpen }) {
               <div className="h-full w-full rounded-full bg-white dark:bg-dark-800 flex items-center justify-center overflow-hidden">
                 {user?.photo ? (
                   <img 
-                    src={`${UPLOAD_URL}${user.photo}`} 
+                    src={getImageUrl(user.photo)} 
                     alt="Profile" 
                     className="w-full h-full object-cover" 
                     onError={(e) => {

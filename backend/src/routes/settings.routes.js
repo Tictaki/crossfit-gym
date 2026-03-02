@@ -5,25 +5,13 @@ import path from 'path';
 import fs from 'fs';
 import { authenticate, requireAdmin } from '../middleware/auth.js';
 
+import { backgroundStorage } from '../utils/cloudinaryConfig.js';
+
 const router = express.Router();
 const prisma = new PrismaClient();
 
-// Configure multer for background upload
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const dir = 'uploads/backgrounds';
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-    cb(null, dir);
-  },
-  filename: (req, file, cb) => {
-    cb(null, 'app-background' + path.extname(file.originalname));
-  }
-});
-
 const upload = multer({
-  storage,
+  storage: backgroundStorage,
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
   fileFilter: (req, file, cb) => {
     const allowedTypes = /jpeg|jpg|png|webp/;
@@ -60,7 +48,7 @@ router.post('/background', authenticate, upload.single('background'), async (req
     }
 
     const { key = 'background_image' } = req.body;
-    const backgroundImagePath = `/uploads/backgrounds/${req.file.filename}`;
+    const backgroundImagePath = req.file.path;
     
     await prisma.setting.upsert({
       where: { key },

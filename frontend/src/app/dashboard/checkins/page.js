@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { checkinsAPI, UPLOAD_URL } from '@/lib/api';
+import { checkinsAPI, UPLOAD_URL, getImageUrl } from '@/lib/api';
 import { 
   ArrowPathIcon,
   CheckCircleIcon,
@@ -91,7 +91,7 @@ export default function CheckinsPage() {
                         <div className="flex items-center gap-3">
                           <div className="h-10 w-10 rounded-full bg-gradient-primary flex items-center justify-center text-white font-bold text-sm shadow-glow-sm">
                             {checkin.member?.photo ? (
-                              <img src={`${UPLOAD_URL}${checkin.member.photo}`} alt={checkin.member.name} className="h-full w-full rounded-full object-cover" />
+                              <img src={getImageUrl(checkin.member.photo)} alt={checkin.member.name} className="h-full w-full rounded-full object-cover" />
                             ) : (
                               checkin.member?.name?.charAt(0) || <UserIcon className="h-5 w-5" />
                             )}

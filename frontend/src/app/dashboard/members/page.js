@@ -10,7 +10,7 @@ import {
   PencilSquareIcon,
   TrashIcon
 } from '@heroicons/react/24/outline';
-import { UPLOAD_URL } from '@/lib/api';
+import { UPLOAD_URL, getImageUrl } from '@/lib/api';
 
 export default function MembersPage() {
   const [members, setMembers] = useState([]);
@@ -164,7 +164,7 @@ export default function MembersPage() {
                         <div className="h-11 w-11 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-bold text-sm shadow-premium flex-shrink-0 border-2 border-white dark:border-dark-700 overflow-hidden relative group-hover:scale-105 transition-transform duration-300">
                           {member.photo ? (
                             <img 
-                              src={`${UPLOAD_URL}${member.photo}`} 
+                              src={getImageUrl(member.photo)} 
                               alt={member.name} 
                               className="h-full w-full object-cover"
                               onError={(e) => {

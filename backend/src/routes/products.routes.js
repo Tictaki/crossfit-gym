@@ -6,36 +6,23 @@ import fs from 'fs';
 import { authenticate, requireAdmin } from '../middleware/auth.js';
 import { networkInterfaces } from 'os';
 
+import { productStorage } from '../utils/cloudinaryConfig.js';
+
 const router = express.Router();
 const prisma = new PrismaClient();
 
-// Configure multer for product photo upload
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const dir = 'uploads/products';
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-    cb(null, dir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, 'product-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
-
 const upload = multer({
-  storage,
+  storage: productStorage,
   limits: { fileSize: parseInt(process.env.MAX_FILE_SIZE) || 5242880 },
   fileFilter: (req, file, cb) => {
-    const allowedTypes = /jpeg|jpg|png/;
+    const allowedTypes = /jpeg|jpg|png|webp/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = allowedTypes.test(file.mimetype);
     
     if (mimetype && extname) {
       return cb(null, true);
     }
-    cb(new Error('Only images are allowed (jpeg, jpg, png)'));
+    cb(new Error('Only images are allowed (jpeg, jpg, png, webp)'));
   }
 });
 
@@ -107,7 +94,7 @@ router.post('/', authenticate, requireAdmin, upload.single('photo'), async (req,
         category,
         packageSize,
         sku,
-        photo: req.file ? `/uploads/products/${req.file.filename}` : null
+        photo: req.file ? req.file.path : null
       }
     });
     res.status(201).json(product);
@@ -139,7 +126,7 @@ router.put('/:id', authenticate, requireAdmin, upload.single('photo'), async (re
     if (stock !== undefined) updateData.stock = parseNumber(stock, true);
 
     if (req.file) {
-      updateData.photo = `/uploads/products/${req.file.filename}`;
+      updateData.photo = req.file.path;
     }
 
     const product = await prisma.product.update({

@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { membersAPI, UPLOAD_URL } from '@/lib/api';
+import { membersAPI, UPLOAD_URL, getImageUrl } from '@/lib/api';
 import { 
   ArrowLeftIcon, 
   UserIcon, 
@@ -58,7 +58,7 @@ export default function EditMemberPage({ params }) {
       });
       
       if (member.photo) {
-        setPhotoPreview(`${UPLOAD_URL}${member.photo}`);
+        setPhotoPreview(getImageUrl(member.photo));
       }
     } catch (err) {
       console.error('Error loading member:', err);

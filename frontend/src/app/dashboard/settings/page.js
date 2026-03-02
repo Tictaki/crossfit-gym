@@ -8,7 +8,7 @@ import {
   TrashIcon,
   UserCircleIcon,
 } from '@heroicons/react/24/outline';
-import { settingsAPI, usersAPI, UPLOAD_URL } from '@/lib/api';
+import { settingsAPI, usersAPI, UPLOAD_URL, getImageUrl } from '@/lib/api';
 import { useTheme } from '@/context/ThemeContext';
 import { useToast } from '@/context/ToastContext';
 import { useConfirm } from '@/context/ConfirmModalContext';
@@ -102,7 +102,7 @@ export default function SettingsPage() {
     try {
       const response = await settingsAPI.get();
       if (response.data.background_image) {
-        setBackgroundPreview(`${UPLOAD_URL}${response.data.background_image}`);
+        setBackgroundPreview(getImageUrl(response.data.background_image));
       }
     } catch (error) {
       console.error('Error loading settings:', error);
@@ -120,7 +120,7 @@ export default function SettingsPage() {
       formData.append('key', 'background_image');
       const response = await settingsAPI.updateBackground(formData);
       
-      const newPath = `${UPLOAD_URL}${response.data.backgroundImage}`;
+      const newPath = getImageUrl(response.data.backgroundImage);
       setBackgroundPreview(newPath);
       
       // Notify other parts of the app
@@ -187,7 +187,7 @@ export default function SettingsPage() {
               <div className="h-32 w-32 rounded-full overflow-hidden bg-dark-100 dark:bg-dark-800 border-4 border-white dark:border-dark-700 shadow-premium relative group">
                 {profilePreview || userData?.photo ? (
                   <img 
-                    src={profilePreview || `${UPLOAD_URL}${userData.photo}`} 
+                    src={profilePreview || getImageUrl(userData.photo)} 
                     alt="Profile" 
                     className="w-full h-full object-cover" 
                   />

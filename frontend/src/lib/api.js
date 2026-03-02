@@ -50,11 +50,19 @@ const getUploadURL = () => {
 
 const ROOT_URL = getUploadURL();
 
+const getImageUrl = (path) => {
+  if (!path) return null;
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    return path;
+  }
+  return `${ROOT_URL}${path}`;
+};
+
 const api = axios.create({
   baseURL: API_URL,
 });
 
-export { API_URL, ROOT_URL as UPLOAD_URL };
+export { API_URL, ROOT_URL as UPLOAD_URL, getImageUrl };
 
 // Request interceptor to add auth token
 api.interceptors.request.use(

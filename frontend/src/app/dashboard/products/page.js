@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { productsAPI, UPLOAD_URL } from '@/lib/api';
+import { productsAPI, UPLOAD_URL, getImageUrl } from '@/lib/api';
 import { 
   ShoppingBagIcon, 
   PlusIcon, 
@@ -280,7 +280,7 @@ export default function ProductsPage() {
                   <div className="aspect-square w-full bg-gray-100 dark:bg-dark-900 flex items-center justify-center overflow-hidden rounded-2xl mb-4 relative shadow-inner">
                     {product.photo ? (
                       <img 
-                        src={`${UPLOAD_URL}${product.photo}`} 
+                        src={getImageUrl(product.photo)} 
                         alt={product.name} 
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                         onError={(e) => {

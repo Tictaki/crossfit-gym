@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { reportsAPI, UPLOAD_URL } from '@/lib/api';
+import { reportsAPI, UPLOAD_URL, getImageUrl } from '@/lib/api';
 import { 
   ExclamationTriangleIcon, 
   ChatBubbleLeftRightIcon, 
@@ -130,7 +130,7 @@ export default function DefaultersPage() {
                       <div className="flex items-center">
                         <div className="h-10 w-10 rounded-full flex-shrink-0 bg-gradient-primary flex items-center justify-center text-white font-bold text-sm shadow-glow-sm mr-3 border-2 border-white dark:border-dark-800">
                           {member.photo ? (
-                            <img src={`${UPLOAD_URL}${member.photo}`} alt={member.name} className="h-full w-full rounded-full object-cover" />
+                            <img src={getImageUrl(member.photo)} alt={member.name} className="h-full w-full rounded-full object-cover" />
                           ) : (
                             member.name.charAt(0)
                           )}

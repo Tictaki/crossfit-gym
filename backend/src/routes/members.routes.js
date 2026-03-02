@@ -7,36 +7,23 @@ import QRCode from 'qrcode';
 import { authenticate } from '../middleware/auth.js';
 import { notify } from '../utils/notifier.js';
 
+import { memberStorage } from '../utils/cloudinaryConfig.js';
+
 const router = express.Router();
 const prisma = new PrismaClient();
 
-// Configure multer for photo upload
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const dir = 'uploads/members';
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-    cb(null, dir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, 'member-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
-
 const upload = multer({
-  storage,
+  storage: memberStorage,
   limits: { fileSize: parseInt(process.env.MAX_FILE_SIZE) || 5242880 },
   fileFilter: (req, file, cb) => {
-    const allowedTypes = /jpeg|jpg|png/;
+    const allowedTypes = /jpeg|jpg|png|webp/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = allowedTypes.test(file.mimetype);
     
     if (mimetype && extname) {
       return cb(null, true);
     }
-    cb(new Error('Only images are allowed (jpeg, jpg, png)'));
+    cb(new Error('Only images are allowed (jpeg, jpg, png, webp)'));
   }
 });
 
@@ -159,7 +146,7 @@ router.post('/', authenticate, upload.single('photo'), async (req, res) => {
       phone,
       birthDate: birthDate ? new Date(birthDate) : null,
       gender,
-      photo: req.file ? `/uploads/members/${req.file.filename}` : null,
+      photo: req.file ? req.file.path : null,
       notes,
       status: 'INACTIVE'
     };
@@ -267,7 +254,7 @@ router.put('/:id', authenticate, upload.single('photo'), async (req, res) => {
     };
     
     if (req.file) {
-      updateData.photo = `/uploads/members/${req.file.filename}`;
+      updateData.photo = req.file.path;
     }
     
     const member = await prisma.member.update({
