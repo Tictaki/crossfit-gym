@@ -208,7 +208,7 @@ export default function AccountingPage() {
             </button>
           </div>
           <div className="overflow-x-auto table-container">
-            <table className="table border-none min-w-[600px]">
+            <table className="table min-w-full table-responsive-cards border-none">
               <thead className="bg-dark-50 dark:bg-dark-800/50">
                 <tr>
                   <th className="px-6 py-4 text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Data</th>
@@ -221,21 +221,21 @@ export default function AccountingPage() {
               <tbody className="divide-y divide-white/5">
                 {expenses.map((expense) => (
                   <tr key={expense.id} className="hover:bg-white/5 transition-colors">
-                    <td className="px-6 py-4 font-bold text-xs text-dark-500 dark:text-dark-200">
+                    <td className="px-6 py-4 font-bold text-xs text-dark-500 dark:text-dark-200" data-label="Data">
                       {new Date(expense.date).toLocaleDateString('pt-PT')}
                     </td>
-                    <td className="px-6 py-4 font-bold text-dark-900 dark:text-white">
+                    <td className="px-6 py-4 font-bold text-dark-900 dark:text-white" data-label="Descrição">
                       {expense.description}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4" data-label="Categoria">
                       <span className={`px-2 py-1 rounded-lg text-[9px] font-bold uppercase tracking-tighter text-white ${EXPENSE_CATEGORIES.find(c => c.value === expense.category)?.color || 'bg-gray-500'}`}>
                         {EXPENSE_CATEGORIES.find(c => c.value === expense.category)?.label || expense.category}
                       </span>
                     </td>
-                    <td className="px-6 py-4 font-bold text-red-500">
+                    <td className="px-6 py-4 font-bold text-red-500" data-label="Valor">
                       -{parseFloat(expense.amount).toLocaleString()} MZN
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4" data-label="Ações">
                       <button 
                         onClick={() => handleDeleteExpense(expense.id)}
                         className="p-2 text-dark-300 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"

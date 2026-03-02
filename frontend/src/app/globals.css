@@ -10,15 +10,14 @@
   }
 
   html {
-    background-color: #000000 !important;
-    color-scheme: dark;
+    @apply bg-black text-white antialiased overflow-x-hidden;
     height: 100%;
     margin: 0;
     padding: 0;
   }
 
   body {
-    @apply text-dark-900 font-sans antialiased transition-colors duration-300;
+    @apply text-dark-900 font-sans antialiased transition-colors duration-300 overflow-x-hidden;
     overscroll-behavior-y: none;
     min-height: 100dvh;
     height: 100%;
@@ -101,7 +100,7 @@
   }
 
   .card-glass {
-    @apply bg-white/40 dark:bg-dark-950/40 backdrop-blur-2xl rounded-2xl md:rounded-3xl shadow-glass border border-white/40 dark:border-dark-700/50 p-4 md:p-6 transition-all duration-300;
+    @apply bg-white/40 dark:bg-dark-950/40 backdrop-blur-2xl rounded-2xl md:rounded-3xl shadow-glass border border-white/40 dark:border-dark-700/50 p-3.5 md:p-6 transition-all duration-300;
   }
 
   .dropdown-glass {
@@ -233,7 +232,7 @@
 
   /* Stats Card */
   .stat-card {
-    @apply card-glass p-6 relative overflow-hidden hover:shadow-premium transition-all duration-300;
+    @apply card-glass !p-3.5 md:!p-6 relative overflow-hidden hover:shadow-premium transition-all duration-300;
   }
 
   .stat-card-icon {

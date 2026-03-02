@@ -93,10 +93,10 @@ export default function LoginPage() {
       </div>
 
       {/* Right Side - Login Form */}
-      <div className="flex-1 flex items-center justify-center p-8 relative">
+      <div className="flex-1 flex items-center justify-center p-4 sm:p-8 relative">
         <div className="w-full max-w-md relative z-10">
           {/* Glass Card */}
-          <div className="bg-white/10 backdrop-blur-2xl rounded-3xl p-8 md:p-10 border border-white/20 shadow-2xl">
+          <div className="bg-white/10 backdrop-blur-2xl rounded-3xl p-6 sm:p-10 border border-white/20 shadow-2xl">
             {/* Header */}
             <div className="mb-8 text-center">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-500/10 rounded-full border border-primary-500/20 mb-4">

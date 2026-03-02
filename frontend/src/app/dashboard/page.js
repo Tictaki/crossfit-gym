@@ -205,7 +205,7 @@ export default function DashboardPage() {
                </div>
              </div>
           </div>
-          <div className="h-[200px] md:h-[300px]">
+          <div className="h-[220px] md:h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={stats?.monthlyRevenue || []}>
                 <defs>
@@ -218,15 +218,15 @@ export default function DashboardPage() {
                 <XAxis 
                   dataKey="month" 
                   tickFormatter={(date) => new Date(date).toLocaleDateString('pt-PT', { month: 'short' })} 
-                  axisLine={false}
+                   axisLine={false}
                   tickLine={false}
-                  tick={{fill: '#6b7280', fontSize: 10}}
+                  tick={{fill: '#6b7280', fontSize: 9}}
                   dy={10}
                 />
                 <YAxis 
                    axisLine={false}
                    tickLine={false}
-                   tick={{fill: '#6b7280', fontSize: 10}}
+                   tick={{fill: '#6b7280', fontSize: 9}}
                 />
                 <Tooltip 
                   contentStyle={{backgroundColor: '#fff', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', border: 'none'}}
@@ -262,7 +262,7 @@ export default function DashboardPage() {
         {/* Member Status Pie */}
         <div className="card-glass">
           <h3 className="text-xl font-bold text-dark-900 dark:text-white mb-6">Membros</h3>
-          <div className="h-[250px] md:h-[300px]">
+          <div className="h-[220px] md:h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie

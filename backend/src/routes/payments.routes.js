@@ -279,49 +279,53 @@ router.get('/:id/receipt', async (req, res) => {
       });
     }
 
-    // Try to use Python PDF Service first, fallback to Node.js PDFKit
-    const usePythonService = process.env.USE_PYTHON_PDF_SERVICE === 'true';
-    
-    if (usePythonService) {
-      try {
-        console.log(`[Receipt] Routing to Python PDF Service for ID: ${paymentId}`);
-        
-        const pythonServiceUrl = process.env.PYTHON_PDF_SERVICE_URL || 'http://localhost:3002';
-        const pdfResponse = await fetch(`${pythonServiceUrl}/generate-pdf?token=${token}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            id: payment.id,
-            amount: payment.amount,
-            member_name: payment.member.name,
-            member_phone: payment.member.phone,
-            plan_name: payment.plan.name,
-            payment_method: payment.paymentMethod,
-            receipt_number: payment.receiptNumber || payment.id.substring(0, 8),
-            payment_date: payment.paymentDate?.toISOString() || new Date().toISOString()
-          })
-        });
-        
-        if (pdfResponse.ok) {
-          console.log(`[Receipt] PDF received from Python service: ${paymentId}`);
-          res.setHeader('Content-Type', 'application/pdf');
-          res.setHeader('Content-Disposition', `inline; filename="recibo-${payment.receiptNumber}.pdf"`);
+    // Primary: Use the Node.js PDF generator (PDFKit)
+    // This is the most robust method for production (Railway/Docker) 
+    // as it doesn't require Python dependencies.
+    try {
+      console.log(`[Receipt] Generating PDF via PDFKit for ID: ${paymentId}`);
+      
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `inline; filename="recibo-${payment.receiptNumber || payment.id}.pdf"`);
+      
+      generateReceiptPDF(payment, res);
+      return;
+    } catch (err) {
+      console.error(`[Receipt] Node.js PDF generation failed for ID: ${paymentId}:`, err.message);
+      
+      // Secondary Fallback: Try Python PDF Service if explicitly enabled
+      const usePythonService = process.env.USE_PYTHON_PDF_SERVICE === 'true';
+      if (usePythonService) {
+        try {
+          console.log(`[Receipt] Falling back to Python PDF Service for ID: ${paymentId}`);
+          const pythonServiceUrl = process.env.PYTHON_PDF_SERVICE_URL || 'http://localhost:3002';
+          const pdfResponse = await fetch(`${pythonServiceUrl}/generate-pdf?token=${token}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              id: payment.id,
+              amount: payment.amount,
+              member_name: payment.member.name,
+              member_phone: payment.member.phone,
+              plan_name: payment.plan.name,
+              payment_method: payment.paymentMethod,
+              receipt_number: payment.receiptNumber || payment.id.substring(0, 8),
+              payment_date: payment.paymentDate?.toISOString() || new Date().toISOString()
+            })
+          });
           
-          const buffer = await pdfResponse.arrayBuffer();
-          res.end(Buffer.from(buffer));
-          return;
-        } else {
-          console.warn(`[Receipt] Python service error ${pdfResponse.status}, falling back to Node.js`);
+          if (pdfResponse.ok) {
+            const buffer = await pdfResponse.arrayBuffer();
+            res.end(Buffer.from(buffer));
+            return;
+          }
+        } catch (pyErr) {
+          console.error(`[Receipt] Python fallback also failed:`, pyErr.message);
         }
-      } catch (err) {
-        console.warn(`[Receipt] Python service unavailable, falling back to Node.js:`, err.message);
       }
+      
+      throw new Error('All PDF generation methods failed');
     }
-
-    // Fallback: Use the standardized PDF generator utility (Node.js PDFKit)
-    generateReceiptPDF(payment, res);
-    
-    console.log(`[Receipt] Successfully generated for ID: ${paymentId}`);
   } catch (error) {
     console.error(`[Receipt] Critical failure for ID: ${paymentId}:`, error);
     if (!res.headersSent) {

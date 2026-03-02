@@ -7,14 +7,32 @@ import {
   ShieldCheckIcon,
   UserIcon,
   TrashIcon,
-  PencilSquareIcon
+  PencilSquareIcon,
+  XMarkIcon,
+  KeyIcon,
+  EnvelopeIcon,
+  IdentificationIcon
 } from '@heroicons/react/24/outline';
 import { useToast } from '@/context/ToastContext';
+import { useConfirm } from '@/context/ConfirmModalContext';
 
 export default function UsersPage() {
   const toast = useToast();
+  const { confirm } = useConfirm();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  // Modal State
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    role: 'STAFF'
+  });
 
   useEffect(() => {
     loadUsers();
@@ -22,12 +40,96 @@ export default function UsersPage() {
 
   const loadUsers = async () => {
     try {
+      setLoading(true);
       const response = await usersAPI.list();
-      setUsers(response.data);
+      setUsers(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
       console.error('Error loading users:', error);
+      toast.error('Erro ao carregar utilizadores');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleOpenModal = (user = null) => {
+    if (user) {
+      setIsEditMode(true);
+      setEditingId(user.id);
+      setFormData({
+        name: user.name,
+        email: user.email,
+        password: '', // Don't show hashed password
+        role: user.role
+      });
+    } else {
+      setIsEditMode(false);
+      setEditingId(null);
+      setFormData({
+        name: '',
+        email: '',
+        password: '',
+        role: 'STAFF'
+      });
+    }
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setFormData({
+      name: '',
+      email: '',
+      password: '',
+      role: 'STAFF'
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      if (isEditMode) {
+        // Only include password if it's changed
+        const updateData = { ...formData };
+        if (!updateData.password) delete updateData.password;
+        
+        await usersAPI.update(editingId, updateData);
+        toast.success('Utilizador atualizado com sucesso!');
+      } else {
+        if (!formData.password) {
+          toast.error('A palavra-passe é obrigatória para novos utilizadores');
+          setIsSubmitting(false);
+          return;
+        }
+        await usersAPI.create(formData);
+        toast.success('Utilizador criado com sucesso!');
+      }
+      handleCloseModal();
+      loadUsers();
+    } catch (error) {
+      console.error('Error saving user:', error);
+      toast.error(error.response?.data?.error || 'Erro ao guardar utilizador');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDeleteUser = async (id, name) => {
+    if (await confirm({
+      title: 'Eliminar Utilizador?',
+      message: `Tem a certeza que deseja eliminar ${name}? Esta ação não pode ser desfeita e removerá o acesso deste utilizador ao sistema.`,
+      confirmText: 'Eliminar',
+      cancelText: 'Cancelar',
+      variant: 'danger'
+    })) {
+      try {
+        await usersAPI.delete(id);
+        toast.success('Utilizador eliminado com sucesso!');
+        loadUsers();
+      } catch (error) {
+        console.error('Error deleting user:', error);
+        toast.error('Erro ao eliminar utilizador. Pode haver registos vinculados a este utilizador.');
+      }
     }
   };
 
@@ -54,8 +156,8 @@ export default function UsersPage() {
           <p className="text-gray-500 dark:text-dark-300 mt-1 text-sm">Gestão de acesso para administradores e staff</p>
         </div>
         <button 
-          onClick={() => toast.info('Funcionalidade em desenvolvimento')} 
-          className="btn-primary w-full sm:w-auto justify-center"
+          onClick={() => handleOpenModal()} 
+          className="btn-primary shadow-glow-sm"
         >
           <UserPlusIcon className="h-5 w-5" />
           Novo Utilizador
@@ -96,11 +198,19 @@ export default function UsersPage() {
                       {new Date(user.createdAt).toLocaleDateString('pt-PT')}
                     </td>
                     <td className="pr-8 text-right">
-                      <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                         <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                      <div className="flex items-center justify-end gap-2">
+                        <button 
+                          onClick={() => handleOpenModal(user)}
+                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          title="Editar"
+                        >
                           <PencilSquareIcon className="h-5 w-5" />
                         </button>
-                        <button className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                        <button 
+                          onClick={() => handleDeleteUser(user.id, user.name)}
+                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Eliminar"
+                        >
                           <TrashIcon className="h-5 w-5" />
                         </button>
                       </div>
@@ -112,6 +222,125 @@ export default function UsersPage() {
           </div>
         )}
       </div>
+
+      {/* User Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-dark-950/60 backdrop-blur-xl animate-fade-in" onClick={handleCloseModal} />
+          
+          <div className="relative w-full max-w-lg bg-white dark:bg-dark-900 rounded-[2.5rem] shadow-2xl animate-slide-up border border-white/20 dark:border-dark-700/50">
+            <div className="p-8 pb-0 flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-dark-900 dark:text-white">
+                  {isEditMode ? 'Editar Utilizador' : 'Novo Utilizador'}
+                </h2>
+                <p className="text-dark-400 dark:text-dark-300 font-medium">
+                  {isEditMode ? 'Atualize as permissões e dados do utilizador' : 'Crie um novo acesso para o staff'}
+                </p>
+              </div>
+              <button 
+                onClick={handleCloseModal}
+                className="p-3 rounded-2xl bg-dark-100 dark:bg-dark-800 text-dark-500 dark:text-dark-200 hover:scale-110 transition-transform"
+              >
+                <XMarkIcon className="h-6 w-6" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmit} className="p-8 space-y-5">
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest px-2">Nome Completo</label>
+                <div className="relative">
+                  <IdentificationIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-dark-400" />
+                  <input
+                    required
+                    type="text"
+                    placeholder="Ex: João Silva"
+                    className="input-glass pl-12"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest px-2">Endereço de Email</label>
+                <div className="relative">
+                  <EnvelopeIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-dark-400" />
+                  <input
+                    required
+                    type="email"
+                    placeholder="exemplo@email.com"
+                    className="input-glass pl-12"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest px-2">
+                  {isEditMode ? 'Palavra-passe (deixe em branco para não alterar)' : 'Palavra-passe'}
+                </label>
+                <div className="relative">
+                  <KeyIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-dark-400" />
+                  <input
+                    required={!isEditMode}
+                    type="password"
+                    placeholder="••••••••"
+                    className="input-glass pl-12"
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest px-2">Função / Permissões</label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, role: 'STAFF' })}
+                    className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${
+                      formData.role === 'STAFF'
+                        ? 'border-primary-500 bg-primary-500/5 text-primary-600'
+                        : 'border-transparent bg-dark-50 dark:bg-dark-800 text-dark-400'
+                    }`}
+                  >
+                    <UserIcon className="h-6 w-6" />
+                    <span className="font-bold text-xs">STAFF</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, role: 'ADMIN' })}
+                    className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${
+                      formData.role === 'ADMIN'
+                        ? 'border-purple-500 bg-purple-500/5 text-purple-600'
+                        : 'border-transparent bg-dark-50 dark:bg-dark-800 text-dark-400'
+                    }`}
+                  >
+                    <ShieldCheckIcon className="h-6 w-6" />
+                    <span className="font-bold text-xs">ADMIN</span>
+                  </button>
+                </div>
+              </div>
+
+              <button 
+                disabled={isSubmitting}
+                className="w-full py-6 bg-dark-900 dark:bg-white text-white dark:text-dark-900 rounded-[2rem] font-bold uppercase tracking-[0.2em] text-sm transition-all duration-300 shadow-xl hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3 mt-4"
+              >
+                {isSubmitting ? (
+                  <div className="h-5 w-5 border-2 border-dark-900/30 border-t-dark-900 rounded-full animate-spin" />
+                ) : (
+                  <>
+                    {isEditMode ? <PencilSquareIcon className="h-5 w-5" /> : <UserPlusIcon className="h-5 w-5" />}
+                    {isEditMode ? 'Atualizar Utilizador' : 'Criar Utilizador'}
+                  </>
+                )}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

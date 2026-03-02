@@ -88,8 +88,8 @@ export default function CheckinPanel({ isOpen, onClose }) {
     <div className="fixed inset-0 z-[100] overflow-hidden">
       <div className="absolute inset-0 bg-dark-950/40 backdrop-blur-sm" onClick={onClose} />
       
-      <div className="absolute inset-y-0 right-0 max-w-full flex pl-10">
-        <div className="w-screen max-w-md animate-slide-in-right">
+      <div className="absolute inset-y-0 right-0 max-w-full flex md:pl-10">
+        <div className="w-screen max-w-md animate-slide-up md:animate-slide-in-right">
           <div className="h-full flex flex-col bg-white dark:bg-dark-900 shadow-2xl border-l border-white/20 dark:border-dark-800">
             {/* Header */}
             <div className="px-6 py-8 border-b border-gray-100 dark:border-dark-800">
