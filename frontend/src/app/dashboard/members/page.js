@@ -11,6 +11,7 @@ import {
   TrashIcon
 } from '@heroicons/react/24/outline';
 import { UPLOAD_URL, getImageUrl } from '@/lib/api';
+import { useDebounce } from '@/lib/utils';
 
 export default function MembersPage() {
   const [members, setMembers] = useState([]);
@@ -19,14 +20,16 @@ export default function MembersPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const debouncedSearch = useDebounce(search, 500);
+
   useEffect(() => {
     loadMembers();
-  }, [search, status]);
+  }, [debouncedSearch, status]);
 
   const loadMembers = async () => {
     try {
       setError(null);
-      const response = await membersAPI.list({ search, status, limit: 50 });
+      const response = await membersAPI.list({ search: debouncedSearch, status, limit: 50 });
       if (response.data && response.data.members) {
         setMembers(response.data.members);
       } else {

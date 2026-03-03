@@ -15,6 +15,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useConfirm } from '@/context/ConfirmModalContext';
 import { useToast } from '@/context/ToastContext';
+import { formatCurrency } from '@/lib/utils';
 
 const EXPENSE_CATEGORIES = [
   { value: 'SALARIES', label: 'Salários', color: 'bg-blue-500' },
@@ -153,7 +154,7 @@ export default function AccountingPage() {
           </div>
           <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-dark-400 dark:text-dark-300 mb-2">Receita Total</p>
           <h3 className="text-2xl md:text-3xl font-bold text-green-500">
-            {summary?.revenue?.total?.toLocaleString()} <span className="text-xs md:text-sm font-bold">MZN</span>
+            {formatCurrency(summary?.revenue?.total)}
           </h3>
           <div className="mt-4 flex items-center gap-2 text-[10px] md:text-xs font-bold text-dark-500 dark:text-dark-200">
             <span className="px-1.5 py-0.5 rounded-md bg-green-500/10 text-green-500">{summary?.revenue?.count}</span>
@@ -167,7 +168,7 @@ export default function AccountingPage() {
           </div>
           <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-dark-400 dark:text-dark-300 mb-2">Despesas Totais</p>
           <h3 className="text-2xl md:text-3xl font-bold text-red-500">
-            {summary?.expenses?.total?.toLocaleString()} <span className="text-xs md:text-sm font-bold">MZN</span>
+            {formatCurrency(summary?.expenses?.total)}
           </h3>
           <div className="mt-4 flex items-center gap-2 text-[10px] md:text-xs font-bold text-dark-500 dark:text-dark-200">
             <span className="px-1.5 py-0.5 rounded-md bg-red-500/10 text-red-500">{summary?.expenses?.count}</span>
@@ -185,7 +186,7 @@ export default function AccountingPage() {
           </div>
           <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-dark-400 dark:text-dark-300 mb-2">Lucro Líquido</p>
           <h3 className={`text-2xl md:text-3xl font-bold ${summary?.netProfit >= 0 ? 'text-blue-500' : 'text-red-500'}`}>
-            {summary?.netProfit?.toLocaleString()} <span className="text-xs md:text-sm font-bold">MZN</span>
+            {formatCurrency(summary?.netProfit)}
           </h3>
           <div className="mt-4 flex items-center gap-2 text-[10px] md:text-xs font-bold text-dark-500 dark:text-dark-200">
             <span className={`px-1.5 py-0.5 rounded-md ${summary?.netProfit >= 0 ? 'bg-blue-500/10 text-blue-500' : 'bg-red-500/10 text-red-500'}`}>
@@ -233,7 +234,7 @@ export default function AccountingPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4 font-bold text-red-500" data-label="Valor">
-                      -{parseFloat(expense.amount).toLocaleString()} MZN
+                      -{formatCurrency(expense.amount)}
                     </td>
                     <td className="px-6 py-4" data-label="Ações">
                       <button 

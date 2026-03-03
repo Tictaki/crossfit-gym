@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { checkinsAPI, UPLOAD_URL, getImageUrl } from '@/lib/api';
+import { timeFormatter, dateFormatter } from '@/lib/utils';
 import { 
   ArrowPathIcon,
   CheckCircleIcon,
@@ -36,11 +37,11 @@ export default function CheckinsPage() {
   };
 
   const formatTime = (dateString) => {
-    return new Date(dateString).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+    return timeFormatter.format(new Date(dateString));
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('pt-PT');
+    return dateFormatter.format(new Date(dateString));
   };
 
   return (

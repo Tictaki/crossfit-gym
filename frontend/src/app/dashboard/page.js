@@ -20,6 +20,8 @@ import {
   EyeIcon
 } from '@heroicons/react/24/outline';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar } from 'recharts';
+import { useMemo } from 'react';
+import { formatCurrency } from '@/lib/utils';
 
 const COLORS = ['#f50707', '#3b82f6', '#10b981', '#f59e0b'];
 
@@ -54,10 +56,10 @@ export default function DashboardPage() {
     );
   }
 
-  const memberData = [
+  const memberData = useMemo(() => [
     { name: 'Ativos', value: stats?.activeMembers || 0 },
     { name: 'Inativos', value: stats?.inactiveMembers || 0 },
-  ];
+  ], [stats]);
 
   return (
     <div className="space-y-8 animate-fade-in pb-10">
@@ -89,7 +91,7 @@ export default function DashboardPage() {
             <div>
               <p className="stat-card-title text-[10px] md:text-xs text-dark-400 dark:text-dark-300">Receita Total (Mês)</p>
               <p className="stat-card-value text-sm md:text-2xl text-primary-600">
-                {(stats?.revenueThisMonth + (stats?.salesRevenueThisMonth || 0))?.toLocaleString('pt-PT', { minimumFractionDigits: 2 }) || '0.00'} <span className="text-[10px] md:text-sm text-dark-400 dark:text-dark-300 font-normal">MZN</span>
+                {formatCurrency(stats?.revenueThisMonth + (stats?.salesRevenueThisMonth || 0))}
               </p>
                <p className="text-[9px] md:text-xs text-dark-400 dark:text-dark-300 mt-1 md:mt-2 font-medium">Mensalidades + Vendas</p>
             </div>
@@ -103,7 +105,9 @@ export default function DashboardPage() {
            <div className="flex flex-col md:flex-row md:items-start justify-between gap-2">
             <div>
               <p className="stat-card-title text-[10px] md:text-xs text-dark-400 dark:text-dark-300">Vendas Loja</p>
-              <p className="stat-card-value text-sm md:text-2xl">{stats?.salesRevenueThisMonth?.toLocaleString('pt-PT', { minimumFractionDigits: 2 }) || '0.00'}</p>
+              <p className="stat-card-value text-sm md:text-2xl text-dark-900 dark:text-white">
+                {formatCurrency(stats?.salesRevenueThisMonth)}
+              </p>
                <div className="flex items-center mt-1 md:mt-2 text-orange-600 text-[9px] md:text-sm font-bold bg-orange-50 px-2 py-0.5 md:py-1 rounded-full w-fit">
                 <ShoppingBagIcon className="h-3 w-3 mr-1" />
                 <span>{stats?.salesCount || 0} v.</span>

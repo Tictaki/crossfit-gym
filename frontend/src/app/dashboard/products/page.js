@@ -20,6 +20,7 @@ import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
 import { useToast } from '@/context/ToastContext';
 import { useConfirm } from '@/context/ConfirmModalContext';
+import { formatCurrency, dateFormatter, timeFormatter } from '@/lib/utils';
 import BarcodeScanner from '@/components/BarcodeScanner';
 import { io } from 'socket.io-client';
 import { QRCodeCanvas } from 'qrcode.react';
@@ -314,7 +315,7 @@ export default function ProductsPage() {
                   <div className="flex justify-between items-end">
                     <div>
                       <p className="text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest mb-1">Preço</p>
-                      <p className="text-2xl font-black text-primary-600 dark:text-primary-400">{parseFloat(product.price).toLocaleString()} <span className="text-sm font-bold">MZN</span></p>
+                      <p className="text-2xl font-black text-primary-600 dark:text-primary-400">{formatCurrency(product.price)}</p>
                     </div>
                     <div className="text-right">
                       <p className="text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest mb-1">Stock</p>
@@ -356,78 +357,54 @@ export default function ProductsPage() {
             <table className="table min-w-full table-responsive-cards">
               <thead className="bg-dark-900 border-b border-white/10">
                 <tr>
+                  <th className="px-6 py-4 text-left text-xs font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Data</th>
                   <th className="px-6 py-4 text-left text-xs font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Produto</th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Categoria</th>
-                  <th className="px-6 py-4 text-center text-xs font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Preço</th>
-                  <th className="px-6 py-4 text-center text-xs font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Stock</th>
-                  <th className="px-6 py-4 text-right text-xs font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Ações</th>
+                  <th className="px-6 py-4 text-center text-xs font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Quantidade</th>
+                  <th className="px-6 py-4 text-center text-xs font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Total</th>
+                  <th className="px-6 py-4 text-right text-xs font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Método</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/10 dark:divide-dark-800/50">
-                {products.map((product) => (
-                  <tr key={product.id} className="hover:bg-white/20 dark:hover:bg-dark-800/10 transition-colors group">
+                {sales.map((sale) => (
+                  <tr key={sale.id} className="hover:bg-white/20 dark:hover:bg-dark-800/10 transition-colors group">
+                    <td className="px-6 py-5" data-label="Data">
+                      <div className="flex flex-col">
+                        <span className="text-xs font-bold text-dark-900 dark:text-white">{dateFormatter.format(new Date(sale.saleDate))}</span>
+                        <span className="text-[10px] text-dark-400">{timeFormatter.format(new Date(sale.saleDate))}</span>
+                      </div>
+                    </td>
                     <td className="px-6 py-5" data-label="Produto">
                       <div className="flex items-center">
                         <div className="h-10 w-10 rounded-2xl bg-gray-100 dark:bg-dark-800 flex items-center justify-center overflow-hidden mr-3 shadow-sm border border-white/20">
-                          {product.photo ? (
-                            <img src={`${UPLOAD_URL}${product.photo}`} alt="" className="w-full h-full object-cover" />
+                          {sale.product?.photo ? (
+                            <img src={getImageUrl(sale.product.photo)} alt="" className="w-full h-full object-cover" />
                           ) : (
-                            <span className="text-primary-500 font-black text-xs">{product.name.charAt(0)}</span>
+                            <span className="text-primary-500 font-black text-xs">{sale.product?.name?.charAt(0)}</span>
                           )}
                         </div>
                         <div>
-                          <p className="font-bold text-dark-900 dark:text-white leading-tight">{product.name}</p>
-                          <p className="text-[10px] text-dark-400 font-bold uppercase tracking-widest">{product.sku || 'Sem SKU'}</p>
+                          <p className="font-bold text-dark-900 dark:text-white leading-tight">{sale.product?.name}</p>
+                          <p className="text-[10px] text-dark-400 font-bold uppercase tracking-widest">Vendido por: {sale.seller?.name}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-5 text-sm font-medium text-dark-600 dark:text-dark-300" data-label="Categoria">
-                      {product.category || 'Geral'}
+                    <td className="px-6 py-5 text-center font-bold text-dark-900 dark:text-white" data-label="Quantidade">
+                      {sale.quantity} un.
                     </td>
-                    <td className="px-6 py-5 text-center font-bold text-dark-900 dark:text-white" data-label="Preço">
-                      {parseFloat(product.price).toLocaleString()} MZN
+                    <td className="px-6 py-5 text-center font-black text-primary-600 dark:text-primary-400" data-label="Total">
+                      {formatCurrency(sale.totalAmount)}
                     </td>
-                    <td className="px-6 py-5 text-center" data-label="Stock">
-                      <span className={`px-3 py-1 rounded-xl text-[10px] font-black uppercase tracking-widest ${
-                        product.stock <= 5 ? 'bg-red-500/10 text-red-600 border border-red-500/20' : 'bg-green-500/10 text-green-600 border border-green-500/20'
-                      }`}>
-                        {product.stock} un.
+                    <td className="px-6 py-5 text-right" data-label="Método">
+                      <span className="px-3 py-1 bg-dark-100 dark:bg-dark-800 rounded-xl text-[10px] font-black uppercase tracking-widest text-dark-600 dark:text-dark-300">
+                        {sale.paymentMethod}
                       </span>
-                    </td>
-                    <td className="px-6 py-5 text-right space-x-2" data-label="Ações">
-                      <button 
-                        onClick={() => handleOpenSaleModal(product)}
-                        disabled={product.stock <= 0}
-                        className="btn-icon-sm bg-primary-500/10 text-primary-500 hover:bg-primary-500 hover:text-white disabled:opacity-50 disabled:pointer-events-none"
-                        title="Registar Venda"
-                      >
-                        <BanknotesIcon className="h-4 w-4" />
-                      </button>
-                      {userRole === 'ADMIN' && (
-                        <>
-                          <button 
-                            onClick={() => handleOpenModal(product)}
-                            className="btn-icon-sm bg-blue-500/10 text-blue-500 hover:bg-blue-500 hover:text-white"
-                            title="Editar Produto"
-                          >
-                            <PencilSquareIcon className="h-4 w-4" />
-                          </button>
-                          <button 
-                            onClick={() => handleDelete(product.id)}
-                            className="btn-icon-sm bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white"
-                            title="Eliminar Produto"
-                          >
-                            <TrashIcon className="h-4 w-4" />
-                          </button>
-                        </>
-                      )}
                     </td>
                   </tr>
                 ))}
                 
                 {sales.length === 0 && (
                   <tr>
-                    <td colSpan="6" className="px-6 py-20 text-center text-gray-400 font-medium">
+                    <td colSpan="5" className="px-6 py-20 text-center text-gray-400 font-medium">
                       <TicketIcon className="h-10 w-10 mx-auto mb-2 opacity-20" />
                       Sem registos de vendas
                     </td>

@@ -1,23 +1,7 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
-import { paymentsAPI } from '@/lib/api';
-import { 
-  BanknotesIcon, 
-  ArrowDownTrayIcon, 
-  MagnifyingGlassIcon, 
-  FunnelIcon,
-  DocumentArrowDownIcon,
-  CalendarIcon,
-  CurrencyDollarIcon,
-  CreditCardIcon,
-  ChevronDownIcon,
-  ShareIcon,
-  EyeIcon
-} from '@heroicons/react/24/outline';
-import { format } from 'date-fns';
-import { pt } from 'date-fns/locale';
 import { UPLOAD_URL } from '@/lib/api';
+import { useDebounce, formatCurrency } from '@/lib/utils';
 
 export default function PaymentsPage() {
   const [payments, setPayments] = useState([]);
@@ -29,15 +13,13 @@ export default function PaymentsPage() {
 
   
   // Filters
-  const [memberId, setMemberId] = useState('');
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('');
 
+  const debouncedMemberId = useDebounce(memberId, 500);
 
   useEffect(() => {
     loadData();
-  }, [memberId, startDate, endDate, paymentMethod]);
+  }, [debouncedMemberId, startDate, endDate, paymentMethod]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -54,7 +36,7 @@ export default function PaymentsPage() {
     try {
       setLoading(true);
       const [paymentsRes, dailyRes, monthlyRes] = await Promise.all([
-        paymentsAPI.list({ memberId, startDate, endDate, paymentMethod }),
+        paymentsAPI.list({ memberId: debouncedMemberId, startDate, endDate, paymentMethod }),
         paymentsAPI.dailyReport(),
         paymentsAPI.monthlyReport()
       ]);
@@ -91,9 +73,7 @@ export default function PaymentsPage() {
     }
   };
 
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat('pt-MZ', { style: 'currency', currency: 'MZN' }).format(value || 0);
-  };
+  /* Removed local formatCurrency to use shared utility */
 
   return (
     <div className="space-y-8 animate-fade-in pb-10">
