@@ -183,7 +183,6 @@ export default function DefaultersPage() {
           </div>
         )}
       </div>
-    </div>
 
       {/* Helpful Tips */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
