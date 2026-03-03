@@ -14,6 +14,7 @@ import {
   ExclamationTriangleIcon,
   ShoppingBagIcon
 } from '@heroicons/react/24/outline';
+import { memo } from 'react';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
@@ -28,7 +29,7 @@ const navigation = [
   { name: 'Configurações', href: '/dashboard/settings', icon: CogIcon },
 ];
 
-export default function Sidebar({ currentPath, user, isOpen, setIsOpen }) {
+const Sidebar = ({ currentPath, user, isOpen, setIsOpen }) => {
   const filteredNavigation = navigation.filter(item => {
     if (user?.role === 'RECEPTIONIST') {
       return !['Dashboard', 'Contabilidade', 'Relatórios', 'Pagamentos', 'Utilizadores'].includes(item.name);
@@ -119,4 +120,6 @@ export default function Sidebar({ currentPath, user, isOpen, setIsOpen }) {
       </div>
     </>
   );
-}
+};
+
+export default memo(Sidebar);

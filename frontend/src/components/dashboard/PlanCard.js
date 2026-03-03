@@ -8,15 +8,16 @@ import {
   CreditCardIcon, 
   ChevronRightIcon 
 } from '@heroicons/react/24/outline';
+import { memo } from 'react';
 
-export default function PlanCard({ 
+const PlanCard = ({ 
   plan, 
   onEdit, 
   onDelete, 
   onSelect, 
   isSelected, 
   mode = 'view' // 'view' or 'select'
-}) {
+}) => {
   if (mode === 'select') {
     return (
       <button
@@ -103,4 +104,6 @@ export default function PlanCard({
       </div>
     </div>
   );
-}
+};
+
+export default memo(PlanCard);

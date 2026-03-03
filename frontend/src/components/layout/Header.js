@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, memo } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   UserIcon, 
@@ -12,7 +12,7 @@ import {
 import { UPLOAD_URL, getImageUrl } from '@/lib/api';
 import NotificationBell from './NotificationBell';
 
-export default function Header({ user, setSidebarOpen }) {
+const Header = ({ user, setSidebarOpen }) => {
   const router = useRouter();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -79,7 +79,7 @@ export default function Header({ user, setSidebarOpen }) {
                 )}
               </div>
             </div>
-            <ChevronDownIcon className={`h-4 w-4 text-dark-400 dark:text-dark-300 dark:text-dark-500 transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+            <ChevronDownIcon className={`h-4 w-4 text-dark-400 dark:text-dark-300 transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />
           </button>
 
           {/* Glass Dropdown Menu */}
@@ -87,14 +87,14 @@ export default function Header({ user, setSidebarOpen }) {
             <div className="absolute top-full right-0 mt-3 w-56 dropdown-glass animate-fade-in z-50 overflow-hidden">
               <div className="p-4 border-b border-white/20 dark:border-dark-700/50 bg-white/20 dark:bg-dark-800/20">
                 <p className="text-sm font-bold text-dark-900 dark:text-white truncate">{user?.name}</p>
-                <p className="text-xs text-dark-500 dark:text-dark-200 dark:text-dark-400 truncate">{user?.email}</p>
+                <p className="text-xs text-dark-500 dark:text-dark-400 truncate">{user?.email}</p>
               </div>
               <div className="p-2">
                 <button 
                   onClick={() => { router.push('/dashboard/settings'); setIsDropdownOpen(false); }}
                   className="w-full flex items-center gap-3 px-3 py-2 text-sm text-dark-700 dark:text-dark-300 hover:bg-primary-500 hover:text-white rounded-xl transition-all duration-200 group"
                 >
-                  <Cog6ToothIcon className="h-5 w-5 text-dark-400 dark:text-dark-300 dark:text-dark-500 group-hover:text-white transition-colors" />
+                  <Cog6ToothIcon className="h-5 w-5 text-dark-400 dark:text-dark-300 group-hover:text-white transition-colors" />
                   Configurações
                 </button>
                 <button 
@@ -111,4 +111,6 @@ export default function Header({ user, setSidebarOpen }) {
       </div>
     </header>
   );
-}
+};
+
+export default memo(Header);

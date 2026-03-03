@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useDeferredValue, memo } from 'react';
 import { productsAPI, UPLOAD_URL, getImageUrl } from '@/lib/api';
 import { 
   ShoppingBagIcon, 
@@ -44,6 +44,8 @@ export default function ProductsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [userRole, setUserRole] = useState(null);
+  const [search, setSearch] = useState('');
+  const deferredSearch = useDeferredValue(search);
   const [formData, setFormData] = useState({
     name: '',
     commercialName: '',
@@ -243,6 +245,19 @@ export default function ProductsPage() {
         )}
       </div>
 
+      <div className="flex flex-col lg:flex-row gap-4">
+        <div className="flex-1 relative group">
+          <MagnifyingGlassIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-dark-300 group-focus-within:text-primary-500 transition-colors" />
+          <input 
+            type="text" 
+            placeholder={`Pesquisar ${activeTab === 'inventory' ? 'produtos' : 'vendas'}...`}
+            className="input pl-11 bg-white/50 dark:bg-dark-800/50 text-sm h-11 rounded-2xl border-none"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+      </div>
+
       {/* Tabs */}
       <div className="flex bg-white/20 dark:bg-dark-800/30 p-1.5 rounded-2xl w-fit border border-white/20 dark:border-dark-700/50 backdrop-blur-md">
         <button
@@ -275,7 +290,9 @@ export default function ProductsPage() {
         </div>
       ) : activeTab === 'inventory' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {products.map((product) => (
+          {products
+            .filter(p => p.name.toLowerCase().includes(deferredSearch.toLowerCase()))
+            .map((product) => (
             <div key={product.id} className="card-glass group overflow-hidden border-none shadow-premium hover:shadow-glow-sm transition-all duration-500 hover:-translate-y-1">
               <div className="p-6">
                   <div className="aspect-square w-full bg-gray-100 dark:bg-dark-900 flex items-center justify-center overflow-hidden rounded-2xl mb-4 relative shadow-inner">
@@ -365,48 +382,50 @@ export default function ProductsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/10 dark:divide-dark-800/50">
-                {sales.map((sale) => (
-                  <tr key={sale.id} className="hover:bg-white/20 dark:hover:bg-dark-800/10 transition-colors group">
-                    <td className="px-6 py-5" data-label="Data">
-                      <div className="flex flex-col">
-                        <span className="text-xs font-bold text-dark-900 dark:text-white">{dateFormatter.format(new Date(sale.saleDate))}</span>
-                        <span className="text-[10px] text-dark-400">{timeFormatter.format(new Date(sale.saleDate))}</span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5" data-label="Produto">
-                      <div className="flex items-center">
-                        <div className="h-10 w-10 rounded-2xl bg-gray-100 dark:bg-dark-800 flex items-center justify-center overflow-hidden mr-3 shadow-sm border border-white/20">
-                          {sale.product?.photo ? (
-                            <img src={getImageUrl(sale.product.photo)} alt="" className="w-full h-full object-cover" />
-                          ) : (
-                            <span className="text-primary-500 font-black text-xs">{sale.product?.name?.charAt(0)}</span>
-                          )}
+                {sales
+                  .filter(s => s.product?.name?.toLowerCase().includes(deferredSearch.toLowerCase()))
+                  .map((sale) => (
+                    <tr key={sale.id} className="hover:bg-white/20 dark:hover:bg-dark-800/10 transition-colors group">
+                      <td className="px-6 py-5" data-label="Data">
+                        <div className="flex flex-col">
+                          <span className="text-xs font-bold text-dark-900 dark:text-white">{dateFormatter.format(new Date(sale.saleDate))}</span>
+                          <span className="text-[10px] text-dark-400">{timeFormatter.format(new Date(sale.saleDate))}</span>
                         </div>
-                        <div>
-                          <p className="font-bold text-dark-900 dark:text-white leading-tight">{sale.product?.name}</p>
-                          <p className="text-[10px] text-dark-400 font-bold uppercase tracking-widest">Vendido por: {sale.seller?.name}</p>
+                      </td>
+                      <td className="px-6 py-5" data-label="Produto">
+                        <div className="flex items-center">
+                          <div className="h-10 w-10 rounded-2xl bg-gray-100 dark:bg-dark-800 flex items-center justify-center overflow-hidden mr-3 shadow-sm border border-white/20">
+                            {sale.product?.photo ? (
+                              <img src={getImageUrl(sale.product.photo)} alt="" className="w-full h-full object-cover" />
+                            ) : (
+                              <span className="text-primary-500 font-black text-xs">{sale.product?.name?.charAt(0)}</span>
+                            ) }
+                          </div>
+                          <div>
+                            <p className="font-bold text-dark-900 dark:text-white leading-tight">{sale.product?.name}</p>
+                            <p className="text-[10px] text-dark-400 font-bold uppercase tracking-widest">Vendido por: {sale.seller?.name}</p>
+                          </div>
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5 text-center font-bold text-dark-900 dark:text-white" data-label="Quantidade">
-                      {sale.quantity} un.
-                    </td>
-                    <td className="px-6 py-5 text-center font-black text-primary-600 dark:text-primary-400" data-label="Total">
-                      {formatCurrency(sale.totalAmount)}
-                    </td>
-                    <td className="px-6 py-5 text-right" data-label="Método">
-                      <span className="px-3 py-1 bg-dark-100 dark:bg-dark-800 rounded-xl text-[10px] font-black uppercase tracking-widest text-dark-600 dark:text-dark-300">
-                        {sale.paymentMethod}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td className="px-6 py-5 text-center font-bold text-dark-900 dark:text-white" data-label="Quantidade">
+                        {sale.quantity} un.
+                      </td>
+                      <td className="px-6 py-5 text-center font-black text-primary-600 dark:text-primary-400" data-label="Total">
+                        {formatCurrency(sale.totalAmount)}
+                      </td>
+                      <td className="px-6 py-5 text-right" data-label="Método">
+                        <span className="px-3 py-1 bg-dark-100 dark:bg-dark-800 rounded-xl text-[10px] font-black uppercase tracking-widest text-dark-600 dark:text-dark-300">
+                          {sale.paymentMethod}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
                 
-                {sales.length === 0 && (
+                {sales.filter(s => s.product?.name?.toLowerCase().includes(deferredSearch.toLowerCase())).length === 0 && (
                   <tr>
                     <td colSpan="5" className="px-6 py-20 text-center text-gray-400 font-medium">
                       <TicketIcon className="h-10 w-10 mx-auto mb-2 opacity-20" />
-                      Sem registos de vendas
+                      Nenhum registo de venda encontrado
                     </td>
                   </tr>
                 )}

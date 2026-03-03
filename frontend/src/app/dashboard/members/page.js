@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useDeferredValue } from 'react';
 import Link from 'next/link';
 import { membersAPI } from '@/lib/api';
 import { 
@@ -20,7 +20,8 @@ export default function MembersPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const debouncedSearch = useDebounce(search, 500);
+  const deferredSearch = useDeferredValue(search);
+  const debouncedSearch = useDebounce(deferredSearch, 500);
 
   useEffect(() => {
     loadMembers();

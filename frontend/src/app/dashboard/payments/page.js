@@ -1,7 +1,22 @@
 'use client';
 
-import { UPLOAD_URL } from '@/lib/api';
+import { useState, useEffect, useRef, useDeferredValue } from 'react';
+import { paymentsAPI, UPLOAD_URL } from '@/lib/api';
 import { useDebounce, formatCurrency } from '@/lib/utils';
+import { 
+  BanknotesIcon, 
+  CurrencyDollarIcon, 
+  CreditCardIcon, 
+  MagnifyingGlassIcon, 
+  CalendarIcon, 
+  ArrowDownTrayIcon,
+  ShareIcon,
+  EyeIcon,
+  FunnelIcon,
+  ChevronDownIcon
+} from '@heroicons/react/24/outline';
+import { format } from 'date-fns';
+import { pt } from 'date-fns/locale';
 
 export default function PaymentsPage() {
   const [payments, setPayments] = useState([]);
@@ -13,9 +28,13 @@ export default function PaymentsPage() {
 
   
   // Filters
+  const [memberId, setMemberId] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('');
 
-  const debouncedMemberId = useDebounce(memberId, 500);
+  const deferredMemberId = useDeferredValue(memberId);
+  const debouncedMemberId = useDebounce(deferredMemberId, 500);
 
   useEffect(() => {
     loadData();
