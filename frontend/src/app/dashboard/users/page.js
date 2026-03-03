@@ -31,7 +31,7 @@ export default function UsersPage() {
     name: '',
     email: '',
     password: '',
-    role: 'STAFF'
+    role: 'RECEPTIONIST'
   });
 
   useEffect(() => {
@@ -68,7 +68,7 @@ export default function UsersPage() {
         name: '',
         email: '',
         password: '',
-        role: 'STAFF'
+        role: 'RECEPTIONIST'
       });
     }
     setIsModalOpen(true);
@@ -299,9 +299,9 @@ export default function UsersPage() {
                 <div className="grid grid-cols-2 gap-3">
                   <button
                     type="button"
-                    onClick={() => setFormData({ ...formData, role: 'STAFF' })}
+                    onClick={() => setFormData({ ...formData, role: 'RECEPTIONIST' })}
                     className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${
-                      formData.role === 'STAFF'
+                      formData.role === 'RECEPTIONIST'
                         ? 'border-primary-500 bg-primary-500/5 text-primary-600'
                         : 'border-transparent bg-dark-50 dark:bg-dark-800 text-dark-400'
                     }`}
