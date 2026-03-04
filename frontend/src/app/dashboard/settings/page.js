@@ -272,7 +272,7 @@ export default function SettingsPage() {
         </div>
         
         <div className="space-y-6">
-          <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-dark-800 rounded-xl border border-gray-100 dark:border-dark-700">
+          <div className="flex items-center justify-between p-4 glass-strong rounded-xl">
             <div>
               <p className="font-bold text-dark-900 dark:text-white">Tema Escuro</p>
               <p className="text-sm text-gray-500 dark:text-dark-300 dark:text-dark-400">Ativar modo noturno na interface</p>
@@ -288,7 +288,7 @@ export default function SettingsPage() {
             </label>
           </div>
 
-          <div className="p-4 bg-gray-50 dark:bg-dark-800 rounded-2xl border border-gray-100 dark:border-dark-700">
+          <div className="p-4 glass-strong rounded-2xl">
             <p className="font-bold text-dark-900 dark:text-white mb-2">Imagem de Fundo (Modo Claro)</p>
             <p className="text-sm text-gray-500 dark:text-dark-300 dark:text-dark-400">Personalize o fundo do dashboard para o modo claro. No modo escuro, o sistema utilizará automaticamente o fundo preto profundo.</p>
             

@@ -36,11 +36,11 @@ const Header = ({ user, setSidebarOpen }) => {
 
   return (
     <header className="bg-transparent px-3 md:px-8 py-3 md:py-6 z-10 relative">
-      <div className="flex items-center justify-between bg-white/60 dark:bg-dark-900/60 backdrop-blur-xl px-3 md:px-6 py-2.5 md:py-3 rounded-2xl shadow-glass border border-white/40 dark:border-dark-700/50">
+      <div className="flex items-center justify-between glass px-3 md:px-6 py-2.5 md:py-3">
         <div className="flex items-center gap-3 md:gap-4">
           <button 
             onClick={() => setSidebarOpen(true)}
-            className="hidden lg:hidden p-2.5 rounded-xl bg-white/50 dark:bg-dark-800/50 text-dark-600 dark:text-dark-300 hover:bg-white dark:hover:bg-dark-700 transition-all shadow-sm active:scale-90"
+            className="lg:hidden p-2.5 rounded-xl glass-button text-dark-600 dark:text-dark-300 active:scale-90"
           >
             <Bars3Icon className="h-6 w-6" />
           </button>
@@ -58,7 +58,7 @@ const Header = ({ user, setSidebarOpen }) => {
           
           <button 
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center gap-2 md:gap-3 p-1 rounded-2xl hover:bg-white/40 dark:hover:bg-dark-800/40 transition-all duration-300 group"
+            className="flex items-center gap-2 md:gap-3 p-1 rounded-2xl glass-button hover:bg-white/50 dark:hover:bg-dark-800/70 transition-all duration-300 group"
           >
             <div className="h-9 w-9 md:h-11 md:w-11 rounded-full p-[2px] bg-gradient-to-br from-primary-400 to-primary-600 shadow-premium overflow-hidden transition-transform duration-300 group-active:scale-90">
               <div className="h-full w-full rounded-full bg-white dark:bg-dark-800 flex items-center justify-center overflow-hidden">
@@ -88,24 +88,24 @@ const Header = ({ user, setSidebarOpen }) => {
 
           {/* Glass Dropdown Menu */}
           {isDropdownOpen && (
-            <div className="absolute top-full right-0 mt-3 w-56 dropdown-glass animate-fade-in z-50 overflow-hidden">
-              <div className="p-4 border-b border-white/20 dark:border-dark-700/50 bg-white/20 dark:bg-dark-800/20">
+            <div className="absolute top-full right-0 mt-3 w-56 glass-strong rounded-2xl animate-fade-in z-50 overflow-hidden border border-white/40 dark:border-white/10">
+              <div className="p-4 border-b border-white/30 dark:border-white/10">
                 <p className="text-sm font-bold text-dark-900 dark:text-white truncate">{user?.name}</p>
                 <p className="text-xs text-dark-500 dark:text-dark-400 truncate">{user?.email}</p>
               </div>
               <div className="p-2">
                 <button 
                   onClick={() => { router.push('/dashboard/settings'); setIsDropdownOpen(false); }}
-                  className="w-full flex items-center gap-3 px-3 py-2 text-sm text-dark-700 dark:text-dark-300 hover:bg-primary-500 hover:text-white rounded-xl transition-all duration-200 group"
+                  className="w-full flex items-center gap-3 px-3 py-2 text-sm text-dark-700 dark:text-dark-300 glass-button rounded-xl transition-all duration-200 group hover:bg-white/50 dark:hover:bg-dark-700/70"
                 >
-                  <Cog6ToothIcon className="h-5 w-5 text-dark-400 dark:text-dark-300 group-hover:text-white transition-colors" />
+                  <Cog6ToothIcon className="h-5 w-5 text-dark-400 dark:text-dark-300 group-hover:text-dark-900 dark:group-hover:text-white transition-colors" />
                   Configurações
                 </button>
                 <button 
                   onClick={handleLogout}
-                  className="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-500 hover:text-white rounded-xl transition-all duration-200 group"
+                  className="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-600 dark:text-red-400 glass-button rounded-xl transition-all duration-200 group hover:bg-red-100/60 dark:hover:bg-red-950/40"
                 >
-                  <ArrowLeftOnRectangleIcon className="h-5 w-5 text-red-500 dark:text-red-400 group-hover:text-white transition-colors" />
+                  <ArrowLeftOnRectangleIcon className="h-5 w-5 text-red-500 dark:text-red-400 group-hover:text-red-700 dark:group-hover:text-red-300 transition-colors" />
                   Sair do Sistema
                 </button>
               </div>

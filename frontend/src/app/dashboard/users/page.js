@@ -228,7 +228,7 @@ export default function UsersPage() {
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-dark-950/60 backdrop-blur-xl animate-fade-in" onClick={handleCloseModal} />
           
-          <div className="relative w-full max-w-lg bg-white dark:bg-dark-900 rounded-[2.5rem] shadow-2xl animate-slide-up border border-white/20 dark:border-dark-700/50">
+          <div className="relative w-full max-w-lg glass-strong rounded-[2.5rem] shadow-2xl animate-slide-up">
             <div className="p-8 pb-0 flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-bold text-dark-900 dark:text-white">
@@ -240,7 +240,7 @@ export default function UsersPage() {
               </div>
               <button 
                 onClick={handleCloseModal}
-                className="p-3 rounded-2xl bg-dark-100 dark:bg-dark-800 text-dark-500 dark:text-dark-200 hover:scale-110 transition-transform"
+                className="p-3 rounded-2xl glass-button text-dark-500 dark:text-dark-200 hover:bg-white/40 dark:hover:bg-dark-800/60 transition-all"
               >
                 <XMarkIcon className="h-6 w-6" />
               </button>

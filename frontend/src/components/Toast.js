@@ -26,10 +26,10 @@ const Toast = ({ message, type = 'success', onClose, duration = 4000 }) => {
   };
 
   const bgColors = {
-    success: 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800',
-    error: 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800',
-    warning: 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800',
-    info: 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800',
+    success: 'bg-green-500/20 dark:bg-green-950/40 border-green-500/30 dark:border-green-500/20 backdrop-blur-xl',
+    error: 'bg-red-500/20 dark:bg-red-950/40 border-red-500/30 dark:border-red-500/20 backdrop-blur-xl',
+    warning: 'bg-amber-500/20 dark:bg-amber-950/40 border-amber-500/30 dark:border-amber-500/20 backdrop-blur-xl',
+    info: 'bg-blue-500/20 dark:bg-blue-950/40 border-blue-500/30 dark:border-blue-500/20 backdrop-blur-xl',
   };
 
   const textColors = {

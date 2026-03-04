@@ -74,13 +74,15 @@ export default function DashboardLayout({ children }) {
 
       {/* Main Content */}
       <div className="relative z-5 flex flex-1 overflow-hidden">
-        {/* Sidebar for Desktop */}
-        <div className="hidden lg:flex lg:w-72 border-r border-gray-100 dark:border-dark-700/50">
-          <Sidebar isOpen={true} setIsOpen={setIsSidebarOpen} user={user} />
+        {/* Sidebar - Fixed while scrolling */}
+        <div className="hidden lg:block sticky top-0 h-screen overflow-y-auto">
+          <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} user={user} />
         </div>
 
         {/* Mobile Sidebar */}
-        <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} user={user} />
+        <div className="lg:hidden">
+          <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} user={user} />
+        </div>
 
         {/* Content Area */}
         <div className="flex-1 overflow-y-auto">
