@@ -69,15 +69,18 @@ const Header = ({ user, setSidebarOpen }) => {
                     className="w-full h-full object-cover" 
                     crossOrigin="anonymous"
                     onError={(e) => {
+                      // On error, show initials instead
                       e.target.style.display = 'none';
-                      e.target.parentElement.innerHTML = `<span class="font-bold text-primary-600 dark:text-primary-500 text-lg">${user?.name?.[0] || 'U'}</span>`;
+                      if (e.target.nextElement) e.target.nextElement.style.display = 'block';
+                      else {
+                        e.target.parentElement.innerHTML = `<span class="font-bold text-primary-600 dark:text-primary-500 text-lg">${user?.name?.[0] || 'U'}</span>`;
+                      }
                     }}
                   />
-                ) : (
-                  <span className="font-bold text-primary-600 dark:text-primary-500 text-base md:text-lg">
-                    {user?.name?.[0] || 'U'}
-                  </span>
-                )}
+                ) : null}
+                <span className="font-bold text-primary-600 dark:text-primary-500 text-base md:text-lg">
+                  {user?.name?.[0] || 'U'}
+                </span>
               </div>
             </div>
             <ChevronDownIcon className={`h-4 w-4 text-dark-400 dark:text-dark-300 transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />
