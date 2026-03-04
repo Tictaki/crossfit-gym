@@ -75,22 +75,12 @@ export default function DashboardLayout({ children }) {
       {/* Main Content */}
       <div className="relative z-5 flex flex-1 overflow-hidden">
         {/* Sidebar for Desktop */}
-        <div className="hidden lg:block w-64 border-r border-gray-100 dark:border-dark-700/50 bg-white dark:bg-dark-900/50 overflow-y-auto">
-          <Sidebar onNavigate={() => setIsSidebarOpen(false)} />
+        <div className="hidden lg:flex lg:w-72 border-r border-gray-100 dark:border-dark-700/50">
+          <Sidebar isOpen={true} setIsOpen={setIsSidebarOpen} user={user} />
         </div>
 
         {/* Mobile Sidebar */}
-        {isSidebarOpen && (
-          <div className="fixed inset-0 z-40 lg:hidden">
-            <div 
-              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-              onClick={() => setIsSidebarOpen(false)}
-            />
-            <div className="absolute left-0 top-0 h-full w-64 bg-white dark:bg-dark-900 shadow-2xl overflow-y-auto">
-              <Sidebar onNavigate={() => setIsSidebarOpen(false)} />
-            </div>
-          </div>
-        )}
+        <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} user={user} />
 
         {/* Content Area */}
         <div className="flex-1 overflow-y-auto">

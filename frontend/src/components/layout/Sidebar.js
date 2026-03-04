@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import {
   HomeIcon,
   UsersIcon,
@@ -12,9 +12,10 @@ import {
   TagIcon,
   BanknotesIcon,
   ExclamationTriangleIcon,
-  ShoppingBagIcon
+  ShoppingBagIcon,
+  XMarkIcon
 } from '@heroicons/react/24/outline';
-import { memo } from 'react';
+import { memo, useMemo, useCallback } from 'react';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
@@ -29,92 +30,94 @@ const navigation = [
   { name: 'Configurações', href: '/dashboard/settings', icon: CogIcon },
 ];
 
-const Sidebar = ({ currentPath, user, isOpen, setIsOpen }) => {
-  const filteredNavigation = navigation.filter(item => {
-    if (user?.role === 'RECEPTIONIST') {
-      return !['Dashboard', 'Contabilidade', 'Relatórios', 'Pagamentos', 'Utilizadores'].includes(item.name);
-    }
-    return true;
-  });
+const Sidebar = ({ isOpen, setIsOpen, user }) => {
+  const pathname = usePathname();
+  
+  const filteredNavigation = useMemo(() => {
+    return navigation.filter(item => {
+      if (user?.role === 'RECEPTIONIST') {
+        return !['Dashboard', 'Contabilidade', 'Relatórios', 'Pagamentos', 'Utilizadores'].includes(item.name);
+      }
+      return true;
+    });
+  }, [user?.role]);
+  
+  const handleNavClick = useCallback(() => {
+    setIsOpen(false);
+  }, [setIsOpen]);
 
   return (
     <>
       {/* Mobile Overlay */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-dark-950/40 backdrop-blur-md z-[80] lg:hidden animate-fade-in"
+          className="fixed inset-0 bg-black/30 backdrop-blur-sm z-[80] lg:hidden"
           onClick={() => setIsOpen(false)}
+          aria-hidden="true"
         />
       )}
 
       <div className={`
         fixed inset-y-0 left-0 lg:static lg:translate-x-0 z-[90]
-        w-72 bg-white/60 dark:bg-dark-900/60 backdrop-blur-2xl border-r border-white/20 dark:border-dark-800/50 
-        flex flex-col h-[100dvh] transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) shadow-glass
-        ${isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full shadow-none'}
+        w-72 bg-gradient-to-b from-white via-gray-50 to-gray-50 dark:from-dark-900 dark:via-dark-900/95 dark:to-dark-950 
+        border-r border-gray-100 dark:border-dark-800/50
+        flex flex-col h-[100dvh] transition-all duration-300 ease-out
+        ${isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}
       `}>
-        <div className="p-8 pb-4 flex justify-center">
-          <div className="h-16 w-full relative">
+        <div className="p-6 pb-4 flex items-center justify-between">
+          <div className="h-12 w-auto flex-1 relative">
             <img 
               src="/logo.png" 
-              alt="Logo" 
-              className="w-full h-full object-contain filter dark:brightness-110" 
+              alt="Crosstraining Gym" 
+              className="h-full w-auto object-contain filter dark:brightness-110" 
+              loading="eager"
             />
           </div>
+          <button
+            onClick={() => setIsOpen(false)}
+            className="lg:hidden p-2 text-dark-600 dark:text-dark-300 hover:bg-gray-100 dark:hover:bg-dark-800 rounded-lg transition-colors"
+            aria-label="Fechar menu"
+          >
+            <XMarkIcon className="h-5 w-5" />
+          </button>
         </div>
 
-        <nav className="flex-1 px-4 space-y-2 overflow-y-auto py-4 custom-scrollbar">
-          <p className="px-4 text-xs font-bold text-secondary-600 dark:text-dark-200 uppercase tracking-wider mb-2 opacity-90">Main Menu</p>
-          {filteredNavigation.map((item) => {
-            const Icon = item.icon;
-            const isActive = currentPath === item.href;
-            
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                onClick={() => setIsOpen(false)}
-                className={`
-                  group flex items-center px-4 py-3.5 text-sm font-bold rounded-2xl transition-all duration-300
-                  ${isActive 
-                    ? 'bg-gradient-primary text-white shadow-lg shadow-primary-500/30 translate-x-1' 
-                    : 'text-dark-700 dark:text-dark-50 hover:bg-white dark:hover:bg-dark-800 hover:text-primary-600 dark:hover:text-primary-400 hover:shadow-premium'
-                  }
-                `}
-              >
-                <Icon 
+        <nav className="flex-1 px-3 py-4 overflow-y-auto">
+          <div className="space-y-1">
+            {filteredNavigation.map((item) => {
+              const Icon = item.icon;
+              const isActive = pathname === item.href;
+              
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  onClick={handleNavClick}
                   className={`
-                    h-6 w-6 mr-3 transition-transform duration-300 group-hover:scale-110
-                    ${isActive ? 'text-white' : 'text-dark-600 dark:text-dark-200 group-hover:text-primary-500'}
-                  `} 
-                />
-                {item.name}
-              </Link>
-            );
-          })}
+                    group flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200
+                    ${isActive 
+                      ? 'bg-gradient-primary text-white shadow-md' 
+                      : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-dark-800/80'
+                    }
+                  `}
+                  title={item.name}
+                >
+                  <Icon className="h-5 w-5 mr-3 flex-shrink-0" />
+                  <span className="truncate">{item.name}</span>
+                </Link>
+              );
+            })}
+          </div>
         </nav>
 
-        <div className="p-6 border-t border-gray-100/50 bg-gradient-to-t from-white/50 to-transparent">
-          <div className="bg-gradient-primary rounded-2xl p-4 text-white shadow-lg shadow-primary-500/20 relative overflow-hidden group mb-4">
-            <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
-              <TagIcon className="h-16 w-16 -rotate-12" />
-            </div>
-            <p className="text-xs font-bold opacity-80 mb-1">Status Pro</p>
-            <p className="text-sm font-bold">Crosstraining Gym</p>
-            <p className="text-[10px] opacity-70 mt-2">© 2026 All Rights Reserved</p>
+        <div className="p-4 border-t border-gray-100 dark:border-dark-800/50 bg-gray-50 dark:bg-dark-950/50">
+          <div className="bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl p-3 text-white shadow-md mb-3">
+            <p className="text-xs font-semibold opacity-90 mb-1">Versão 2.0</p>
+            <p className="text-xs font-bold">Crosstraining Gym</p>
           </div>
 
-          <div className="flex justify-center items-center">
-            <a 
-              href="https://idesignmoz.com" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="flex items-center text-[10px] font-bold opacity-80 hover:opacity-100 transition-opacity"
-            >
-              <span className="text-gray-400 dark:text-dark-200 mr-1 font-medium italic">powered by</span>
-              <span style={{ color: '#080707' }} className="dark:text-white dark:brightness-100">IDesign</span>
-              <span style={{ color: '#bf0404' }}>moz</span>
-            </a>
+          <div className="text-center">
+            <p className="text-[9px] text-gray-500 dark:text-dark-400">© 2026 Todos os Direitos Reservados</p>
           </div>
         </div>
       </div>
