@@ -63,6 +63,7 @@ router.put('/profile', authenticate, upload.single('photo'), async (req, res) =>
 // List users (admin only)
 router.get('/', authenticate, requireAdmin, async (req, res) => {
   try {
+    console.log('📋 Fetching users list for admin user:', req.user.id);
     const users = await prisma.user.findMany({
       select: {
         id: true,
@@ -74,10 +75,15 @@ router.get('/', authenticate, requireAdmin, async (req, res) => {
       orderBy: { createdAt: 'desc' }
     });
     
+    console.log('✓ Found', users.length, 'users');
     res.json(users);
   } catch (error) {
-    console.error('Error fetching users:', error);
-    res.status(500).json({ error: 'Failed to fetch users' });
+    console.error('❌ Error fetching users:', error.message);
+    res.status(500).json({ 
+      error: 'Failed to fetch users',
+      message: error.message,
+      details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 });
 
@@ -85,6 +91,16 @@ router.get('/', authenticate, requireAdmin, async (req, res) => {
 router.post('/', authenticate, requireAdmin, async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
+    
+    console.log('👤 Creating new user:', { name, email, role });
+    
+    // Validation
+    if (!name || !email || !password || !role) {
+      return res.status(400).json({ 
+        error: 'Missing required fields',
+        required: ['name', 'email', 'password', 'role']
+      });
+    }
     
     const hashedPassword = await bcrypt.hash(password, 10);
     
@@ -104,10 +120,24 @@ router.post('/', authenticate, requireAdmin, async (req, res) => {
       }
     });
     
+    console.log('✓ User created successfully:', user.id);
     res.status(201).json(user);
   } catch (error) {
-    console.error('Error creating user:', error);
-    res.status(500).json({ error: 'Failed to create user' });
+    console.error('❌ Error creating user:', error.message);
+    
+    // Handle unique constraint error
+    if (error.code === 'P2002') {
+      return res.status(409).json({ 
+        error: 'Email already exists',
+        field: error.meta?.target?.[0]
+      });
+    }
+    
+    res.status(500).json({ 
+      error: 'Failed to create user',
+      message: error.message,
+      details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 });
 

@@ -44,8 +44,14 @@ export default function UsersPage() {
       const response = await usersAPI.list();
       setUsers(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
-      console.error('Error loading users:', error);
-      toast.error('Erro ao carregar utilizadores');
+      console.error('❌ Error loading users:', {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data,
+        full: error
+      });
+      const errorMsg = error.response?.data?.error || error.response?.data?.message || 'Erro ao carregar utilizadores';
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -107,8 +113,14 @@ export default function UsersPage() {
       handleCloseModal();
       loadUsers();
     } catch (error) {
-      console.error('Error saving user:', error);
-      toast.error(error.response?.data?.error || 'Erro ao guardar utilizador');
+      console.error('❌ Error saving user:', {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data,
+        full: error
+      });
+      const errorMsg = error.response?.data?.error || error.response?.data?.message || 'Erro ao guardar utilizador';
+      toast.error(errorMsg);
     } finally {
       setIsSubmitting(false);
     }
