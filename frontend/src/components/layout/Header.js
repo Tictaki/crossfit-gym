@@ -67,6 +67,7 @@ const Header = ({ user, setSidebarOpen }) => {
                     src={getImageUrl(user.photo)} 
                     alt="Profile" 
                     className="w-full h-full object-cover" 
+                    crossOrigin="anonymous"
                     onError={(e) => {
                       e.target.style.display = 'none';
                       e.target.parentElement.innerHTML = `<span class="font-bold text-primary-600 dark:text-primary-500 text-lg">${user?.name?.[0] || 'U'}</span>`;

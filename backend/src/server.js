@@ -73,6 +73,20 @@ app.use('/api/payments/:id/receipt', (req, res, next) => {
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Middleware to set CORS headers for uploads
+app.use('/uploads', (req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+});
+
 app.use('/uploads', express.static('uploads'));
 
 // Routes
