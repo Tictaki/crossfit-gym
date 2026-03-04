@@ -35,25 +35,25 @@ const Header = ({ user, setSidebarOpen }) => {
   }, []);
 
   return (
-    <header className="bg-transparent px-3 md:px-8 py-3 md:py-6 z-10 relative">
-      <div className="flex items-center justify-between glass px-3 md:px-6 py-2.5 md:py-3">
-        <div className="flex items-center gap-3 md:gap-4">
+    <header className="bg-transparent z-40 relative">
+      <div className="flex items-center justify-between glass-panel !rounded-2xl !p-3 shadow-glass-premium transition-all duration-300">
+        <div className="flex items-center gap-3">
           <button 
             onClick={() => setSidebarOpen(true)}
-            className="lg:hidden p-2.5 rounded-xl glass-button text-dark-600 dark:text-dark-300 active:scale-90"
+            className="lg:hidden p-2.5 rounded-xl glass-button text-dark-800 dark:text-gray-200 active:scale-90"
           >
             <Bars3Icon className="h-6 w-6" />
           </button>
           
-          <div className="flex flex-col">
-            <h2 className="text-sm md:text-xl font-bold text-dark-900 dark:text-white tracking-tight leading-tight">
+          <div className="flex flex-col pl-2 lg:pl-0">
+            <h2 className="text-sm md:text-base font-bold text-dark-900 dark:text-white tracking-tight leading-tight">
               Olá, <span className="text-primary-600 dark:text-primary-500">{user?.name?.split(' ')[0] || 'Utilizador'}</span> 👋
             </h2>
-            <p className="text-[9px] md:text-xs font-semibold text-dark-400 dark:text-dark-200 uppercase tracking-widest opacity-80">{user?.role?.toLowerCase()}</p>
+            <p className="text-[10px] sm:text-xs font-semibold text-dark-500 dark:text-dark-300 uppercase tracking-widest">{user?.role?.toLowerCase()}</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-4 relative" ref={dropdownRef}>
+        <div className="flex items-center gap-3 relative" ref={dropdownRef}>
           <NotificationBell />
           
           <button 

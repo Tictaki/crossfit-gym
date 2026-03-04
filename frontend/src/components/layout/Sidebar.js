@@ -46,44 +46,62 @@ const Sidebar = ({ isOpen, setIsOpen, user }) => {
     setIsOpen(false);
   }, [setIsOpen]);
 
+  const [isHovered, setIsHovered] = useState(false);
+
   return (
     <>
       {/* Mobile Overlay */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-black/30 backdrop-blur-sm z-[80] lg:hidden"
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[80] lg:hidden transition-opacity duration-300"
           onClick={() => setIsOpen(false)}
           aria-hidden="true"
         />
       )}
 
-      <div className={`
-        fixed inset-y-0 left-0 lg:static lg:translate-x-0 z-[90]
-        w-72 bg-gradient-to-b from-white/30 via-white/20 to-white/10 dark:from-dark-900/50 dark:via-dark-900/30 dark:to-dark-950/20 backdrop-blur-2xl
-        border-r border-white/30 dark:border-white/10 
-        flex flex-col h-[100dvh] lg:h-full transition-transform duration-300 ease-out shadow-xl
-        ${isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0'}
+      {/* Sidebar Container */}
+      <div 
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className={`
+        fixed inset-y-0 left-0 z-[90]
+        bg-white/70 dark:bg-dark-900/70 backdrop-blur-2xl
+        border-r border-gray-200/50 dark:border-white/10 
+        flex flex-col h-[100dvh] transition-all duration-300 ease-in-out shadow-2xl
+        /* Mobile handling: */
+        ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+        /* Desktop size handling: */
+        lg:top-4 lg:bottom-4 lg:h-[calc(100vh-2rem)] lg:left-4 lg:rounded-3xl
+        ${isHovered ? 'w-[260px]' : 'w-[80px] lg:w-[80px]'}
+        ${!isOpen && !isHovered ? 'w-full max-w-[260px] lg:w-[80px]' : ''}
+        ${isOpen && 'w-[260px] lg:w-[260px]'}
       `}>
-        <div className="p-6 pb-4 flex items-center justify-between">
-          <div className="h-12 w-auto flex-1 relative">
+        {/* Logo Section */}
+        <div className={`p-4 flex items-center transition-all duration-300 ${isHovered || isOpen ? 'justify-between' : 'justify-center'}`}>
+          <div className={`relative flex items-center justify-center transition-all duration-300 ${isHovered || isOpen ? 'h-10 w-32' : 'h-10 w-10'}`}>
             <img 
               src="/logo.png" 
               alt="Crosstraining Gym" 
-              className="h-full w-auto object-contain filter dark:brightness-110" 
+              className={`object-contain filter dark:brightness-110 transition-all duration-300 ${isHovered || isOpen ? 'opacity-100 w-full h-full' : 'opacity-0 scale-50 hidden'}`} 
               loading="eager"
             />
+            {/* Minimal Logo for collapsed state */}
+            <div className={`absolute inset-0 flex items-center justify-center font-black text-2xl bg-gradient-to-br from-primary-500 to-primary-600 bg-clip-text text-transparent transition-all duration-300 ${!isHovered && !isOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-50 hidden'}`}>
+              CG
+            </div>
           </div>
           <button
             onClick={() => setIsOpen(false)}
-            className="lg:hidden p-2 text-dark-600 dark:text-dark-300 glass-subtle hover:bg-white/40 dark:hover:bg-dark-800/40 rounded-lg transition-all"
+            className="lg:hidden p-2 text-dark-600 dark:text-dark-300 hover:bg-black/5 dark:hover:bg-white/10 rounded-xl transition-all"
             aria-label="Fechar menu"
           >
             <XMarkIcon className="h-5 w-5" />
           </button>
         </div>
 
-        <nav className="flex-1 px-3 py-4 overflow-y-auto">
-          <div className="space-y-1">
+        {/* Navigation Links */}
+        <nav className="flex-1 px-3 py-4 overflow-y-auto no-scrollbar overflow-x-hidden">
+          <div className="space-y-2">
             {filteredNavigation.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
@@ -94,38 +112,52 @@ const Sidebar = ({ isOpen, setIsOpen, user }) => {
                   href={item.href}
                   onClick={handleNavClick}
                   className={`
-                    group flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200
+                    group flex items-center px-3 py-3 rounded-xl transition-all duration-300 relative
                     ${isActive 
-                      ? 'bg-gradient-primary text-white shadow-md' 
-                      : 'text-gray-700 dark:text-gray-200 bg-white/10 dark:bg-dark-800/20 hover:bg-white/30 dark:hover:bg-dark-800/50 backdrop-blur-sm'
+                      ? 'bg-gradient-primary text-white shadow-md shadow-primary-500/20' 
+                      : 'text-dark-600 dark:text-dark-300 hover:bg-black/5 dark:hover:bg-white/10'
                     }
+                    ${!isHovered && !isOpen ? 'justify-center' : 'justify-start'}
                   `}
-                  title={item.name}
+                  title={!isHovered && !isOpen ? item.name : undefined}
                 >
-                  <Icon className="h-5 w-5 mr-3 flex-shrink-0" />
-                  <span className="truncate">{item.name}</span>
+                  <Icon className={`h-6 w-6 flex-shrink-0 transition-all duration-300 ${isActive ? 'text-white' : 'group-hover:scale-110'}`} />
+                  
+                  {/* Label with fade + translate */}
+                  <span className={`
+                    whitespace-nowrap font-medium text-sm ml-3
+                    transition-all duration-300 ease-in-out
+                    ${isHovered || isOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 hidden lg:block lg:absolute lg:left-14 lg:invisible'}
+                  `}>
+                    {item.name}
+                  </span>
                 </Link>
               );
             })}
           </div>
         </nav>
 
-        <div className="p-4 border-t border-gray-100 dark:border-dark-800/50 bg-gray-50 dark:bg-dark-950/50">
-          <div className="bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl p-3 text-white shadow-md mb-3">
-            <p className="text-xs font-bold">Crosstraining Gym</p>
-            <p className="text-[9px] opacity-80 mt-1">© 2026 Todos os Direitos Reservados</p>
-          </div>
-
-          <div className="text-center">
+        {/* Footer Section */}
+        <div className="p-4 border-t border-gray-200/50 dark:border-white/10">
+          <div className="flex flex-col items-center justify-center">
             <a 
               href="https://idesignmoz.com" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="flex items-center justify-center text-[9px] font-bold opacity-80 hover:opacity-100 transition-opacity gap-1"
+              className={`flex items-center justify-center transition-all duration-300 hover:opacity-100
+                ${isHovered || isOpen ? 'opacity-80' : 'opacity-0 scale-50 hidden'}
+              `}
             >
-              <span className="text-gray-500 dark:text-dark-400">powered by</span>
-              <span style={{ color: '#080707' }} className="dark:text-white">IDesign</span><span style={{ color: '#bf0404' }}>moz</span>
+              <div className="flex items-center gap-1 text-[10px] font-bold">
+                <span className="text-dark-400 dark:text-dark-500">powered by</span>
+                <span className="text-dark-900 dark:text-white">IDesign<span className="text-[#bf0404]">moz</span></span>
+              </div>
             </a>
+            
+            {/* Minimal footer logo for collapsed state */}
+            <div className={`h-6 w-6 rounded-full bg-dark-100 dark:bg-dark-800 flex items-center justify-center transition-all duration-300 ${!isHovered && !isOpen ? 'opacity-100' : 'opacity-0 hidden'}`}>
+              <span className="text-[8px] font-black text-dark-500">ID</span>
+            </div>
           </div>
         </div>
       </div>
