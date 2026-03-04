@@ -15,7 +15,7 @@ import {
   ShoppingBagIcon,
   XMarkIcon
 } from '@heroicons/react/24/outline';
-import { memo, useMemo, useCallback } from 'react';
+import { memo, useMemo, useCallback, useState, useEffect } from 'react';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
@@ -32,7 +32,18 @@ const navigation = [
 
 const Sidebar = ({ isOpen, setIsOpen, user }) => {
   const pathname = usePathname();
-  
+  const [isHovered, setIsHovered] = useState(false);
+
+  // Persist expanded preference in localStorage (optional pin state)
+  const [isPinned, setIsPinned] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('sidebarPinned') === 'true';
+    }
+    return false;
+  });
+
+  const isExpanded = isHovered || isPinned || isOpen;
+
   const filteredNavigation = useMemo(() => {
     return navigation.filter(item => {
       if (user?.role === 'RECEPTIONIST') {
@@ -41,94 +52,101 @@ const Sidebar = ({ isOpen, setIsOpen, user }) => {
       return true;
     });
   }, [user?.role]);
-  
+
   const handleNavClick = useCallback(() => {
     setIsOpen(false);
   }, [setIsOpen]);
 
-  const [isHovered, setIsHovered] = useState(false);
+  const togglePin = useCallback(() => {
+    setIsPinned(prev => {
+      const next = !prev;
+      localStorage.setItem('sidebarPinned', String(next));
+      return next;
+    });
+  }, []);
 
   return (
     <>
       {/* Mobile Overlay */}
       {isOpen && (
-        <div 
-          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[80] lg:hidden transition-opacity duration-300"
+        <div
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[80] lg:hidden"
           onClick={() => setIsOpen(false)}
           aria-hidden="true"
         />
       )}
 
-      {/* Sidebar Container */}
-      <div 
+      {/* Sidebar */}
+      <aside
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
+        style={{ width: isExpanded ? '260px' : '80px' }}
         className={`
-        fixed inset-y-0 left-0 z-[90]
-        bg-white/70 dark:bg-dark-900/70 backdrop-blur-2xl
-        border-r border-gray-200/50 dark:border-white/10 
-        flex flex-col h-[100dvh] transition-all duration-300 ease-in-out shadow-2xl
-        /* Mobile handling: */
-        ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-        /* Desktop size handling: */
-        lg:top-4 lg:bottom-4 lg:h-[calc(100vh-2rem)] lg:left-4 lg:rounded-3xl
-        ${isHovered ? 'w-[260px]' : 'w-[80px] lg:w-[80px]'}
-        ${!isOpen && !isHovered ? 'w-full max-w-[260px] lg:w-[80px]' : ''}
-        ${isOpen && 'w-[260px] lg:w-[260px]'}
-      `}>
-        {/* Logo Section */}
-        <div className={`p-4 flex items-center transition-all duration-300 ${isHovered || isOpen ? 'justify-between' : 'justify-center'}`}>
-          <div className={`relative flex items-center justify-center transition-all duration-300 ${isHovered || isOpen ? 'h-10 w-32' : 'h-10 w-10'}`}>
-            <img 
-              src="/logo.png" 
-              alt="Crosstraining Gym" 
-              className={`object-contain filter dark:brightness-110 transition-all duration-300 ${isHovered || isOpen ? 'opacity-100 w-full h-full' : 'opacity-0 scale-50 hidden'}`} 
-              loading="eager"
-            />
-            {/* Minimal Logo for collapsed state */}
-            <div className={`absolute inset-0 flex items-center justify-center font-black text-2xl bg-gradient-to-br from-primary-500 to-primary-600 bg-clip-text text-transparent transition-all duration-300 ${!isHovered && !isOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-50 hidden'}`}>
-              CG
+          fixed top-0 left-0 h-screen z-[90]
+          bg-white/80 dark:bg-dark-900/80 backdrop-blur-2xl
+          border-r border-black/5 dark:border-white/10
+          flex flex-col
+          transition-[width,transform] duration-300 ease-in-out
+          shadow-[4px_0_30px_rgba(0,0,0,0.06)]
+          ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+        `}
+      >
+        {/* Logo */}
+        <div className={`flex items-center h-[72px] px-4 border-b border-black/5 dark:border-white/10 overflow-hidden`}>
+          <div className="flex items-center gap-3 min-w-0">
+            {/* Icon mark - always visible */}
+            <div className="flex-shrink-0 h-10 w-10 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-lg shadow-primary-500/25">
+              <span className="text-white font-black text-base tracking-tight">CG</span>
+            </div>
+            {/* Full name - visible when expanded */}
+            <div
+              className={`flex flex-col overflow-hidden transition-all duration-300 ease-in-out ${
+                isExpanded ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'
+              }`}
+            >
+              <span className="text-sm font-bold text-dark-900 dark:text-white whitespace-nowrap">Crosstraining</span>
+              <span className="text-xs text-dark-400 dark:text-dark-400 whitespace-nowrap">Gym Manager</span>
             </div>
           </div>
+          {/* Mobile close button */}
           <button
             onClick={() => setIsOpen(false)}
-            className="lg:hidden p-2 text-dark-600 dark:text-dark-300 hover:bg-black/5 dark:hover:bg-white/10 rounded-xl transition-all"
-            aria-label="Fechar menu"
+            className="lg:hidden ml-auto p-2 rounded-xl text-dark-500 hover:bg-black/5 dark:hover:bg-white/10 transition-all flex-shrink-0"
           >
             <XMarkIcon className="h-5 w-5" />
           </button>
         </div>
 
-        {/* Navigation Links */}
-        <nav className="flex-1 px-3 py-4 overflow-y-auto no-scrollbar overflow-x-hidden">
-          <div className="space-y-2">
+        {/* Navigation */}
+        <nav className="flex-1 px-3 py-4 overflow-y-auto overflow-x-hidden no-scrollbar">
+          <div className="space-y-1">
             {filteredNavigation.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
-              
+
               return (
                 <Link
                   key={item.name}
                   href={item.href}
                   onClick={handleNavClick}
+                  title={!isExpanded ? item.name : undefined}
                   className={`
-                    group flex items-center px-3 py-3 rounded-xl transition-all duration-300 relative
-                    ${isActive 
-                      ? 'bg-gradient-primary text-white shadow-md shadow-primary-500/20' 
-                      : 'text-dark-600 dark:text-dark-300 hover:bg-black/5 dark:hover:bg-white/10'
+                    flex items-center gap-3 px-3 py-2.5 rounded-xl
+                    transition-all duration-200 group relative overflow-hidden
+                    ${isActive
+                      ? 'bg-primary-500 text-white shadow-md shadow-primary-500/30'
+                      : 'text-dark-600 dark:text-dark-300 hover:bg-black/5 dark:hover:bg-white/8'
                     }
-                    ${!isHovered && !isOpen ? 'justify-center' : 'justify-start'}
                   `}
-                  title={!isHovered && !isOpen ? item.name : undefined}
                 >
-                  <Icon className={`h-6 w-6 flex-shrink-0 transition-all duration-300 ${isActive ? 'text-white' : 'group-hover:scale-110'}`} />
-                  
-                  {/* Label with fade + translate */}
-                  <span className={`
-                    whitespace-nowrap font-medium text-sm ml-3
-                    transition-all duration-300 ease-in-out
-                    ${isHovered || isOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 hidden lg:block lg:absolute lg:left-14 lg:invisible'}
-                  `}>
+                  <Icon className={`h-5 w-5 flex-shrink-0 transition-transform duration-200 ${!isActive && 'group-hover:scale-110'}`} />
+                  <span
+                    className={`
+                      text-sm font-medium whitespace-nowrap
+                      transition-all duration-300 ease-in-out
+                      ${isExpanded ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2 absolute pointer-events-none'}
+                    `}
+                  >
                     {item.name}
                   </span>
                 </Link>
@@ -137,30 +155,28 @@ const Sidebar = ({ isOpen, setIsOpen, user }) => {
           </div>
         </nav>
 
-        {/* Footer Section */}
-        <div className="p-4 border-t border-gray-200/50 dark:border-white/10">
-          <div className="flex flex-col items-center justify-center">
-            <a 
-              href="https://idesignmoz.com" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className={`flex items-center justify-center transition-all duration-300 hover:opacity-100
-                ${isHovered || isOpen ? 'opacity-80' : 'opacity-0 scale-50 hidden'}
-              `}
-            >
-              <div className="flex items-center gap-1 text-[10px] font-bold">
-                <span className="text-dark-400 dark:text-dark-500">powered by</span>
-                <span className="text-dark-900 dark:text-white">IDesign<span className="text-[#bf0404]">moz</span></span>
-              </div>
-            </a>
-            
-            {/* Minimal footer logo for collapsed state */}
-            <div className={`h-6 w-6 rounded-full bg-dark-100 dark:bg-dark-800 flex items-center justify-center transition-all duration-300 ${!isHovered && !isOpen ? 'opacity-100' : 'opacity-0 hidden'}`}>
-              <span className="text-[8px] font-black text-dark-500">ID</span>
+        {/* Footer */}
+        <div className="p-3 border-t border-black/5 dark:border-white/10 overflow-hidden">
+          <a
+            href="https://idesignmoz.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`
+              flex items-center gap-2 px-3 py-2 rounded-xl text-[10px] font-bold
+              text-dark-400 dark:text-dark-500 hover:text-dark-700 dark:hover:text-dark-300
+              transition-all duration-300
+              ${isExpanded ? 'opacity-100' : 'opacity-0 pointer-events-none'}
+            `}
+          >
+            <span>powered by IDesign<span className="text-[#bf0404]">moz</span></span>
+          </a>
+          {!isExpanded && (
+            <div className="flex justify-center py-1">
+              <span className="text-[9px] font-black text-dark-300 dark:text-dark-600">ID</span>
             </div>
-          </div>
+          )}
         </div>
-      </div>
+      </aside>
     </>
   );
 };

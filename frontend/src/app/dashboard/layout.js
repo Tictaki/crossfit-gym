@@ -53,49 +53,43 @@ export default function DashboardLayout({ children }) {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-dark-950 flex font-sans">
+    <div className="min-h-screen bg-gray-50 dark:bg-dark-950 font-sans">
       {/* Background Image */}
       {backgroundImage && (
-        <div 
-          className="fixed inset-0 z-0 opacity-10 dark:opacity-5"
+        <div
+          className="fixed inset-0 z-0 opacity-10 dark:opacity-5 pointer-events-none"
           style={{
             backgroundImage: `url('${backgroundImage}')`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
-            pointerEvents: 'none'
           }}
         />
       )}
 
-      {/* Smart Sidebar (Fixed to left) */}
-      <div className="hidden lg:block z-40">
-        <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} user={user} />
-      </div>
+      {/* Smart Sidebar - handles its own mobile/desktop behavior */}
+      <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} user={user} />
 
-      {/* Mobile Sidebar Overlay */}
-      <div className="lg:hidden z-50">
-        <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} user={user} />
-      </div>
+      {/* Main Area — always offset by the collapsed sidebar width on lg+ */}
+      <div className="lg:pl-[80px] min-h-screen flex flex-col transition-none">
 
-      {/* Main Content Area (Pushed right by sidebar) */}
-      <div className="flex-1 flex flex-col min-h-screen relative w-full lg:pl-[80px] transition-[padding] duration-300 ease-in-out group-hover/sidebar:lg:pl-[260px]">
-        {/* Suspended Header */}
-        <div className="sticky top-4 z-30 mx-4 sm:mx-6 lg:mx-8 mb-4">
+        {/* Floating Header */}
+        <div className="sticky top-4 z-30 px-4 sm:px-6 lg:px-6 mb-2">
           <Header user={user} setSidebarOpen={setIsSidebarOpen} />
         </div>
 
-        {/* Content Area */}
-        <main className="flex-1 overflow-x-hidden p-4 sm:p-6 lg:p-8 pt-0 relative z-10 w-full">
+        {/* Page Content */}
+        <main className="flex-1 px-4 sm:px-6 lg:px-6 pb-8 pt-2 relative z-10">
           <div className="max-w-7xl mx-auto w-full">
             {children}
           </div>
         </main>
       </div>
 
-      {/* Bottom Navigation for Mobile */}
+      {/* Mobile Bottom Navigation */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40">
         <BottomNav />
       </div>
     </div>
   );
 }
+
