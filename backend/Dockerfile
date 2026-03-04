@@ -6,14 +6,11 @@ WORKDIR /app
 # Copy package files
 COPY package.json package-lock.json ./
 
-# Install dependencies
-RUN npm ci
-
-# Copy Prisma
+# Copy Prisma schema BEFORE npm ci so postinstall (prisma generate) can find it
 COPY prisma ./prisma
 
-# Generate Prisma Client
-RUN npm exec prisma generate
+# Install dependencies (postinstall runs prisma generate - needs schema to exist first)
+RUN npm ci
 
 # Copy application code
 COPY src ./src
