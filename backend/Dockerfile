@@ -1,6 +1,9 @@
 # Node.js Backend Dockerfile
 FROM node:20-alpine
 
+# Install OpenSSL required by Prisma
+RUN apk add --no-cache openssl
+
 WORKDIR /app
 
 # Copy package files
