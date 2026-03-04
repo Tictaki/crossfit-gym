@@ -19,105 +19,90 @@ export default function DashboardLayout({ children }) {
   const [backgroundImage, setBackgroundImage] = useState(null);
 
   useEffect(() => {
-    const fetchSettings = async () => {
-      try {
-        const response = await settingsAPI.get();
-        if (response.data.background_image) {
-          setBackgroundImage(getImageUrl(response.data.background_image));
-        }
-      } catch (error) {
-        console.error('Error fetching settings:', error);
-      }
-    };
-
-    fetchSettings();
-
-    const handleBackgroundUpdate = (e) => {
-      const { path, theme } = e.detail;
-      if (theme === 'light') {
-        setBackgroundImage(path);
-      }
-    };
-
-    window.addEventListener('backgroundUpdate', handleBackgroundUpdate);
-    return () => window.removeEventListener('backgroundUpdate', handleBackgroundUpdate);
-  }, []);
-
-  useEffect(() => {
-    const updateUser = () => {
-      const savedUser = localStorage.getItem('user');
-      if (savedUser) {
-        const parsedUser = JSON.parse(savedUser);
-        setUser(parsedUser);
-        
-        // Role-based access control
-        const forbiddenForReceptionist = [
-          '/dashboard', 
-          '/dashboard/reports', 
-          '/dashboard/accounting', 
-          '/dashboard/payments', 
-          '/dashboard/users'
-        ];
-        if (parsedUser.role === 'RECEPTIONIST' && forbiddenForReceptionist.includes(pathname)) {
-          router.push('/dashboard/members');
-        }
-      }
-    };
-
-    const token = localStorage.getItem('token');
-    if (!token) {
+    const storedUser = localStorage.getItem('user');
+    if (!storedUser) {
       router.push('/login');
-      return;
+    } else {
+      setUser(JSON.parse(storedUser));
+      loadSettings();
     }
-
-    updateUser();
     setLoading(false);
+  }, [router]);
 
-    window.addEventListener('userUpdate', updateUser);
-    return () => window.removeEventListener('userUpdate', updateUser);
-  }, [router, pathname]);
+  const loadSettings = async () => {
+    try {
+      const response = await settingsAPI.get();
+      if (response.data?.background_image) {
+        setBackgroundImage(getImageUrl(response.data.background_image));
+      }
+    } catch (error) {
+      console.error('Error loading settings:', error);
+    }
+  };
 
-  if (loading && !user) {
+  if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary-500"></div>
       </div>
     );
   }
 
+  if (!user) {
+    return null;
+  }
+
   return (
-    <div className="relative flex min-h-dvh h-dvh overflow-hidden bg-gray-50 dark:bg-black transition-colors duration-500">
-      {/* Dynamic Background Image - Only in Light Mode */}
-      {!isDarkMode && backgroundImage && (
+    <div className="min-h-screen bg-white dark:bg-dark-950 flex flex-col">
+      {/* Background Image */}
+      {backgroundImage && (
         <div 
-          className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat transition-all duration-1000"
-          style={{ 
-            backgroundImage: `url(${backgroundImage})`,
-            filter: 'blur(20px) brightness(0.7) saturate(1.2)'
+          className="fixed inset-0 z-0 opacity-10 dark:opacity-5"
+          style={{
+            backgroundImage: `url('${backgroundImage}')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            pointerEvents: 'none'
           }}
         />
       )}
-      
-      {/* App Content */}
-      <div className="relative z-10 flex w-full h-full overflow-hidden">
-        <Sidebar 
-          currentPath={pathname} 
-          user={user} 
-          isOpen={isSidebarOpen} 
-          setIsOpen={setIsSidebarOpen} 
-        />
-        
-        <div className="flex-1 flex flex-col overflow-hidden w-full">
-          <Header 
-            user={user} 
-            setSidebarOpen={setIsSidebarOpen} 
-          />
-          <main className="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6 scroll-smooth">
-            {children}
-          </main>
+
+      {/* Header */}
+      <div className="relative z-10 border-b border-gray-100 dark:border-dark-700/50 bg-white dark:bg-dark-900/80 backdrop-blur-xl sticky top-0">
+        <Header user={user} setSidebarOpen={setIsSidebarOpen} />
+      </div>
+
+      {/* Main Content */}
+      <div className="relative z-5 flex flex-1 overflow-hidden">
+        {/* Sidebar for Desktop */}
+        <div className="hidden lg:block w-64 border-r border-gray-100 dark:border-dark-700/50 bg-white dark:bg-dark-900/50 overflow-y-auto">
+          <Sidebar onNavigate={() => setIsSidebarOpen(false)} />
         </div>
-        <BottomNav user={user} />
-        <ThemeToggle />
+
+        {/* Mobile Sidebar */}
+        {isSidebarOpen && (
+          <div className="fixed inset-0 z-40 lg:hidden">
+            <div 
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+              onClick={() => setIsSidebarOpen(false)}
+            />
+            <div className="absolute left-0 top-0 h-full w-64 bg-white dark:bg-dark-900 shadow-2xl overflow-y-auto">
+              <Sidebar onNavigate={() => setIsSidebarOpen(false)} />
+            </div>
+          </div>
+        )}
+
+        {/* Content Area */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            {children}
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Navigation for Mobile */}
+      <div className="lg:hidden">
+        <BottomNav />
       </div>
     </div>
   );

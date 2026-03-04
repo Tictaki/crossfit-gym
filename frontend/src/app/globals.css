@@ -355,6 +355,27 @@
   .loading-bar-fill {
     @apply h-full bg-gradient-primary shadow-glow-sm animate-loading-bar;
   }
+
+  /* Dashboard Components */
+  .stat-card {
+    @apply p-6 rounded-2xl bg-white dark:bg-dark-800/50 border border-gray-100 dark:border-dark-700/50 transition-all duration-200 hover:shadow-md;
+  }
+
+  .dashboard-section {
+    @apply rounded-2xl bg-white dark:bg-dark-800/50 border border-gray-100 dark:border-dark-700/50 p-6;
+  }
+
+  .action-button {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:shadow-md active:scale-95;
+  }
+
+  .action-button-primary {
+    @apply bg-primary-500 text-white hover:bg-primary-600;
+  }
+
+  .action-button-secondary {
+    @apply bg-gray-100 dark:bg-dark-700 text-dark-900 dark:text-white hover:bg-gray-200 dark:hover:bg-dark-600;
+  }
 }
 
 @layer utilities {
@@ -377,5 +398,14 @@
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+
+  /* Dashboard Utilities */
+  .stat-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6;
+  }
+
+  .chart-container {
+    @apply rounded-2xl bg-white dark:bg-dark-800/50 border border-gray-100 dark:border-dark-700/50 p-6;
   }
 }
