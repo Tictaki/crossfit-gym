@@ -8,8 +8,14 @@ import {
   BanknotesIcon,
   ExclamationCircleIcon,
   UserPlusIcon,
+  ArrowTrendingUpIcon,
+  ArrowTrendingDownIcon,
+  ChartBarIcon,
+  Cog6ToothIcon,
+  ShoppingBagIcon,
+  ArchiveBoxIcon,
 } from '@heroicons/react/24/outline';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, defs, linearGradient, stop } from 'recharts';
 import { useMemo } from 'react';
 import { formatCurrency } from '@/lib/utils';
 
@@ -28,7 +34,16 @@ export default function DashboardPage() {
   const loadStats = async () => {
     try {
       const response = await dashboardAPI.stats();
-      setStats(response.data);
+      // Format the daily activity data
+      const formattedData = response.data;
+      if (formattedData.dailyActivity && Array.isArray(formattedData.dailyActivity)) {
+        formattedData.dailyActivity = formattedData.dailyActivity.map(d => ({
+          date: new Date(d.date).toLocaleDateString('pt-PT', { month: 'short', day: 'numeric' }),
+          checkIns: d.checkIns || 0,
+          activeMembersCount: d.activeMembersCount || 0
+        }));
+      }
+      setStats(formattedData);
     } catch (error) {
       console.error('Error loading stats:', error);
     } finally {
@@ -36,114 +51,144 @@ export default function DashboardPage() {
     }
   };
 
-  const statsData = useMemo(() => {
-    if (!stats) return null;
-    return [
-      {
-        title: 'Membros Ativos',
-        value: stats.totalMembers || 0,
-        change: '+2.5%',
-        isPositive: true,
-        icon: UsersIcon,
-        color: 'from-blue-500 to-blue-600',
-        href: '/dashboard/members'
-      },
-      {
-        title: 'Receita Mensal',
-        value: formatCurrency(stats.monthlyRevenue || 0),
-        change: '+12.4%',
-        isPositive: true,
-        icon: BanknotesIcon,
-        color: 'from-green-500 to-green-600',
-        href: '/dashboard/payments'
-      },
-      {
-        title: 'Pagamentos Pendentes',
-        value: formatCurrency(stats.pendingPayments || 0),
-        change: '-5.2%',
-        isPositive: false,
-        icon: ExclamationCircleIcon,
-        color: 'from-red-500 to-red-600',
-        href: '/dashboard/defaulters'
-      },
-      {
-        title: 'Novos Membros (30 dias)',
-        value: stats.newMembersThisMonth || 0,
-        change: '+8.1%',
-        isPositive: true,
-        icon: UserPlusIcon,
-        color: 'from-purple-500 to-purple-600',
-        href: '/dashboard/members'
-      },
-    ];
-  }, [stats]);
-
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary-500"></div>
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-8 pb-16">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <h1 className="text-4xl font-bold text-dark-900 dark:text-white">Dashboard</h1>
-          <p className="text-dark-400 dark:text-dark-300 mt-1 font-medium">
-            Bem-vindo de volta! Aqui está a visão geral do seu ginásio.
-          </p>
+    <div className="space-y-8 animate-fade-in pb-10">
+      <div>
+        <h1 className="text-2xl md:text-4xl font-bold text-dark-900 dark:text-white leading-tight">Dashboard</h1>
+        <p className="text-dark-500 dark:text-dark-300 mt-1 md:mt-2 text-sm md:text-base font-medium">Bem-vindo ao painel de controlo do seu ginásio.</p>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
+        {/* Active Members */}
+        <div className="stat-card group !p-4 md:!p-6">
+          <div className="flex flex-col md:flex-row md:items-start justify-between gap-2">
+            <div>
+              <p className="text-[10px] md:text-xs text-dark-400 dark:text-dark-300 font-medium">Membros Ativos</p>
+              <p className="text-2xl md:text-3xl font-bold text-dark-900 dark:text-white mt-1">{stats?.totalMembers || 0}</p>
+              <div className="flex items-center mt-1 md:mt-2 text-green-600 text-[9px] md:text-sm font-bold bg-green-50 dark:bg-green-900/30 px-2 py-0.5 md:py-1 rounded-full w-fit">
+                <ArrowTrendingUpIcon className="h-3 w-3 mr-1" />
+                <span>+2.4%</span>
+              </div>
+            </div>
+            <div className="stat-card-icon from-blue-500 to-blue-600 shadow-blue-500/30 h-10 w-10 md:h-12 md:w-12 !p-2 md:!p-3">
+              <UsersIcon className="h-5 w-5 md:h-6 md:w-6 text-white" />
+            </div>
+          </div>
         </div>
-        <div className="flex gap-3">
-          <Link 
-            href="/dashboard/members/new"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-all duration-200 active:scale-95 shadow-lg shadow-primary-500/30"
-          >
-            <UserPlusIcon className="h-5 w-5" />
-            Novo Membro
-          </Link>
+
+        {/* Monthly Revenue */}
+        <div className="stat-card group !p-4 md:!p-6">
+          <div className="flex flex-col md:flex-row md:items-start justify-between gap-2">
+            <div>
+              <p className="text-[10px] md:text-xs text-dark-400 dark:text-dark-300 font-medium">Receita (Mês)</p>
+              <p className="text-2xl md:text-3xl font-bold text-primary-600 dark:text-primary-400 mt-1">
+                {formatCurrency(stats?.monthlyRevenue || 0)}
+              </p>
+              <p className="text-[9px] md:text-xs text-dark-400 dark:text-dark-300 mt-1 md:mt-2">Mensalidades</p>
+            </div>
+            <div className="stat-card-icon from-green-500 to-green-600 shadow-green-500/30 h-10 w-10 md:h-12 md:w-12 !p-2 md:!p-3">
+              <BanknotesIcon className="h-5 w-5 md:h-6 md:w-6 text-white" />
+            </div>
+          </div>
+        </div>
+
+        {/* Pending Payments */}
+        <div className="stat-card group !p-4 md:!p-6">
+          <div className="flex flex-col md:flex-row md:items-start justify-between gap-2">
+            <div>
+              <p className="text-[10px] md:text-xs text-dark-400 dark:text-dark-300 font-medium">Pagamentos Pendentes</p>
+              <p className="text-2xl md:text-3xl font-bold text-red-600 dark:text-red-400 mt-1">
+                {formatCurrency(stats?.pendingPayments || 0)}
+              </p>
+              <div className="flex items-center mt-1 md:mt-2 text-red-600 text-[9px] md:text-sm font-bold bg-red-50 dark:bg-red-900/30 px-2 py-0.5 md:py-1 rounded-full w-fit">
+                <ExclamationCircleIcon className="h-3 w-3 mr-1" />
+                <span>Atenção</span>
+              </div>
+            </div>
+            <div className="stat-card-icon from-red-500 to-red-600 shadow-red-500/30 h-10 w-10 md:h-12 md:w-12 !p-2 md:!p-3">
+              <ExclamationCircleIcon className="h-5 w-5 md:h-6 md:w-6 text-white" />
+            </div>
+          </div>
+        </div>
+
+        {/* New Members */}
+        <div className="stat-card group !p-4 md:!p-6">
+          <div className="flex flex-col md:flex-row md:items-start justify-between gap-2">
+            <div>
+              <p className="text-[10px] md:text-xs text-dark-400 dark:text-dark-300 font-medium">Novos Membros</p>
+              <p className="text-2xl md:text-3xl font-bold text-dark-900 dark:text-white mt-1">{stats?.newMembersThisMonth || 0}</p>
+              <div className="flex items-center mt-1 md:mt-2 text-green-600 text-[9px] md:text-sm font-bold bg-green-50 dark:bg-green-900/30 px-2 py-0.5 md:py-1 rounded-full w-fit">
+                <ArrowTrendingUpIcon className="h-3 w-3 mr-1" />
+                <span>+12%</span>
+              </div>
+            </div>
+            <div className="stat-card-icon from-purple-500 to-purple-600 shadow-purple-500/30 h-10 w-10 md:h-12 md:w-12 !p-2 md:!p-3">
+              <UserPlusIcon className="h-5 w-5 md:h-6 md:w-6 text-white" />
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Stats Grid */}
-      {statsData && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {statsData.map((stat, idx) => {
-            const Icon = stat.icon;
-            return (
-              <Link 
-                key={idx}
-                href={stat.href}
-                className="group p-6 rounded-2xl bg-white dark:bg-dark-800/50 border border-gray-100 dark:border-dark-700/50 hover:border-gray-200 dark:hover:border-dark-600 transition-all duration-200 hover:shadow-lg"
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div className={`p-3 rounded-xl bg-gradient-to-br ${stat.color} shadow-lg`}>
-                    <Icon className="h-6 w-6 text-white" />
-                  </div>
-                  <div className={`px-2 py-1 rounded-lg text-sm font-semibold ${
-                    stat.isPositive 
-                      ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' 
-                      : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
-                  }`}>
-                    {stat.isPositive ? '↑' : '↓'} {stat.change}
-                  </div>
-                </div>
-                <h3 className="text-dark-600 dark:text-dark-300 text-sm font-medium mb-1">{stat.title}</h3>
-                <p className="text-2xl font-bold text-dark-900 dark:text-white">{stat.value}</p>
-              </Link>
-            );
-          })}
-        </div>
-      )}
+      {/* Quick Access */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4">
+        <Link href="/dashboard/members/new" className="group p-3 md:p-4 rounded-xl bg-white dark:bg-dark-800/50 border border-gray-100 dark:border-dark-700/50 hover:border-blue-500 dark:hover:border-blue-500 transition-all duration-200 text-center">
+          <div className="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 group-hover:bg-blue-600 dark:group-hover:bg-blue-600 group-hover:text-white h-10 w-10 md:h-12 md:w-12 rounded-lg flex items-center justify-center mx-auto transition-all mb-2">
+            <UserPlusIcon className="h-5 w-5 md:h-6 md:w-6" />
+          </div>
+          <span className="text-[10px] md:text-xs font-semibold text-dark-700 dark:text-dark-200">Novo Membro</span>
+        </Link>
+
+        <Link href="/dashboard/payments" className="group p-3 md:p-4 rounded-xl bg-white dark:bg-dark-800/50 border border-gray-100 dark:border-dark-700/50 hover:border-green-500 dark:hover:border-green-500 transition-all duration-200 text-center">
+          <div className="bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 group-hover:bg-green-600 dark:group-hover:bg-green-600 group-hover:text-white h-10 w-10 md:h-12 md:w-12 rounded-lg flex items-center justify-center mx-auto transition-all mb-2">
+            <BanknotesIcon className="h-5 w-5 md:h-6 md:w-6" />
+          </div>
+          <span className="text-[10px] md:text-xs font-semibold text-dark-700 dark:text-dark-200">Pagamentos</span>
+        </Link>
+
+        <Link href="/dashboard/members" className="group p-3 md:p-4 rounded-xl bg-white dark:bg-dark-800/50 border border-gray-100 dark:border-dark-700/50 hover:border-indigo-500 dark:hover:border-indigo-500 transition-all duration-200 text-center">
+          <div className="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-600 dark:group-hover:bg-indigo-600 group-hover:text-white h-10 w-10 md:h-12 md:w-12 rounded-lg flex items-center justify-center mx-auto transition-all mb-2">
+            <UsersIcon className="h-5 w-5 md:h-6 md:w-6" />
+          </div>
+          <span className="text-[10px] md:text-xs font-semibold text-dark-700 dark:text-dark-200">Membros</span>
+        </Link>
+
+        <Link href="/dashboard/products" className="group p-3 md:p-4 rounded-xl bg-white dark:bg-dark-800/50 border border-gray-100 dark:border-dark-700/50 hover:border-orange-500 dark:hover:border-orange-500 transition-all duration-200 text-center">
+          <div className="bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 group-hover:bg-orange-600 dark:group-hover:bg-orange-600 group-hover:text-white h-10 w-10 md:h-12 md:w-12 rounded-lg flex items-center justify-center mx-auto transition-all mb-2">
+            <ShoppingBagIcon className="h-5 w-5 md:h-6 md:w-6" />
+          </div>
+          <span className="text-[10px] md:text-xs font-semibold text-dark-700 dark:text-dark-200">Loja</span>
+        </Link>
+
+        <Link href="/dashboard/plans" className="group p-3 md:p-4 rounded-xl bg-white dark:bg-dark-800/50 border border-gray-100 dark:border-dark-700/50 hover:border-cyan-500 dark:hover:border-cyan-500 transition-all duration-200 text-center">
+          <div className="bg-cyan-100 dark:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400 group-hover:bg-cyan-600 dark:group-hover:bg-cyan-600 group-hover:text-white h-10 w-10 md:h-12 md:w-12 rounded-lg flex items-center justify-center mx-auto transition-all mb-2">
+            <ChartBarIcon className="h-5 w-5 md:h-6 md:w-6" />
+          </div>
+          <span className="text-[10px] md:text-xs font-semibold text-dark-700 dark:text-dark-200">Planos</span>
+        </Link>
+
+        <Link href="/dashboard/reports" className="group p-3 md:p-4 rounded-xl bg-white dark:bg-dark-800/50 border border-gray-100 dark:border-dark-700/50 hover:border-amber-500 dark:hover:border-amber-500 transition-all duration-200 text-center">
+          <div className="bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 group-hover:bg-amber-600 dark:group-hover:bg-amber-600 group-hover:text-white h-10 w-10 md:h-12 md:w-12 rounded-lg flex items-center justify-center mx-auto transition-all mb-2">
+            <ArchiveBoxIcon className="h-5 w-5 md:h-6 md:w-6" />
+          </div>
+          <span className="text-[10px] md:text-xs font-semibold text-dark-700 dark:text-dark-200">Relatórios</span>
+        </Link>
+      </div>
 
       {/* Charts Section */}
       {stats?.chartData && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Revenue Trend */}
-          <div className="lg:col-span-2 p-6 rounded-2xl bg-white dark:bg-dark-800/50 border border-gray-100 dark:border-dark-700/50">
-            <h3 className="text-lg font-bold text-dark-900 dark:text-white mb-6">Tendência de Receita</h3>
+          {/* Revenue Chart */}
+          <div className="card-glass lg:col-span-2">
+            <h3 className="text-lg font-bold text-dark-900 dark:text-white mb-6">Evolução de Receita</h3>
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={stats.chartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(200, 200, 200, 0.1)" />
@@ -155,7 +200,6 @@ export default function DashboardPage() {
                     border: '1px solid rgba(255, 255, 255, 0.1)',
                     borderRadius: '8px'
                   }}
-                  cursor={{ stroke: 'rgba(100, 100, 100, 0.3)' }}
                 />
                 <Legend />
                 <Line type="monotone" dataKey="revenue" stroke="#f50707" strokeWidth={2} dot={false} />
@@ -163,9 +207,9 @@ export default function DashboardPage() {
             </ResponsiveContainer>
           </div>
 
-          {/* Plans Distribution */}
+          {/* Plan Distribution */}
           {stats?.planDistribution && (
-            <div className="p-6 rounded-2xl bg-white dark:bg-dark-800/50 border border-gray-100 dark:border-dark-700/50">
+            <div className="card-glass">
               <h3 className="text-lg font-bold text-dark-900 dark:text-white mb-6">Distribuição de Planos</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
@@ -191,24 +235,98 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Quick Actions */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[
-          { name: 'Membros', href: '/dashboard/members', icon: '👥' },
-          { name: 'Pagamentos', href: '/dashboard/payments', icon: '💰' },
-          { name: 'Planos', href: '/dashboard/plans', icon: '📋' },
-          { name: 'Relatórios', href: '/dashboard/reports', icon: '📊' },
-        ].map((action) => (
-          <Link
-            key={action.name}
-            href={action.href}
-            className="p-4 rounded-xl bg-white dark:bg-dark-800/50 border border-gray-100 dark:border-dark-700/50 hover:border-primary-500 dark:hover:border-primary-500 transition-all duration-200 text-center group"
-          >
-            <div className="text-3xl mb-2">{action.icon}</div>
-            <p className="text-sm font-semibold text-dark-700 dark:text-dark-200 group-hover:text-primary-500 transition-colors">{action.name}</p>
-          </Link>
-        ))}
-      </div>
+      {/* Modern Dynamic Chart - Daily Activity */}
+      {stats?.dailyActivity && (
+        <div className="card-glass">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h3 className="text-lg font-bold text-dark-900 dark:text-white">Atividade Diária</h3>
+              <p className="text-sm text-dark-400 dark:text-dark-300 mt-1">Check-ins e Membros Ativos</p>
+            </div>
+            <div className="flex gap-4">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-gradient-to-r from-blue-400 to-blue-600"></div>
+                <span className="text-xs text-dark-600 dark:text-dark-300">Check-ins</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-gradient-to-r from-purple-400 to-purple-600"></div>
+                <span className="text-xs text-dark-600 dark:text-dark-300">Ativos</span>
+              </div>
+            </div>
+          </div>
+          <ResponsiveContainer width="100%" height={350}>
+            <AreaChart data={stats.dailyActivity} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+              <defs>
+                <linearGradient id="colorCheckIn" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
+                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                </linearGradient>
+                <linearGradient id="colorActive" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#a855f7" stopOpacity={0.8}/>
+                  <stop offset="95%" stopColor="#a855f7" stopOpacity={0}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(200, 200, 200, 0.1)" vertical={false} />
+              <XAxis 
+                dataKey="date" 
+                stroke="rgba(100, 100, 100, 0.6)"
+                style={{ fontSize: '12px' }}
+              />
+              <YAxis 
+                stroke="rgba(100, 100, 100, 0.6)"
+                style={{ fontSize: '12px' }}
+              />
+              <Tooltip 
+                contentStyle={{
+                  backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: '12px',
+                  boxShadow: '0 8px 16px rgba(0, 0, 0, 0.3)'
+                }}
+                cursor={{ stroke: 'rgba(100, 100, 100, 0.2)', strokeWidth: 2 }}
+                formatter={(value) => value}
+                labelStyle={{ color: '#fff' }}
+              />
+              <Area 
+                type="monotone" 
+                dataKey="checkIns" 
+                stroke="#3b82f6" 
+                strokeWidth={3}
+                fill="url(#colorCheckIn)"
+                isAnimationActive={true}
+                animationDuration={800}
+                dot={{ fill: '#3b82f6', r: 4 }}
+                activeDot={{ r: 6, fill: '#3b82f6' }}
+              />
+              <Area 
+                type="monotone" 
+                dataKey="activeMembersCount" 
+                stroke="#a855f7" 
+                strokeWidth={3}
+                fill="url(#colorActive)"
+                isAnimationActive={true}
+                animationDuration={800}
+                dot={{ fill: '#a855f7', r: 4 }}
+                activeDot={{ r: 6, fill: '#a855f7' }}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+          <div className="grid grid-cols-2 gap-4 mt-6 pt-6 border-t border-gray-200 dark:border-dark-700">
+            <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20">
+              <p className="text-xs text-dark-600 dark:text-dark-300 font-medium">Total Check-ins</p>
+              <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-1">
+                {stats.dailyActivity?.reduce((sum, d) => sum + (d.checkIns || 0), 0) || 0}
+              </p>
+            </div>
+            <div className="p-4 rounded-lg bg-purple-50 dark:bg-purple-900/20">
+              <p className="text-xs text-dark-600 dark:text-dark-300 font-medium">Média Diária</p>
+              <p className="text-2xl font-bold text-purple-600 dark:text-purple-400 mt-1">
+                {Math.round((stats.dailyActivity?.reduce((sum, d) => sum + (d.checkIns || 0), 0) || 0) / (stats.dailyActivity?.length || 1)) || 0}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

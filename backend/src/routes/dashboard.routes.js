@@ -181,6 +181,66 @@ router.get('/stats', authenticate, async (req, res) => {
     const monthlyRevenue = Array.from(revenueMap.values())
       .sort((a, b) => new Date(a.month) - new Date(b.month));
     
+    // Daily activity (last 14 days)
+    const fourteenDaysAgo = new Date();
+    fourteenDaysAgo.setDate(today.getDate() - 14);
+    fourteenDaysAgo.setHours(0, 0, 0, 0);
+
+    const dailyCheckinsRaw = await prisma.$queryRaw`
+      SELECT 
+        DATE("checkinDatetime") as date,
+        COUNT(*) as count
+      FROM "Checkin"
+      WHERE "checkinDatetime" >= ${fourteenDaysAgo}
+      GROUP BY DATE("checkinDatetime")
+      ORDER BY date ASC
+    `;
+
+    const dailyActiveMembers = await prisma.$queryRaw`
+      SELECT 
+        DATE(c."checkinDatetime") as date,
+        COUNT(DISTINCT c."memberId") as count
+      FROM "Checkin" c
+      WHERE c."checkinDatetime" >= ${fourteenDaysAgo}
+      GROUP BY DATE(c."checkinDatetime")
+      ORDER BY date ASC
+    `;
+
+    // Merge daily check-ins and active members data
+    const dailyActivityMap = new Map();
+    
+    // Create entries for all days in the range
+    for (let i = 0; i <= 14; i++) {
+      const date = new Date(fourteenDaysAgo);
+      date.setDate(date.getDate() + i);
+      const dateStr = date.toISOString().split('T')[0];
+      dailyActivityMap.set(dateStr, {
+        date: dateStr,
+        checkIns: 0,
+        activeMembersCount: 0
+      });
+    }
+
+    // Add check-ins data
+    dailyCheckinsRaw.forEach(r => {
+      const dateStr = new Date(r.date).toISOString().split('T')[0];
+      if (dailyActivityMap.has(dateStr)) {
+        const entry = dailyActivityMap.get(dateStr);
+        entry.checkIns = r.count;
+      }
+    });
+
+    // Add active members data
+    dailyActiveMembers.forEach(r => {
+      const dateStr = new Date(r.date).toISOString().split('T')[0];
+      if (dailyActivityMap.has(dateStr)) {
+        const entry = dailyActivityMap.get(dateStr);
+        entry.activeMembersCount = r.count;
+      }
+    });
+
+    const dailyActivity = Array.from(dailyActivityMap.values());
+    
     res.json({
       activeMembers,
       inactiveMembers,
@@ -194,7 +254,8 @@ router.get('/stats', authenticate, async (req, res) => {
       overdueMembers,
       newMembersThisMonth: newMembersCount,
       expiringSoon,
-      monthlyRevenue
+      monthlyRevenue,
+      dailyActivity
     });
   } catch (error) {
     console.error('Error fetching dashboard stats:', error);
