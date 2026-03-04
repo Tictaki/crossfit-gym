@@ -55,7 +55,18 @@ const getImageUrl = (path) => {
   if (path.startsWith('http://') || path.startsWith('https://')) {
     return path;
   }
-  return `${ROOT_URL}${path}`;
+  
+  // Normalize Windows paths if any
+  let normalizedPath = path.replace(/\\/g, '/');
+  
+  // If the path doesn't start with a slash and doesn't start with uploads/
+  // and is just a filename, it might need to be resolved properly.
+  // At the very least, ensure a valid URL is formed.
+  if (!normalizedPath.startsWith('/')) {
+    normalizedPath = '/' + normalizedPath;
+  }
+  
+  return `${ROOT_URL}${normalizedPath}`;
 };
 
 const api = axios.create({

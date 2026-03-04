@@ -67,7 +67,6 @@ const Header = ({ user, setSidebarOpen }) => {
                     src={getImageUrl(user.photo)} 
                     alt="Profile" 
                     className="w-full h-full object-cover" 
-                    crossOrigin="anonymous"
                     onError={(e) => {
                       // On error, show initials instead
                       e.target.style.display = 'none';
