@@ -1,12 +1,7 @@
 {
   "version": 2,
-  "framework": "nextjs",
-  "functions": {
-    "frontend/**": {
-      "runtime": "@vercel/node@2",
-      "memory": 1024
-    }
-  },
   "buildCommand": "cd frontend && npm run build",
-  "installCommand": "cd frontend && npm install --legacy-peer-deps"
+  "installCommand": "cd frontend && npm install --legacy-peer-deps",
+  "outputDirectory": "frontend/.next",
+  "framework": "nextjs"
 }
