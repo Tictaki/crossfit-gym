@@ -38,6 +38,9 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="pt">
+      <head>
+        <link rel="manifest" href="/manifest.json" crossOrigin="use-credentials" />
+      </head>
       <body className={`${inter.className} bg-black`}>
         <ThemeProvider>
           <ToastProvider>

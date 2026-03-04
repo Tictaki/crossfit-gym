@@ -17,11 +17,9 @@ async function handler(request, { params }) {
     'content-length',
     'transfer-encoding',
     'keep-alive',
-    'proxy-authenticate',
-    'proxy-authorization',
-    'te',
+    'te', // Keep-alive chunking
     'trailer',
-    'upgrade'
+    'upgrade',
   ];
 
   request.headers.forEach((value, key) => {
@@ -30,24 +28,28 @@ async function handler(request, { params }) {
     }
   });
 
-  let body;
+  const fetchOptions = {
+    method: request.method,
+    headers,
+    redirect: 'manual',
+  };
+
   if (!['GET', 'HEAD'].includes(request.method)) {
-    // For uploads and binary data, read as arrayBuffer
-    body = await request.arrayBuffer();
+    try {
+      // Use arrayBuffer for all body types to support file uploads (multer) and JSON
+      fetchOptions.body = await request.arrayBuffer();
+    } catch (e) {
+      console.warn('Failed to read request body', e);
+    }
   }
 
   try {
-    const response = await fetch(targetUrl, {
-      method: request.method,
-      headers,
-      body,
-      redirect: 'manual',
-    });
+    const response = await fetch(targetUrl, fetchOptions);
 
-    // Read response binary data
+    // Get response body
     const data = await response.arrayBuffer();
     
-    // Forward filtered headers from backend response
+    // Process response headers
     const responseHeaders = new Headers();
     response.headers.forEach((value, key) => {
       if (!restrictedHeaders.includes(key.toLowerCase())) {
