@@ -46,8 +46,9 @@ async function handler(request, { params }) {
   try {
     const response = await fetch(targetUrl, fetchOptions);
 
-    // Get response body
-    const data = await response.arrayBuffer();
+    // Get response content
+    const contentType = response.headers.get('content-type');
+    let data;
     
     // Process response headers
     const responseHeaders = new Headers();
@@ -56,21 +57,40 @@ async function handler(request, { params }) {
         responseHeaders.set(key, value);
       }
     });
-    
-    // Ensure CORS and basic security
-    responseHeaders.set('Access-Control-Allow-Origin', '*');
 
-    return new NextResponse(data, {
-      status: response.status,
-      headers: responseHeaders
-    });
+    // Handle JSON or Binary response
+    if (contentType?.includes('application/json')) {
+      data = await response.json();
+      
+      // If backend returned an error, relay it instead of a generic 502
+      if (!response.ok) {
+        console.error(`Backend error (${response.status}):`, data);
+        return NextResponse.json(data, { 
+          status: response.status,
+          headers: responseHeaders 
+        });
+      }
+      
+      return NextResponse.json(data, {
+        status: response.status,
+        headers: responseHeaders
+      });
+    } else {
+      // Binary data (PDFs, Images, etc)
+      const buffer = await response.arrayBuffer();
+      return new NextResponse(buffer, {
+        status: response.status,
+        headers: responseHeaders
+      });
+    }
   } catch (error) {
-    console.error('Proxy error:', error);
+    console.error('Proxy fetch failed:', error);
     return NextResponse.json({ 
-      error: 'Proxy request failed', 
+      error: 'Incapaz de contactar o servidor backend', 
       details: error.message,
-      target: targetUrl 
-    }, { status: 502 });
+      target: targetUrl,
+      timestamp: new Date().toISOString()
+    }, { status: 504 }); // 504 Gateway Timeout is often more accurate for unreachable backends
   }
 }
 

@@ -23,7 +23,6 @@ export const metadata = {
   icons: {
     icon: '/favicon.jpg',
   },
-  manifest: '/manifest.json',
 }
 
 export const viewport = {
