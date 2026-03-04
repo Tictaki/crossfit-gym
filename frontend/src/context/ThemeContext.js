@@ -6,11 +6,9 @@ const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-    // Check local storage or system preference on mount
+    // Check local storage or system preference on mount (only after hydration)
     const savedTheme = localStorage.getItem('theme');
     const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     
@@ -35,10 +33,6 @@ export const ThemeProvider = ({ children }) => {
       localStorage.setItem('theme', 'light');
     }
   };
-
-  if (!mounted) {
-    return children;
-  }
 
   return (
     <ThemeContext.Provider value={{ isDarkMode, toggleTheme }}>

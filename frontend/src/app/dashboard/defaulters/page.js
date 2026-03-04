@@ -98,20 +98,19 @@ export default function DefaultersPage() {
       {/* Defaulters Table */}
       <div className="card-glass p-0 overflow-hidden">
         <div className="p-6 pb-2 flex items-center justify-between mb-2">
-           <h3 className="text-xl font-bold text-dark-900 dark:text-white">Lista de Inadimplentes</h3>
-           <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-red-500/10 text-red-600 border border-red-500/20">{defaulters.length} pendentes</span>
+          <h3 className="text-xl font-bold text-dark-900 dark:text-white">Lista de Inadimplentes</h3>
+          <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-red-500/10 text-red-600 border border-red-500/20">{defaulters.length} pendentes</span>
         </div>
 
-        <div className="table-container border-none shadow-none bg-transparent">
-          {defaulters.length === 0 ? (
-            <div className="text-center py-16">
-              <div className="h-16 w-16 bg-green-500/10 text-green-600 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-green-500/20">
-                <CheckCircleIcon className="h-8 w-8" />
-              </div>
-              <h4 className="text-xl font-bold text-dark-900 dark:text-white">Sem dívidas pendentes!</h4>
-              <p className="text-dark-500 dark:text-dark-300 font-medium">Excelente! Atualmente não existem membros com planos expirados.</p>
+        {defaulters.length === 0 ? (
+          <div className="text-center py-16">
+            <div className="h-16 w-16 bg-green-500/10 text-green-600 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-green-500/20">
+              <CheckCircleIcon className="h-8 w-8" />
             </div>
-          ) : (
+            <h4 className="text-xl font-bold text-dark-900 dark:text-white">Sem dívidas pendentes!</h4>
+            <p className="text-dark-500 dark:text-dark-300 font-medium">Excelente! Atualmente não existem membros com planos expirados.</p>
+          </div>
+        ) : (
           <div className="table-container pt-4">
             <table className="table min-w-full table-responsive-cards">
               <thead className="bg-dark-900 dark:bg-black">
