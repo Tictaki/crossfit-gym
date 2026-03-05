@@ -99,6 +99,20 @@ export default function LoginPage() {
           <div className="bg-white/10 backdrop-blur-2xl rounded-3xl p-6 sm:p-10 border border-white/20 shadow-2xl">
             {/* Header */}
             <div className="mb-8 text-center">
+              {/* Mobile Logo */}
+              <div className="lg:hidden flex justify-center mb-6">
+                 <div className="relative group">
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary-500 to-red-500 rounded-2xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity" />
+                    <div className="relative h-20 w-20 bg-white/10 backdrop-blur-xl rounded-2xl p-4 border border-white/20 shadow-xl overflow-hidden">
+                      <img 
+                        src="/logo.png" 
+                        alt="Logo" 
+                        className="w-full h-full object-contain brightness-0 invert" 
+                      />
+                    </div>
+                 </div>
+              </div>
+
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-500/10 rounded-full border border-primary-500/20 mb-4">
                 <SparklesIcon className="h-4 w-4 text-primary-400" />
                 <span className="text-xs font-bold text-primary-300 uppercase tracking-wider">Acesso Seguro</span>

@@ -95,8 +95,12 @@ const Sidebar = ({ isOpen, setIsOpen, user }) => {
         <div className={`flex items-center h-[72px] px-4 border-b border-black/5 dark:border-white/10 overflow-hidden`}>
           <div className="flex items-center gap-3 min-w-0">
             {/* Icon mark - always visible */}
-            <div className="flex-shrink-0 h-10 w-10 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center shadow-lg shadow-primary-500/25">
-              <span className="text-white font-black text-base tracking-tight">CG</span>
+            <div className="flex-shrink-0 h-10 w-10 rounded-xl bg-white dark:bg-dark-800 flex items-center justify-center shadow-lg border border-black/5 dark:border-white/10 overflow-hidden group">
+              <img 
+                src="/logo.png" 
+                alt="Logo" 
+                className={`h-7 w-7 object-contain transition-transform duration-300 ${isExpanded ? 'scale-110' : 'scale-100'}`} 
+              />
             </div>
             {/* Full name - visible when expanded */}
             <div
