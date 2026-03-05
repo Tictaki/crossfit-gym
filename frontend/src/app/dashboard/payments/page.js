@@ -111,43 +111,43 @@ export default function PaymentsPage() {
       </div>
 
       {/* Stats Summary */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
         <div className="stat-card group !p-4 md:!p-6">
-          <div className="flex flex-col md:flex-row md:items-start justify-between gap-2">
+          <div className="flex md:items-start justify-between gap-2">
             <div>
               <p className="text-[10px] md:text-sm font-semibold text-dark-500 dark:text-dark-300 uppercase tracking-wider">Receita Hoje</p>
-              <h3 className="text-base md:text-2xl font-bold text-dark-900 dark:text-white mt-1">{formatCurrency(dailyStats?.total)}</h3>
+              <h3 className="text-lg md:text-2xl font-bold text-dark-900 dark:text-white mt-1">{formatCurrency(dailyStats?.total)}</h3>
               <p className="text-[10px] md:text-xs text-green-600 dark:text-green-400 font-bold mt-1">+{dailyStats?.count || 0} transaç.</p>
             </div>
-            <div className="stat-card-icon h-10 w-10 md:h-12 md:w-12 !p-2 md:!p-3">
+            <div className="stat-card-icon h-10 w-10 md:h-12 md:w-12 !p-2 md:!p-3 shrink-0">
               <BanknotesIcon className="h-5 w-5 md:h-6 md:w-6" />
             </div>
           </div>
         </div>
 
         <div className="stat-card group !p-4 md:!p-6">
-          <div className="flex flex-col md:flex-row md:items-start justify-between gap-2">
+          <div className="flex md:items-start justify-between gap-2">
             <div>
               <p className="text-[10px] md:text-sm font-semibold text-dark-500 dark:text-dark-300 uppercase tracking-wider">Mês Actual</p>
-              <h3 className="text-base md:text-2xl font-bold text-dark-900 dark:text-white mt-1">{formatCurrency(monthlyStats?.total)}</h3>
+              <h3 className="text-lg md:text-2xl font-bold text-dark-900 dark:text-white mt-1">{formatCurrency(monthlyStats?.total)}</h3>
               <p className="text-[10px] md:text-xs text-dark-400 dark:text-dark-300 mt-1">{monthlyStats?.count || 0} transaç.</p>
             </div>
-            <div className="stat-card-icon h-10 w-10 md:h-12 md:w-12 !p-2 md:!p-3 bg-blue-500 shadow-blue-500/30">
+            <div className="stat-card-icon h-10 w-10 md:h-12 md:w-12 !p-2 md:!p-3 bg-blue-500 shadow-blue-500/30 shrink-0">
               <CurrencyDollarIcon className="h-5 w-5 md:h-6 md:w-6" />
             </div>
           </div>
         </div>
 
-        <div className="stat-card group !p-4 md:!p-6 col-span-2 lg:col-span-1">
-          <div className="flex flex-col md:flex-row md:items-start justify-between gap-2">
+        <div className="stat-card group !p-4 md:!p-6 col-span-1 sm:col-span-2 lg:col-span-1">
+          <div className="flex md:items-start justify-between gap-2">
             <div>
               <p className="text-[10px] md:text-sm font-semibold text-dark-500 dark:text-dark-300 uppercase tracking-wider">Ticket Médio</p>
-              <h3 className="text-base md:text-2xl font-bold text-dark-900 dark:text-white mt-1">
+              <h3 className="text-lg md:text-2xl font-bold text-dark-900 dark:text-white mt-1">
                 {formatCurrency(monthlyStats?.total / Math.max(1, monthlyStats?.count))}
               </h3>
               <p className="text-[10px] md:text-xs text-dark-400 dark:text-dark-300 mt-1">Média mensal</p>
             </div>
-            <div className="stat-card-icon h-10 w-10 md:h-12 md:w-12 !p-2 md:!p-3 bg-purple-500 shadow-purple-500/30">
+            <div className="stat-card-icon h-10 w-10 md:h-12 md:w-12 !p-2 md:!p-3 bg-purple-500 shadow-purple-500/30 shrink-0">
               <CreditCardIcon className="h-5 w-5 md:h-6 md:w-6" />
             </div>
           </div>
@@ -156,19 +156,19 @@ export default function PaymentsPage() {
 
       {/* Filters */}
       <div className="card-glass !p-4 md:!p-6 relative z-30">
-        <div className="flex flex-col lg:flex-row gap-4">
+        <div className="flex flex-col xl:flex-row gap-4">
           <div className="flex-1 relative group">
             <MagnifyingGlassIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-dark-300 group-focus-within:text-primary-500 transition-colors" />
             <input 
               type="text" 
-              placeholder="Pesquisar..." 
-              className="input pl-11 bg-white/50 dark:bg-dark-800/50 text-sm h-11 rounded-2xl border-none"
+              placeholder="Pesquisar por membro..." 
+              className="input pl-11 bg-white/50 dark:bg-dark-800/50 text-sm h-11 rounded-2xl border-none focus:ring-2 focus:ring-primary-500/30"
               value={memberId}
               onChange={(e) => setMemberId(e.target.value)}
             />
           </div>
           
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 flex-[2]">
             <div className="relative">
               <CalendarIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-dark-300 pointer-events-none" />
               <input 
@@ -242,16 +242,16 @@ export default function PaymentsPage() {
                 setEndDate('');
                 setPaymentMethod('');
               }}
-              className="btn-secondary !p-0 h-11 flex items-center justify-center rounded-2xl border-none bg-dark-500/10 text-dark-600 dark:text-dark-300 active:scale-95 group"
+              className="btn-secondary !p-0 h-11 flex items-center justify-center rounded-2xl border-none bg-dark-500/10 text-dark-600 dark:text-dark-300 active:scale-95 group sm:col-span-2 lg:col-span-1"
             >
-              <span className="text-xs font-bold group-hover:scale-110 transition-transform">Limpar</span>
+              <span className="text-xs font-bold group-hover:scale-110 transition-transform">Limpar Filtros</span>
             </button>
           </div>
         </div>
       </div>
 
       {/* Transactions Table */}
-      <div className="card-glass p-0 overflow-hidden relative">
+      <div className="card-glass p-0 overflow-hidden relative border-none sm:border-solid">
         <div className="absolute inset-0 bg-white/5 dark:bg-dark-900/5 pointer-events-none" />
         {loading ? (
           <div className="flex items-center justify-center h-64">
@@ -273,7 +273,7 @@ export default function PaymentsPage() {
               <tbody className="divide-y divide-white/10 dark:divide-dark-800/50">
                 {payments.length === 0 ? (
                   <tr>
-                    <td colSpan="6" className="text-center py-12 text-gray-500 dark:text-dark-300 dark:text-dark-300">
+                    <td colSpan="6" className="text-center py-12 text-gray-500 dark:text-dark-300">
                       Nenhum pagamento encontrado para os filtros selecionados
                     </td>
                   </tr>
@@ -281,27 +281,32 @@ export default function PaymentsPage() {
                   payments.map((payment) => (
                     <tr key={payment.id} className="group hover:bg-white/40 dark:hover:bg-dark-700/30 transition-all duration-300">
                       <td className="px-6 py-4" data-label="Membro">
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-1">
-                          <p className="font-bold text-dark-900 dark:text-white leading-tight">{payment.member?.name}</p>
-                          <span className="text-[10px] text-dark-400 font-bold uppercase tracking-tighter bg-secondary-100 dark:bg-dark-800 px-1.5 py-0.5 rounded-md w-fit">{payment.member?.phone}</span>
+                        <div className="flex items-center gap-3">
+                          <div className="flex flex-col">
+                            <p className="font-bold text-dark-900 dark:text-white leading-tight">{payment.member?.name}</p>
+                            <span className="text-[10px] text-dark-400 font-bold uppercase tracking-tighter bg-secondary-100 dark:bg-dark-800 px-1.5 py-0.5 rounded-md w-fit mt-0.5">{payment.member?.phone}</span>
+                          </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-dark-700 dark:text-dark-300" data-label="Plano">
-                        <span className="text-xs font-bold px-2 py-1 bg-primary-500/5 text-primary-600 rounded-lg">{payment.plan?.name}</span>
+                      <td className="px-6 py-4" data-label="Plano">
+                        <span className="text-xs font-bold px-2 py-1 bg-primary-500/10 text-primary-600 dark:text-primary-400 rounded-lg">{payment.plan?.name}</span>
                       </td>
-                      <td className="px-6 py-4 text-right font-bold text-dark-900 dark:text-white" data-label="Valor">
-                        <span className="text-sm md:text-base">{formatCurrency(payment.amount)}</span>
+                      <td className="px-6 py-4 text-right" data-label="Valor">
+                        <span className="text-sm md:text-base font-bold text-dark-900 dark:text-white">{formatCurrency(payment.amount)}</span>
                       </td>
                       <td className="px-6 py-4 text-dark-600 dark:text-dark-200" data-label="Data">
-                        <span className="text-[10px] md:text-xs font-medium">{format(new Date(payment.paymentDate), 'dd/MM/yyyy HH:mm', { locale: pt })}</span>
+                        <div className="flex flex-col items-end sm:items-start">
+                          <span className="text-xs font-bold">{format(new Date(payment.paymentDate), 'dd/MM/yyyy', { locale: pt })}</span>
+                          <span className="text-[10px] opacity-60 uppercase">{format(new Date(payment.paymentDate), 'HH:mm', { locale: pt })}</span>
+                        </div>
                       </td>
                       <td className="px-6 py-4" data-label="Método">
-                        <span className="text-[10px] px-2.5 py-1 bg-white/50 dark:bg-dark-800/50 text-dark-600 dark:text-dark-200 rounded-lg font-bold border border-white/40 dark:border-dark-700/50 uppercase tracking-tighter">
+                        <span className="text-[10px] px-2.5 py-1 bg-white/50 dark:bg-dark-800/50 text-dark-600 dark:text-dark-200 rounded-lg font-bold border border-white/40 dark:border-dark-700/50 uppercase tracking-tighter shrink-0">
                           {payment.paymentMethod}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-center" data-label="Ações">
-                        <div className="flex items-center justify-center gap-3 sm:gap-2">
+                        <div className="flex items-center justify-center gap-4 sm:gap-2">
                           <button
                             onClick={() => {
                               const token = localStorage.getItem('token');
@@ -310,14 +315,14 @@ export default function PaymentsPage() {
                               const phone = (payment.member?.phone || '').replace(/[^0-9]/g, '');
                               window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
                             }}
-                            className="p-3 sm:p-2 bg-green-500/10 text-green-600 hover:bg-green-500 hover:text-white rounded-2xl transition-all shadow-sm active:scale-90"
+                            className="flex items-center justify-center p-3 sm:p-2 bg-green-500 text-white rounded-2xl sm:bg-green-500/10 sm:text-green-600 sm:hover:bg-green-500 sm:hover:text-white transition-all shadow-md sm:shadow-sm active:scale-90"
                             title="Partilhar WhatsApp"
                           >
                             <ShareIcon className="h-6 w-6 sm:h-5 sm:w-5" />
                           </button>
                           <button 
                             onClick={() => handleDownloadReceipt(payment)}
-                            className="p-3 sm:p-2 bg-primary-500/10 text-primary-600 hover:bg-primary-500 hover:text-white rounded-2xl transition-all shadow-sm active:scale-90"
+                            className="flex items-center justify-center p-3 sm:p-2 bg-primary-500 text-white rounded-2xl sm:bg-primary-500/10 sm:text-primary-600 sm:hover:bg-primary-500 sm:hover:text-white transition-all shadow-md sm:shadow-sm active:scale-90"
                             title="Ver Fatura"
                           >
                             <EyeIcon className="h-6 w-6 sm:h-5 sm:w-5" />

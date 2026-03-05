@@ -47,7 +47,7 @@ export default function BottomNav({ user }) {
               <Link
                 key={item.name}
                 href={item.href}
-                className="relative -top-6 flex flex-col items-center"
+                className="relative -top-8 flex flex-col items-center"
               >
                 <div className="h-14 w-14 rounded-full bg-gradient-primary shadow-glow flex items-center justify-center text-white transform hover:scale-110 active:scale-95 transition-all duration-300">
                   <item.icon className="h-8 w-8" />

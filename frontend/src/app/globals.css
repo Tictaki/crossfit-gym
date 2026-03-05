@@ -184,16 +184,20 @@
     }
 
     .table-responsive-cards tbody tr {
-      @apply block mb-4 glass-strong p-4 hover:bg-white/60 dark:hover:bg-dark-800/60 transition-all;
+      @apply block mb-4 glass-strong p-4 hover:bg-white/60 dark:hover:bg-dark-800/60 transition-all border border-white/20 dark:border-white/10 rounded-3xl mt-2 mx-2;
     }
 
     .table-responsive-cards tbody td {
-      @apply flex justify-between items-center py-2 px-0 border-b border-white/20 dark:border-white/10 last:border-0 text-right whitespace-normal;
+      @apply flex justify-between items-center py-3 px-0 border-b border-white/10 dark:border-white/5 last:border-0 text-right whitespace-normal;
     }
 
     .table-responsive-cards tbody td::before {
       content: attr(data-label);
-      @apply font-bold text-dark-400 dark:text-dark-300 text-[10px] uppercase tracking-wider mr-4 text-left;
+      @apply font-bold text-dark-400 dark:text-dark-300 text-[9px] uppercase tracking-wider mr-4 text-left;
+    }
+    
+    .table-responsive-cards tbody td[data-label="Ações"] {
+      @apply pt-4 mt-2 justify-center border-t border-white/20 dark:border-white/10;
     }
   }
 

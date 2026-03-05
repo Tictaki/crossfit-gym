@@ -260,10 +260,10 @@ export default function ProductsPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex bg-white/20 dark:bg-dark-800/30 p-1.5 rounded-2xl w-fit border border-white/20 dark:border-dark-700/50 backdrop-blur-md">
+      <div className="flex bg-white/20 dark:bg-dark-800/30 p-1 rounded-2xl w-full sm:w-fit border border-white/20 dark:border-dark-700/50 backdrop-blur-md overflow-x-auto no-scrollbar">
         <button
           onClick={() => setActiveTab('inventory')}
-          className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${
+          className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 whitespace-nowrap ${
             activeTab === 'inventory' 
               ? 'bg-gradient-primary text-white shadow-lg' 
               : 'text-dark-600 dark:text-dark-200 hover:text-primary-500'
@@ -274,7 +274,7 @@ export default function ProductsPage() {
         </button>
         <button
           onClick={() => setActiveTab('sales')}
-          className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${
+          className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 sm:px-6 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 whitespace-nowrap ${
             activeTab === 'sales' 
               ? 'bg-gradient-primary text-white shadow-lg' 
               : 'text-dark-600 dark:text-dark-200 hover:text-primary-500'
@@ -290,12 +290,12 @@ export default function ProductsPage() {
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
         </div>
       ) : activeTab === 'inventory' ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {products
             .filter(p => p.name.toLowerCase().includes(deferredSearch.toLowerCase()))
             .map((product) => (
-            <div key={product.id} className="card-glass group overflow-hidden border-none shadow-premium hover:shadow-glow-sm transition-all duration-500 hover:-translate-y-1">
-              <div className="p-6">
+            <div key={product.id} className="card-glass group overflow-hidden border-none shadow-premium hover:shadow-glow-sm transition-all duration-500 hover:-translate-y-1 !p-3 sm:!p-6">
+              <div className="relative">
                   <div className="aspect-square w-full bg-gray-100 dark:bg-dark-900 flex items-center justify-center overflow-hidden rounded-2xl mb-4 relative shadow-inner">
                     {product.photo ? (
                       <img 
@@ -309,75 +309,76 @@ export default function ProductsPage() {
                       />
                     ) : (
                       <div className="flex flex-col items-center gap-2">
-                        <ShoppingBagIcon className="h-10 w-10 text-dark-300 dark:text-dark-700" />
+                        <ShoppingBagIcon className="h-12 w-12 text-dark-300 dark:text-dark-700" />
                       </div>
                     )}
                     <div className="absolute top-3 left-3 p-2 bg-white/90 dark:bg-dark-800/90 backdrop-blur-md rounded-xl shadow-sm border border-white/20">
                       <ShoppingBagIcon className="h-4 w-4 text-primary-500" />
                     </div>
+                    
+                    {userRole === 'ADMIN' && (
+                      <div className="absolute top-3 right-3 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button onClick={(e) => { e.stopPropagation(); handleOpenModal(product); }} className="p-2.5 bg-white/90 dark:bg-dark-800/90 backdrop-blur-md rounded-xl text-blue-500 shadow-lg border border-white/20 active:scale-90 transition-all">
+                          <PencilSquareIcon className="h-5 w-5" />
+                        </button>
+                        <button onClick={(e) => { e.stopPropagation(); handleDelete(product.id); }} className="p-2.5 bg-white/90 dark:bg-dark-800/90 backdrop-blur-md rounded-xl text-red-500 shadow-lg border border-white/20 active:scale-90 transition-all">
+                          <TrashIcon className="h-5 w-5" />
+                        </button>
+                      </div>
+                    )}
                   </div>
-                  {userRole === 'ADMIN' && (
-                    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button onClick={() => handleOpenModal(product)} className="p-2 bg-white/50 dark:bg-dark-800/50 hover:bg-white dark:hover:bg-dark-800 rounded-xl text-blue-500 transition-colors">
-                        <PencilSquareIcon className="h-5 w-5" />
-                      </button>
-                      <button onClick={() => handleDelete(product.id)} className="p-2 bg-white/50 dark:bg-dark-800/50 hover:bg-white dark:hover:bg-dark-800 rounded-xl text-red-500 transition-colors">
-                        <TrashIcon className="h-5 w-5" />
-                      </button>
-                    </div>
-                  )}
 
-                  <h3 className="text-xl font-bold text-dark-900 dark:text-white mb-1">{product.name}</h3>
-                  <p className="text-sm text-gray-500 dark:text-dark-300 mb-4 line-clamp-2 h-10">{product.description || 'Sem descrição'}</p>
+                  <div className="space-y-1 mb-4">
+                    <h3 className="text-lg sm:text-xl font-bold text-dark-900 dark:text-white line-clamp-1">{product.name}</h3>
+                    <p className="text-xs text-gray-500 dark:text-dark-300 line-clamp-2 h-8 leading-relaxed">{product.description || 'Sem descrição detalhada'}</p>
+                  </div>
                   
-                  <div className="flex justify-between items-end">
+                  <div className="flex justify-between items-end bg-dark-50/50 dark:bg-dark-800/30 p-3 rounded-2xl border border-white/10">
                     <div>
-                      <p className="text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest mb-1">Preço</p>
-                      <p className="text-2xl font-black text-primary-600 dark:text-primary-400">{formatCurrency(product.price)}</p>
+                      <p className="text-[9px] font-bold text-dark-400 dark:text-dark-400 uppercase tracking-widest mb-0.5">Preço</p>
+                      <p className="text-lg sm:text-xl font-black text-primary-600 dark:text-primary-400 leading-none">{formatCurrency(product.price)}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest mb-1">Stock</p>
-                      <p className={`text-lg font-bold ${product.stock <= 5 ? 'text-red-500' : 'text-green-500'}`}>{product.stock}</p>
+                      <p className="text-[9px] font-bold text-dark-400 dark:text-dark-400 uppercase tracking-widest mb-0.5">Stock</p>
+                      <p className={`text-base sm:text-lg font-bold leading-none ${product.stock <= 5 ? 'text-red-500' : 'text-green-500'}`}>{product.stock}</p>
                     </div>
                   </div>
 
-                  <div className="mt-6 pt-6 border-t border-white/20 dark:border-dark-700/50">
+                  <div className="mt-4">
                     <button 
                       onClick={() => handleOpenSaleModal(product)}
                       disabled={product.stock <= 0}
-                      className="w-full py-3 bg-dark-950 dark:bg-white dark:text-dark-950 text-white rounded-xl font-bold uppercase tracking-widest text-xs hover:scale-[1.02] active:scale-95 transition-all shadow-lg disabled:opacity-50 disabled:scale-100 flex items-center justify-center gap-2"
+                      className={`w-full py-3.5 rounded-xl font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg ${
+                        product.stock <= 0 
+                          ? 'bg-gray-100 dark:bg-dark-800 text-dark-400 cursor-not-allowed' 
+                          : 'bg-dark-950 dark:bg-white dark:text-dark-950 text-white hover:shadow-glow-sm'
+                      }`}
                     >
                       <BanknotesIcon className="h-4 w-4" />
-                      Registar Venda
+                      {product.stock <= 0 ? 'Sem Stock' : 'Vender agora'}
                     </button>
                   </div>
                 </div>
               </div>
             ))}
           
-          {products.length === 0 && (
+          {products.filter(p => p.name.toLowerCase().includes(deferredSearch.toLowerCase())).length === 0 && (
             <div className="col-span-full py-20 text-center card-glass">
-              <ArchiveBoxIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500 dark:text-dark-300 font-medium">Nenhum produto registado</p>
-              <button 
-                onClick={() => handleOpenModal()} 
-                className="mt-4 px-6 py-2 bg-primary-500 text-white rounded-xl font-bold hover:bg-primary-600 transition-colors"
-              >
-                Adicionar Primeiro Produto
-              </button>
+              <ArchiveBoxIcon className="h-12 w-12 text-dark-200 dark:text-dark-800 mx-auto mb-4" />
+              <p className="text-gray-500 dark:text-dark-300 font-medium italic">Nenhum produto corresponde à sua pesquisa</p>
             </div>
           )}
         </div>
       ) : (
         <div className="card-glass p-0 overflow-hidden border-none shadow-premium">
-          <div className="overflow-x-auto">
-            <div className="table-container pt-4">
-            <table className="table min-w-full table-responsive-cards">
-              <thead className="bg-dark-900 border-b border-white/10">
+          <div className="overflow-x-auto relative z-10">
+            <div className="table-container">
+            <table className="table min-w-full table-responsive-cards mt-0">
+              <thead className="bg-dark-900 border-b border-white/10 hidden sm:table-header-group">
                 <tr>
                   <th className="px-6 py-4 text-left text-xs font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Data</th>
                   <th className="px-6 py-4 text-left text-xs font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Produto</th>
-                  <th className="px-6 py-4 text-center text-xs font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Quantidade</th>
+                  <th className="px-6 py-4 text-center text-xs font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Qtd</th>
                   <th className="px-6 py-4 text-center text-xs font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Total</th>
                   <th className="px-6 py-4 text-right text-xs font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Método</th>
                 </tr>
@@ -388,34 +389,34 @@ export default function ProductsPage() {
                   .map((sale) => (
                     <tr key={sale.id} className="hover:bg-white/20 dark:hover:bg-dark-800/10 transition-colors group">
                       <td className="px-6 py-5" data-label="Data">
-                        <div className="flex flex-col">
+                        <div className="flex flex-col sm:items-start items-end">
                           <span className="text-xs font-bold text-dark-900 dark:text-white">{dateFormatter.format(new Date(sale.saleDate))}</span>
-                          <span className="text-[10px] text-dark-400">{timeFormatter.format(new Date(sale.saleDate))}</span>
+                          <span className="text-[10px] text-dark-400 opacity-70 uppercase">{timeFormatter.format(new Date(sale.saleDate))}</span>
                         </div>
                       </td>
                       <td className="px-6 py-5" data-label="Produto">
                         <div className="flex items-center">
-                          <div className="h-10 w-10 rounded-2xl bg-gray-100 dark:bg-dark-800 flex items-center justify-center overflow-hidden mr-3 shadow-sm border border-white/20">
+                          <div className="h-10 w-10 rounded-xl bg-gray-100 dark:bg-dark-800 flex items-center justify-center overflow-hidden mr-3 shadow-sm border border-white/20 shrink-0">
                             {sale.product?.photo ? (
                               <img src={getImageUrl(sale.product.photo)} alt="" className="w-full h-full object-cover" />
                             ) : (
-                              <span className="text-primary-500 font-black text-xs">{sale.product?.name?.charAt(0)}</span>
+                              <ShoppingBagIcon className="h-5 w-5 text-dark-300" />
                             ) }
                           </div>
-                          <div>
-                            <p className="font-bold text-dark-900 dark:text-white leading-tight">{sale.product?.name}</p>
-                            <p className="text-[10px] text-dark-400 font-bold uppercase tracking-widest">Vendido por: {sale.seller?.name}</p>
+                          <div className="text-left">
+                            <p className="font-bold text-dark-900 dark:text-white leading-tight truncate max-w-[120px] sm:max-w-none">{sale.product?.name}</p>
+                            <p className="text-[9px] text-dark-400 font-bold uppercase tracking-widest mt-0.5">Por: {sale.seller?.name?.split(' ')[0]}</p>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-5 text-center font-bold text-dark-900 dark:text-white" data-label="Quantidade">
-                        {sale.quantity} un.
+                      <td className="px-6 py-5 text-center" data-label="Quantidade">
+                        <span className="text-xs font-bold text-dark-700 dark:text-dark-200">{sale.quantity} un.</span>
                       </td>
-                      <td className="px-6 py-5 text-center font-black text-primary-600 dark:text-primary-400" data-label="Total">
-                        {formatCurrency(sale.totalAmount)}
+                      <td className="px-6 py-5 text-center" data-label="Total">
+                        <span className="text-sm font-black text-primary-600 dark:text-primary-400">{formatCurrency(sale.totalAmount)}</span>
                       </td>
                       <td className="px-6 py-5 text-right" data-label="Método">
-                        <span className="px-3 py-1 bg-dark-100 dark:bg-dark-800 rounded-xl text-[10px] font-black uppercase tracking-widest text-dark-600 dark:text-dark-300">
+                        <span className="px-2.5 py-1 bg-white/50 dark:bg-dark-800/50 border border-white/20 dark:border-dark-700 rounded-lg text-[9px] font-black uppercase tracking-widest text-dark-600 dark:text-dark-300">
                           {sale.paymentMethod}
                         </span>
                       </td>
@@ -424,8 +425,7 @@ export default function ProductsPage() {
                 
                 {sales.filter(s => s.product?.name?.toLowerCase().includes(deferredSearch.toLowerCase())).length === 0 && (
                   <tr>
-                    <td colSpan="5" className="px-6 py-20 text-center text-gray-400 font-medium">
-                      <TicketIcon className="h-10 w-10 mx-auto mb-2 opacity-20" />
+                    <td colSpan="5" className="px-6 py-20 text-center text-gray-400 font-medium italic">
                       Nenhum registo de venda encontrado
                     </td>
                   </tr>

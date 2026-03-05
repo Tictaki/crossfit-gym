@@ -77,25 +77,25 @@ export default function MembersPage() {
         </Link>
       </div>
 
-      <div className="card-glass p-2 md:p-4">
+      <div className="card-glass p-3 md:p-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
           <div className="relative group">
             <MagnifyingGlassIcon className="h-5 w-5 absolute left-4 top-1/2 transform -translate-y-1/2 text-dark-400 dark:text-dark-300 group-focus-within:text-primary-500 transition-colors" />
             <input
               type="text"
-              placeholder="Buscar..."
+              placeholder="Pesquisar por nome..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="input pl-11 text-sm h-11 bg-white/50 dark:bg-dark-800/50 border-none rounded-2xl"
+              className="input pl-11 text-sm h-11 bg-white/50 dark:bg-dark-800/50 border-none rounded-2xl focus:ring-2 focus:ring-primary-500/30"
             />
           </div>
           <div className="relative group">
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
-              className="input text-sm h-11 bg-white/50 dark:bg-dark-800/50 border-none appearance-none cursor-pointer rounded-2xl"
+              className="input text-sm h-11 bg-white/50 dark:bg-dark-800/50 border-none appearance-none cursor-pointer rounded-2xl pr-10"
             >
-              <option value="">Todos os Status</option>
+              <option value="">Status: Todos</option>
               <option value="ACTIVE">Ativos</option>
               <option value="INACTIVE">Inativos</option>
               <option value="SUSPENDED">Suspensos</option>
@@ -110,7 +110,7 @@ export default function MembersPage() {
       </div>
 
       {/* Members Table */}
-      <div className="card-glass p-0 overflow-hidden">
+      <div className="card-glass p-0 overflow-hidden border-none sm:border-solid">
         {loading ? (
           <div className="flex items-center justify-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
@@ -153,16 +153,16 @@ export default function MembersPage() {
             <table className="table min-w-full table-responsive-cards">
               <thead className="bg-dark-900 dark:bg-black">
                 <tr>
-                  <th className="text-white py-5 pl-8 rounded-tl-3xl">Membro</th>
+                  <th className="text-white py-5 pl-8">Membro</th>
                   <th className="text-white py-5">Contatos</th>
                   <th className="text-white py-5">Plano & Vencimento</th>
                   <th className="text-white py-5">Status</th>
-                  <th className="text-white py-5 pr-8 text-right rounded-tr-3xl">Ações</th>
+                  <th className="text-white py-5 pr-8 text-right">Ações</th>
                 </tr>
               </thead>
               <tbody>
                 {members.map((member) => (
-                  <tr key={member.id} className="hover:bg-white/20 dark:hover:bg-dark-800/10 transition-colors">
+                  <tr key={member.id} className="group hover:bg-white/20 dark:hover:bg-dark-800/10 transition-colors">
                     <td className="py-4 pl-8" data-label="Membro">
                       <div className="flex items-center gap-3">
                         <div className="h-11 w-11 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-bold text-sm shadow-premium flex-shrink-0 border-2 border-white dark:border-dark-700 overflow-hidden relative group-hover:scale-105 transition-transform duration-300">
@@ -186,8 +186,10 @@ export default function MembersPage() {
                       </div>
                     </td>
                     <td className="py-4" data-label="Contatos">
-                      <p className="text-sm font-bold text-dark-700 dark:text-dark-200">{member.phone}</p>
-                      <p className="text-[10px] text-dark-400 dark:text-dark-400">{member.email || 'Sem email'}</p>
+                      <div className="flex flex-col">
+                        <p className="text-sm font-bold text-dark-700 dark:text-dark-200">{member.phone}</p>
+                        <p className="text-[10px] text-dark-400 dark:text-dark-400 truncate max-w-[150px]">{member.email || 'Sem email'}</p>
+                      </div>
                     </td>
                     <td className="py-4" data-label="Plano & Vencimento">
                       <div className="flex flex-col">
@@ -198,15 +200,15 @@ export default function MembersPage() {
                       </div>
                     </td>
                     <td className="py-4" data-label="Status">{getStatusBadge(member.status)}</td>
-                    <td className="py-4 pr-8 text-right flex-actions" data-label="Ações">
-                      <div className="flex items-center justify-end gap-2 sm:gap-1">
+                    <td className="py-4 pr-8 text-right" data-label="Ações">
+                      <div className="flex items-center justify-center sm:justify-end gap-3 sm:gap-1">
                         <button
                           onClick={() => {
                             const message = `Olá *${member.name}*! 💪\n\nAqui é da *Crosstraining Gym*. Gostaríamos de entrar em contacto.`;
                             const phone = member.phone.replace(/[^0-9]/g, '');
                             window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
                           }}
-                          className="p-3 sm:p-2 rounded-2xl bg-green-500/10 text-green-600 hover:bg-green-500 hover:text-white transition-all shadow-sm active:scale-90"
+                          className="flex items-center justify-center p-3 sm:p-2 rounded-2xl bg-green-500 text-white sm:bg-green-500/10 sm:text-green-600 sm:hover:bg-green-500 sm:hover:text-white transition-all shadow-md sm:shadow-sm active:scale-90"
                           title="WhatsApp"
                         >
                           <svg className="h-6 w-6 sm:h-5 sm:w-5" fill="currentColor" viewBox="0 0 24 24">
@@ -215,14 +217,14 @@ export default function MembersPage() {
                         </button>
                         <Link 
                           href={`/dashboard/members/${member.id}`}
-                          className="p-3 sm:p-2 rounded-2xl bg-primary-500/10 text-primary-600 hover:bg-primary-500 hover:text-white transition-all shadow-sm active:scale-90"
+                          className="flex items-center justify-center p-3 sm:p-2 rounded-2xl bg-primary-500 text-white sm:bg-primary-500/10 sm:text-primary-600 sm:hover:bg-primary-500 sm:hover:text-white transition-all shadow-md sm:shadow-sm active:scale-90"
                           title="Ver Detalhes"
                         >
                           <EyeIcon className="h-6 w-6 sm:h-5 sm:w-5" />
                         </Link>
                         <Link 
                           href={`/dashboard/members/${member.id}/edit`}
-                          className="p-3 sm:p-2 rounded-2xl bg-dark-500/10 text-dark-600 dark:text-dark-400 dark:hover:bg-dark-700 hover:bg-dark-600 hover:text-white transition-all shadow-sm active:scale-90"
+                          className="flex items-center justify-center p-3 sm:p-2 rounded-2xl bg-dark-600 text-white sm:bg-dark-500/10 sm:text-dark-600 dark:sm:text-dark-400 dark:sm:hover:bg-dark-700 sm:hover:bg-dark-600 sm:hover:text-white transition-all shadow-md sm:shadow-sm active:scale-90"
                           title="Editar"
                         >
                           <PencilSquareIcon className="h-6 w-6 sm:h-5 sm:w-5" />
