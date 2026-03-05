@@ -5,7 +5,7 @@
     "buildCommand": "npm install && npx prisma generate"
   },
   "deploy": {
-    "startCommand": "npx prisma migrate resolve --applied 20260213073818_init 2>/dev/null || true && npx prisma migrate deploy && npm start",
+    "startCommand": "for m in 20260213073818_init 20260213092020_add_payment_methods 20260214061957_add_user_photo 20260215_add_invoice_and_audit 20260216134726_add_product_management 20260216190723_change_expense_category_to_string; do npx prisma migrate resolve --applied $m 2>/dev/null || true; done && npx prisma migrate deploy && npm start",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 5
   }
