@@ -74,9 +74,13 @@ export default function DashboardPage() {
             <div>
               <p className="text-[10px] md:text-xs text-dark-400 dark:text-dark-300 font-medium">Membros Ativos</p>
               <p className="text-2xl md:text-3xl font-bold text-dark-900 dark:text-white mt-1">{stats?.totalMembers || 0}</p>
-              <div className="flex items-center mt-1 md:mt-2 text-green-600 text-[9px] md:text-sm font-bold bg-green-50 dark:bg-green-900/30 px-2 py-0.5 md:py-1 rounded-full w-fit">
-                <ArrowTrendingUpIcon className="h-3 w-3 mr-1" />
-                <span>+2.4%</span>
+              <div className={`flex items-center mt-1 md:mt-2 text-[9px] md:text-sm font-bold px-2 py-0.5 md:py-1 rounded-full w-fit ${
+                stats?.membersTrend >= 0 
+                ? 'text-green-600 bg-green-50 dark:bg-green-900/30' 
+                : 'text-red-600 bg-red-50 dark:bg-red-900/30'
+              }`}>
+                {stats?.membersTrend >= 0 ? <ArrowTrendingUpIcon className="h-3 w-3 mr-1" /> : <ArrowTrendingDownIcon className="h-3 w-3 mr-1" />}
+                <span>{stats?.membersTrend > 0 ? `+${stats.membersTrend}%` : `${stats?.membersTrend || 0}%`}</span>
               </div>
             </div>
             <div className="stat-card-icon from-blue-500 to-blue-600 shadow-blue-500/30 h-10 w-10 md:h-12 md:w-12 !p-2 md:!p-3">
@@ -98,6 +102,17 @@ export default function DashboardPage() {
             <div className="stat-card-icon from-green-500 to-green-600 shadow-green-500/30 h-10 w-10 md:h-12 md:w-12 !p-2 md:!p-3">
               <BanknotesIcon className="h-5 w-5 md:h-6 md:w-6 text-white" />
             </div>
+          </div>
+          <div className="mt-4 flex items-center justify-between">
+            <div className={`flex items-center text-[9px] md:text-xs font-bold px-2 py-0.5 rounded-full ${
+              stats?.revenueTrend >= 0 
+              ? 'text-green-600 bg-green-50 dark:bg-green-900/30' 
+              : 'text-red-600 bg-red-50 dark:bg-red-900/30'
+            }`}>
+              {stats?.revenueTrend >= 0 ? <ArrowTrendingUpIcon className="h-2 w-2 mr-1" /> : <ArrowTrendingDownIcon className="h-2 w-2 mr-1" />}
+              {stats?.revenueTrend > 0 ? `+${stats.revenueTrend}%` : `${stats?.revenueTrend || 0}%`}
+            </div>
+            <p className="text-[9px] md:text-xs text-dark-400 dark:text-dark-300">vs Mês Anterior</p>
           </div>
         </div>
 
@@ -126,9 +141,13 @@ export default function DashboardPage() {
             <div>
               <p className="text-[10px] md:text-xs text-dark-400 dark:text-dark-300 font-medium">Novos Membros</p>
               <p className="text-2xl md:text-3xl font-bold text-dark-900 dark:text-white mt-1">{stats?.newMembersThisMonth || 0}</p>
-              <div className="flex items-center mt-1 md:mt-2 text-green-600 text-[9px] md:text-sm font-bold bg-green-50 dark:bg-green-900/30 px-2 py-0.5 md:py-1 rounded-full w-fit">
-                <ArrowTrendingUpIcon className="h-3 w-3 mr-1" />
-                <span>+12%</span>
+              <div className={`flex items-center mt-1 md:mt-2 text-[9px] md:text-sm font-bold px-2 py-0.5 md:py-1 rounded-full w-fit ${
+                stats?.newMembersTrend >= 0 
+                ? 'text-green-600 bg-green-50 dark:bg-green-900/30' 
+                : 'text-red-600 bg-red-50 dark:bg-red-900/30'
+              }`}>
+                {stats?.newMembersTrend >= 0 ? <ArrowTrendingUpIcon className="h-3 w-3 mr-1" /> : <ArrowTrendingDownIcon className="h-3 w-3 mr-1" />}
+                <span>{stats?.newMembersTrend > 0 ? `+${stats.newMembersTrend}%` : `${stats?.newMembersTrend || 0}%`}</span>
               </div>
             </div>
             <div className="stat-card-icon from-purple-500 to-purple-600 shadow-purple-500/30 h-10 w-10 md:h-12 md:w-12 !p-2 md:!p-3">
@@ -327,6 +346,77 @@ export default function DashboardPage() {
           </div>
         </div>
       )}
+
+      {/* Extra Info: Expirations & Recent Activity */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Expiring Soon */}
+        <div className="card-glass p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="font-bold text-dark-900 dark:text-white flex items-center gap-2">
+              <ExclamationCircleIcon className="h-5 w-5 text-yellow-500" />
+              Expirações Próximas (7 dias)
+            </h3>
+            <Link href="/dashboard/defaulters" className="text-xs text-primary-500 font-bold hover:underline">Ver Todos</Link>
+          </div>
+          <div className="space-y-4">
+            {stats?.expiringSoon && stats.expiringSoon.length > 0 ? (
+              stats.expiringSoon.map((m) => (
+                <div key={m.id} className="flex items-center justify-between p-3 rounded-xl bg-gray-50/50 dark:bg-dark-700/30 border border-gray-100 dark:border-dark-700/50">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-600 flex items-center justify-center font-bold">
+                      {m.name.charAt(0)}
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-dark-900 dark:text-white">{m.name}</p>
+                      <p className="text-[10px] text-gray-500 dark:text-dark-400 uppercase font-medium">{m.plan?.name}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs font-bold text-dark-700 dark:text-dark-200">{new Date(m.expirationDate).toLocaleDateString()}</p>
+                    <p className="text-[10px] text-red-500 font-bold uppercase mt-0.5">Expira Breve</p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="text-sm text-dark-400 text-center py-4 italic">Nenhuma expiração próxima.</p>
+            )}
+          </div>
+        </div>
+
+        {/* Recent Activity */}
+        <div className="card-glass p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="font-bold text-dark-900 dark:text-white flex items-center gap-2">
+              <ArrowTrendingUpIcon className="h-5 w-5 text-green-500" />
+              Atividade Recente (Pagamentos)
+            </h3>
+            <Link href="/dashboard/payments" className="text-xs text-primary-500 font-bold hover:underline">Histórico</Link>
+          </div>
+          <div className="space-y-4">
+            {stats?.recentActivity && stats.recentActivity.length > 0 ? (
+              stats.recentActivity.map((r) => (
+                <div key={r.id} className="flex items-center justify-between p-3 rounded-xl bg-white/50 dark:bg-dark-800/50 border border-gray-100 dark:border-dark-700/50">
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-lg bg-green-100 dark:bg-green-900/20 text-green-600 flex items-center justify-center">
+                      <BanknotesIcon className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-dark-900 dark:text-white">{r.member?.name}</p>
+                      <p className="text-[10px] text-gray-500 dark:text-dark-400">{r.plan?.name}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs font-bold text-green-600">{formatCurrency(r.amount)}</p>
+                    <p className="text-[9px] text-gray-400 dark:text-dark-500 mt-0.5">{new Date(r.paymentDate).toLocaleDateString()}</p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="text-sm text-dark-400 text-center py-4 italic">Sem atividade recente.</p>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
