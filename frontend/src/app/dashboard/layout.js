@@ -74,7 +74,9 @@ export default function DashboardLayout({ children }) {
 
         {/* Floating Header */}
         <div className="sticky top-4 z-30 px-4 sm:px-6 lg:px-6 mb-2">
-          <Header user={user} setSidebarOpen={setIsSidebarOpen} />
+          <div className="max-w-7xl mx-auto w-full">
+            <Header user={user} setSidebarOpen={setIsSidebarOpen} />
+          </div>
         </div>
 
         {/* Page Content */}
