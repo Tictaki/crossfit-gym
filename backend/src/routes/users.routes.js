@@ -26,6 +26,32 @@ const upload = multer({
   }
 });
 
+// Get own profile
+router.get('/profile', authenticate, async (req, res) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.user.id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        photo: true,
+        createdAt: true
+      }
+    });
+    
+    if (!user) {
+      return res.status(404).json({ error: 'Usuário não encontrado' });
+    }
+    
+    res.json(user);
+  } catch (error) {
+    console.error('Error fetching profile:', error);
+    res.status(500).json({ error: 'Erro ao carregar perfil' });
+  }
+});
+
 // Update own profile
 router.put('/profile', authenticate, upload.single('photo'), async (req, res) => {
   try {

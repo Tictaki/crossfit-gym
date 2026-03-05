@@ -3,7 +3,7 @@ import axios from 'axios';
 const getBaseURL = () => {
   // In the browser, always use relative /api so the Next.js proxy handles it
   if (typeof window !== 'undefined') {
-    if (process.env.NEXT_PUBLIC_API_URL) {
+    if (process.env.NEXT_PUBLIC_API_URL && !process.env.NEXT_PUBLIC_API_URL.includes('your-backend-url')) {
       let url = process.env.NEXT_PUBLIC_API_URL;
       if (!url.startsWith('http://') && !url.startsWith('https://')) {
         url = `https://${url}`;
@@ -13,14 +13,16 @@ const getBaseURL = () => {
       }
       return url;
     }
-    const { hostname } = window.location;
+    const { hostname, port } = window.location;
     if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      return 'http://localhost:3001/api';
+      return `http://${hostname}:3001/api`;
     }
     // On Vercel: use relative path, the proxy route at /api/[...path] handles it
     return '/api';
   }
-  return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  if (apiUrl && !apiUrl.includes('your-backend-url')) return apiUrl;
+  return 'http://localhost:3001/api';
 };
 
 const API_URL = getBaseURL();
@@ -28,17 +30,22 @@ const API_URL = getBaseURL();
 // Upload URL must always be the absolute Railway backend root (not relative)
 const getUploadURL = () => {
   if (typeof window !== 'undefined') {
-    const { hostname, protocol } = window.location;
+    const { hostname, protocol, port } = window.location;
     
     // If we're on localhost, use local backend
     if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      return 'http://localhost:3001';
+      return `http://${hostname}:3001`;
     }
     
     // If we're on a local IP (e.g. 192.168.x.x), use that same IP for backend
     // This allows mobile devices on the same network to see images
     if (/^(\d{1,3}\.){3}\d{1,3}$/.test(hostname)) {
       return `${protocol}//${hostname}:3001`;
+    }
+
+    // If we have a valid environment variable, use it
+    if (process.env.NEXT_PUBLIC_API_URL && !process.env.NEXT_PUBLIC_API_URL.includes('your-backend-url')) {
+       return process.env.NEXT_PUBLIC_API_URL.replace(/\/api$/, '');
     }
 
     // If we're on Vercel or any other production domain
