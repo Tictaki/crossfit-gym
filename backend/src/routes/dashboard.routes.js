@@ -177,9 +177,38 @@ router.get('/stats', authenticate, async (req, res) => {
       entry.total += amount;
     });
 
-    // Convert map to sorted array
-    const monthlyRevenue = Array.from(revenueMap.values())
-      .sort((a, b) => new Date(a.month) - new Date(b.month));
+    // Plan distribution for Pie Chart
+    const planDistributionRaw = await prisma.member.groupBy({
+      by: ['planId'],
+      _count: {
+        id: true
+      },
+      where: {
+        planId: { not: null },
+        status: 'ACTIVE'
+      }
+    });
+
+    const planDistribution = await Promise.all(planDistributionRaw.map(async (item) => {
+      const plan = await prisma.plan.findUnique({
+        where: { id: item.planId },
+        select: { name: true }
+      });
+      return {
+        name: plan?.name || 'Sem Plano',
+        value: item._count.id
+      };
+    }));
+
+    // Convert map to sorted array and format for frontend
+    const chartData = Array.from(revenueMap.values())
+      .sort((a, b) => new Date(a.month) - new Date(b.month))
+      .map(entry => ({
+        name: new Date(entry.month).toLocaleDateString('pt-PT', { month: 'short' }),
+        revenue: entry.total,
+        payments: entry.payments,
+        sales: entry.sales
+      }));
     
     // Daily activity (last 14 days)
     const fourteenDaysAgo = new Date();
@@ -226,7 +255,7 @@ router.get('/stats', authenticate, async (req, res) => {
       const dateStr = new Date(r.date).toISOString().split('T')[0];
       if (dailyActivityMap.has(dateStr)) {
         const entry = dailyActivityMap.get(dateStr);
-        entry.checkIns = r.count;
+        entry.checkIns = Number(r.count);
       }
     });
 
@@ -235,26 +264,42 @@ router.get('/stats', authenticate, async (req, res) => {
       const dateStr = new Date(r.date).toISOString().split('T')[0];
       if (dailyActivityMap.has(dateStr)) {
         const entry = dailyActivityMap.get(dateStr);
-        entry.activeMembersCount = r.count;
+        entry.activeMembersCount = Number(r.count);
       }
     });
 
     const dailyActivity = Array.from(dailyActivityMap.values());
     
+    // Calculate pending payments (monetary value of expired plans)
+    const overdueMembersWithPlans = await prisma.member.findMany({
+      where: {
+        status: 'INACTIVE',
+        expirationDate: { lt: today },
+        planId: { not: null }
+      },
+      include: { plan: true }
+    });
+
+    const pendingPayments = overdueMembersWithPlans.reduce((sum, m) => {
+      return sum + parseFloat(m.plan?.price || 0);
+    }, 0);
+
     res.json({
       activeMembers,
       inactiveMembers,
-      totalMembers,
-      revenueThisMonth: parseFloat(paymentsThisMonth._sum.amount || 0),
+      totalMembers: activeMembers, // UI shows "Membros Ativos" for this card
+      monthlyRevenue: parseFloat(paymentsThisMonth._sum.amount || 0) + parseFloat(salesThisMonth._sum.totalAmount || 0),
       paymentsCount: paymentsThisMonth._count,
       salesRevenueThisMonth: parseFloat(salesThisMonth._sum.totalAmount || 0),
       salesCount: salesThisMonth._count,
       lowStockCount,
       topProducts,
-      overdueMembers,
+      overdueMembers, // Keep count just in case
+      pendingPayments, // Monetary value for UI
       newMembersThisMonth: newMembersCount,
       expiringSoon,
-      monthlyRevenue,
+      chartData,
+      planDistribution,
       dailyActivity
     });
   } catch (error) {
