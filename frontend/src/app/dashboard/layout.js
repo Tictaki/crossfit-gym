@@ -66,6 +66,17 @@ export default function DashboardLayout({ children }) {
         />
       )}
 
+      {/* Dark Mode Texture Background */}
+      <div
+        className="fixed inset-0 z-0 opacity-0 dark:opacity-40 pointer-events-none transition-opacity duration-700 select-none"
+        style={{
+          backgroundImage: "url('/bg-dark.jpg')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          mixBlendMode: 'overlay'
+        }}
+      />
+
       {/* Smart Sidebar - handles its own mobile/desktop behavior */}
       <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} user={user} />
 
