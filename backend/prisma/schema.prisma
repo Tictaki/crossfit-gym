@@ -29,12 +29,14 @@ model Member {
   id             String       @id @default(uuid())
   name           String
   phone          String       @unique
+  email          String?
   birthDate      DateTime
   gender         Gender
   photo          String?
   planId         String?
   startDate      DateTime?
   expirationDate DateTime?
+  enrollmentDate DateTime     @default(now())
   status         MemberStatus @default(INACTIVE)
   notes          String?
   createdAt      DateTime     @default(now())
@@ -45,6 +47,7 @@ model Member {
 
   @@index([status])
   @@index([expirationDate])
+  @@index([email])
 }
 
 model Plan {

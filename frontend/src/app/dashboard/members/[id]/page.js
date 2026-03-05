@@ -276,10 +276,16 @@ export default function MemberDetailsPage({ params }) {
                   {member.birthDate ? new Date(member.birthDate).toLocaleDateString('pt-PT') : '-'}
                 </span>
               </div>
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-dark-400 dark:text-dark-300 dark:text-dark-300">Membro desde</span>
+              <div className="flex justify-between items-center text-sm border-b border-white/10 dark:border-dark-700/50 pb-3">
+                <span className="text-dark-400 dark:text-dark-300">Data de Inscrição</span>
                 <span className="font-bold text-dark-700 dark:text-dark-300">
-                  {new Date(member.createdAt).toLocaleDateString('pt-PT')}
+                  {(member.enrollmentDate || member.createdAt) ? new Date(member.enrollmentDate || member.createdAt).toLocaleDateString('pt-PT') : '-'}
+                </span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-dark-400 dark:text-dark-300">Registo no Sistema</span>
+                <span className="font-bold text-dark-700 dark:text-dark-300 italic text-[10px]">
+                  {new Date(member.createdAt).toLocaleString('pt-PT')}
                 </span>
               </div>
             </div>
@@ -305,8 +311,12 @@ export default function MemberDetailsPage({ params }) {
                   <div className="space-y-6 mt-8">
                     <div>
                       <div className="flex justify-between text-[10px] mb-2 text-dark-400 dark:text-dark-300 dark:text-dark-300 uppercase font-bold tracking-widest">
-                        <span>Validade do Plano</span>
-                        <span className="text-white">{new Date(member.expirationDate).toLocaleDateString('pt-PT')}</span>
+                        <span>Início do Plano</span>
+                        <span className="text-white">{member.startDate ? new Date(member.startDate).toLocaleDateString('pt-PT') : '-'}</span>
+                      </div>
+                      <div className="flex justify-between text-[10px] mb-2 text-dark-400 dark:text-dark-300 dark:text-dark-300 uppercase font-bold tracking-widest">
+                        <span>Vencimento</span>
+                        <span className="text-primary-400">{new Date(member.expirationDate).toLocaleDateString('pt-PT')}</span>
                       </div>
                       <div className="w-full bg-white/5 rounded-full h-1.5 overflow-hidden">
                         <div 

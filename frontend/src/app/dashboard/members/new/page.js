@@ -22,14 +22,18 @@ export default function NewMemberPage() {
   const [plans, setPlans] = useState([]);
   const [loadingPlans, setLoadingPlans] = useState(true);
   
+  const todayStr = new Date().toISOString().split('T')[0];
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
+    email: '',
     birthDate: '',
     gender: 'MALE',
     notes: '',
     planId: '',
     paymentMethod: 'CASH',
+    enrollmentDate: todayStr,
+    startDate: todayStr,
   });
   const [photo, setPhoto] = useState(null);
 
@@ -149,7 +153,30 @@ export default function NewMemberPage() {
                 />
               </div>
 
+              <div>
+                <label className="label text-[10px] uppercase tracking-widest font-bold">E-mail (Contacto)</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="input-glass h-14"
+                  placeholder="exemplo@gym.com"
+                />
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="label text-[10px] uppercase tracking-widest font-bold">Inscrição *</label>
+                  <input
+                    type="date"
+                    name="enrollmentDate"
+                    value={formData.enrollmentDate}
+                    onChange={handleChange}
+                    className="input-glass h-14"
+                    required
+                  />
+                </div>
                 <div>
                   <label className="label text-[10px] uppercase tracking-widest font-bold">Nascimento *</label>
                   <input
@@ -161,20 +188,20 @@ export default function NewMemberPage() {
                     required
                   />
                 </div>
+              </div>
 
-                <div>
-                  <label className="label text-[10px] uppercase tracking-widest font-bold">Sexo *</label>
-                  <select
-                    name="gender"
-                    value={formData.gender}
-                    onChange={handleChange}
-                    className="input-glass h-14 appearance-none"
-                    required
-                  >
-                    <option value="MALE" className="bg-dark-900">Masculino</option>
-                    <option value="FEMALE" className="bg-dark-900">Feminino</option>
-                  </select>
-                </div>
+              <div>
+                <label className="label text-[10px] uppercase tracking-widest font-bold">Sexo *</label>
+                <select
+                  name="gender"
+                  value={formData.gender}
+                  onChange={handleChange}
+                  className="input-glass h-14 appearance-none"
+                  required
+                >
+                  <option value="MALE" className="bg-dark-900">Masculino</option>
+                  <option value="FEMALE" className="bg-dark-900">Feminino</option>
+                </select>
               </div>
             </div>
           </div>
@@ -259,6 +286,18 @@ export default function NewMemberPage() {
               <h3 className="text-lg font-bold text-dark-900 dark:text-white border-b border-white/10 dark:border-dark-700 pb-4">Pagamento Inicial</h3>
               
               <div className="space-y-6">
+                <div>
+                  <label className="label text-[10px] uppercase tracking-widest font-bold mb-3 block">Data de Início do Plano *</label>
+                  <input
+                    type="date"
+                    name="startDate"
+                    value={formData.startDate}
+                    onChange={handleChange}
+                    className="input-glass h-14 mb-6"
+                    required
+                  />
+                </div>
+
                 <div>
                   <label className="label text-[10px] uppercase tracking-widest font-bold mb-3 block">Método de Pagamento</label>
                   <div className="grid grid-cols-2 gap-3">

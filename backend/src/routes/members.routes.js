@@ -55,7 +55,8 @@ router.get('/', authenticate, async (req, res) => {
     if (search) {
       where.OR = [
         { name: { contains: search, mode: 'insensitive' } },
-        { phone: { contains: search } }
+        { phone: { contains: search } },
+        { email: { contains: search, mode: 'insensitive' } }
       ];
     }
     
@@ -129,7 +130,18 @@ router.get('/:id', authenticate, async (req, res) => {
 // Create member
 router.post('/', authenticate, upload.single('photo'), async (req, res) => {
   try {
-    const { name, phone, birthDate, gender, notes, planId, paymentMethod } = req.body;
+    const { 
+      name, 
+      phone, 
+      email,
+      birthDate, 
+      gender, 
+      notes, 
+      planId, 
+      paymentMethod,
+      enrollmentDate,
+      startDate
+    } = req.body;
     
     // Check if phone already exists
     const existingMember = await prisma.member.findUnique({
@@ -144,10 +156,12 @@ router.post('/', authenticate, upload.single('photo'), async (req, res) => {
     let memberData = {
       name,
       phone,
+      email: email || null,
       birthDate: birthDate ? new Date(birthDate) : null,
       gender,
       photo: req.file ? req.file.path : null,
       notes,
+      enrollmentDate: enrollmentDate ? new Date(enrollmentDate) : today,
       status: 'INACTIVE'
     };
 
@@ -160,14 +174,15 @@ router.post('/', authenticate, upload.single('photo'), async (req, res) => {
 
       const result = await prisma.$transaction(async (tx) => {
         // 1. Create member as ACTIVE
-        const expirationDate = new Date(today);
+        const actualStartDate = startDate ? new Date(startDate) : today;
+        const expirationDate = new Date(actualStartDate);
         expirationDate.setDate(expirationDate.getDate() + plan.durationDays);
 
         const newMember = await tx.member.create({
           data: {
             ...memberData,
             planId,
-            startDate: today,
+            startDate: actualStartDate,
             expirationDate,
             status: 'ACTIVE'
           },
@@ -243,14 +258,18 @@ router.post('/', authenticate, upload.single('photo'), async (req, res) => {
 // Update member
 router.put('/:id', authenticate, upload.single('photo'), async (req, res) => {
   try {
-    const { name, phone, birthDate, gender, notes } = req.body;
+    const { name, phone, email, birthDate, gender, notes, enrollmentDate, startDate, expirationDate } = req.body;
     
     const updateData = {
       name,
       phone,
+      email: email === '' ? null : email,
       birthDate: birthDate ? new Date(birthDate) : undefined,
       gender,
-      notes
+      notes,
+      enrollmentDate: enrollmentDate ? new Date(enrollmentDate) : undefined,
+      startDate: startDate ? new Date(startDate) : undefined,
+      expirationDate: expirationDate ? new Date(expirationDate) : undefined
     };
     
     if (req.file) {

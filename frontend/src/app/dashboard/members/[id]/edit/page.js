@@ -32,9 +32,13 @@ export default function EditMemberPage({ params }) {
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
+    email: '',
     birthDate: '',
     gender: 'MALE',
     notes: '',
+    enrollmentDate: '',
+    startDate: '',
+    expirationDate: '',
   });
   
   const [photo, setPhoto] = useState(null);
@@ -52,9 +56,13 @@ export default function EditMemberPage({ params }) {
       setFormData({
         name: member.name || '',
         phone: member.phone || '',
+        email: member.email || '',
         birthDate: member.birthDate ? new Date(member.birthDate).toISOString().split('T')[0] : '',
         gender: member.gender || 'MALE',
         notes: member.notes || '',
+        enrollmentDate: member.enrollmentDate ? new Date(member.enrollmentDate).toISOString().split('T')[0] : '',
+        startDate: member.startDate ? new Date(member.startDate).toISOString().split('T')[0] : '',
+        expirationDate: member.expirationDate ? new Date(member.expirationDate).toISOString().split('T')[0] : '',
       });
       
       if (member.photo) {
@@ -222,7 +230,7 @@ export default function EditMemberPage({ params }) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Phone */}
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-dark-500 dark:text-dark-200 dark:text-dark-400 uppercase tracking-wider flex items-center gap-2">
+                  <label className="text-xs font-bold text-dark-500 dark:text-dark-200 uppercase tracking-wider flex items-center gap-2">
                     <PhoneIcon className="h-4 w-4" /> Telefone
                   </label>
                   <input 
@@ -236,9 +244,40 @@ export default function EditMemberPage({ params }) {
                   />
                 </div>
 
+                {/* Email */}
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-dark-500 dark:text-dark-200 uppercase tracking-wider flex items-center gap-2">
+                    <CheckIcon className="h-4 w-4" /> E-mail (Contacto)
+                  </label>
+                  <input 
+                    type="email" 
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    className="input bg-white/50 dark:bg-dark-800/50"
+                    placeholder="exemplo@gym.com"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Enrollment Date */}
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-dark-500 dark:text-dark-200 uppercase tracking-wider flex items-center gap-2">
+                    <CalendarIcon className="h-4 w-4" /> Data de Inscrição
+                  </label>
+                  <input 
+                    type="date" 
+                    name="enrollmentDate"
+                    value={formData.enrollmentDate}
+                    onChange={handleInputChange}
+                    className="input bg-white/50 dark:bg-dark-800/50"
+                  />
+                </div>
+
                 {/* Birth Date */}
                 <div className="space-y-2">
-                  <label className="text-xs font-bold text-dark-500 dark:text-dark-200 dark:text-dark-400 uppercase tracking-wider flex items-center gap-2">
+                  <label className="text-xs font-bold text-dark-500 dark:text-dark-200 uppercase tracking-wider flex items-center gap-2">
                     <CalendarIcon className="h-4 w-4" /> Data de Nascimento
                   </label>
                   <input 
@@ -248,6 +287,36 @@ export default function EditMemberPage({ params }) {
                     value={formData.birthDate}
                     onChange={handleInputChange}
                     className="input bg-white/50 dark:bg-dark-800/50"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Subscription Start Date */}
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-dark-500 dark:text-dark-200 uppercase tracking-wider flex items-center gap-2">
+                    <CalendarIcon className="h-4 w-4 text-primary-500" /> Início do Plano
+                  </label>
+                  <input 
+                    type="date" 
+                    name="startDate"
+                    value={formData.startDate}
+                    onChange={handleInputChange}
+                    className="input bg-white/50 dark:bg-dark-800/50 border-primary-500/20"
+                  />
+                </div>
+
+                {/* Expiration Date */}
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-dark-500 dark:text-dark-200 uppercase tracking-wider flex items-center gap-2">
+                    <CalendarIcon className="h-4 w-4 text-red-500" /> Vencimento do Plano
+                  </label>
+                  <input 
+                    type="date" 
+                    name="expirationDate"
+                    value={formData.expirationDate}
+                    onChange={handleInputChange}
+                    className="input bg-white/50 dark:bg-dark-800/50 border-red-500/20"
                   />
                 </div>
               </div>
