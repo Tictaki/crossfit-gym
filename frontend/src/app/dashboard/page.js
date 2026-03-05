@@ -132,10 +132,13 @@ export default function DashboardPage() {
           <div className="flex flex-col md:flex-row md:items-start justify-between gap-2">
             <div>
               <p className="text-[10px] md:text-xs text-dark-400 dark:text-dark-300 font-medium">Membros Ativos</p>
-              <p className="text-2xl md:text-3xl font-bold text-dark-900 dark:text-white mt-1">{stats?.totalMembers || 0}</p>
-              <div className={`flex items-center mt-1 md:mt-2 text-[9px] md:text-sm font-bold px-2 py-0.5 md:py-1 rounded-full w-fit ${stats?.membersTrend >= 0 ? 'text-green-600 bg-green-50 dark:bg-green-900/30' : 'text-red-600 bg-red-50 dark:bg-red-900/30'}`}>
-                {stats?.membersTrend >= 0 ? <ArrowTrendingUpIcon className="h-3 w-3 mr-1" /> : <ArrowTrendingDownIcon className="h-3 w-3 mr-1" />}
-                <span>{stats?.membersTrend > 0 ? `+${stats.membersTrend}%` : `${stats?.membersTrend || 0}%`}</span>
+              <p className="text-2xl md:text-3xl font-bold text-dark-900 dark:text-white mt-1">{stats?.activeMembers || 0}</p>
+              <div className="flex items-center mt-2 gap-2">
+                <div className={`flex items-center text-[9px] md:text-xs font-bold px-2 py-0.5 rounded-full ${stats?.membersTrend >= 0 ? 'text-green-600 bg-green-50 dark:bg-green-900/30' : 'text-red-600 bg-red-50 dark:bg-red-900/30'}`}>
+                  {stats?.membersTrend >= 0 ? <ArrowTrendingUpIcon className="h-2.5 w-2.5 mr-1" /> : <ArrowTrendingDownIcon className="h-2.5 w-2.5 mr-1" />}
+                  <span>{stats?.membersTrend > 0 ? `+${stats.membersTrend}%` : `${stats?.membersTrend || 0}%`}</span>
+                </div>
+                <span className="text-[9px] md:text-xs text-dark-400">Total: {stats?.totalMembers || 0}</span>
               </div>
             </div>
             <div className="stat-card-icon from-blue-500 to-blue-600 h-10 w-10 md:h-12 md:w-12 !p-2 md:!p-3 shadow-blue-500/30">
@@ -150,8 +153,8 @@ export default function DashboardPage() {
             <div>
               <p className="text-[10px] md:text-xs text-dark-400 dark:text-dark-300 font-medium">Receita (Mês)</p>
               <p className="text-2xl md:text-3xl font-bold text-primary-600 mt-1">{formatCurrency(stats?.monthlyRevenue || 0)}</p>
-              <div className={`flex items-center mt-1 md:mt-2 text-[9px] md:text-sm font-bold px-2 py-0.5 md:py-1 rounded-full w-fit ${stats?.revenueTrend >= 0 ? 'text-green-600 bg-green-50 dark:bg-green-900/30' : 'text-red-600 bg-red-50 dark:bg-red-900/30'}`}>
-                 <span>{stats?.revenueTrend > 0 ? `+${stats.revenueTrend}%` : `${stats?.revenueTrend || 0}%`}</span>
+              <div className={`flex items-center mt-2 text-[9px] md:text-xs font-bold px-2 py-0.5 rounded-full w-fit ${stats?.revenueTrend >= 0 ? 'text-green-600 bg-green-50 dark:bg-green-900/30' : 'text-red-600 bg-red-50 dark:bg-red-900/30'}`}>
+                 <span>{stats?.revenueTrend > 0 ? `+${stats.revenueTrend}%` : `${stats?.revenueTrend || 0}%`} vs anterior</span>
               </div>
             </div>
             <div className="stat-card-icon from-green-500 to-green-600 h-10 w-10 md:h-12 md:w-12 !p-2 md:!p-3 shadow-green-500/30">
@@ -166,9 +169,9 @@ export default function DashboardPage() {
             <div>
               <p className="text-[10px] md:text-xs text-dark-400 dark:text-dark-300 font-medium">Pagamentos Pendentes</p>
               <p className="text-2xl md:text-3xl font-bold text-red-600 mt-1">{formatCurrency(stats?.pendingPayments || 0)}</p>
-              <div className="flex items-center mt-1 md:mt-2 text-red-600 text-[9px] md:text-sm font-bold bg-red-50 dark:bg-red-900/30 px-2 py-0.5 md:py-1 rounded-full w-fit">
+              <div className="flex items-center mt-2 text-red-600 text-[9px] md:text-xs font-bold bg-red-50 dark:bg-red-900/30 px-2 py-0.5 rounded-full w-fit">
                 <ExclamationCircleIcon className="h-3 w-3 mr-1" />
-                <span>Atenção</span>
+                <span>Urgent</span>
               </div>
             </div>
             <div className="stat-card-icon from-red-500 to-red-600 h-10 w-10 md:h-12 md:w-12 !p-2 md:!p-3 shadow-red-500/30">
@@ -177,18 +180,18 @@ export default function DashboardPage() {
           </div>
         </motion.div>
 
-        {/* New Members Card */}
+        {/* Low Stock Card */}
         <motion.div whileHover={{ y: -5 }} className="stat-card group !p-4 md:!p-6">
           <div className="flex flex-col md:flex-row md:items-start justify-between gap-2">
             <div>
-              <p className="text-[10px] md:text-xs text-dark-400 dark:text-dark-300 font-medium">Novos Membros</p>
-              <p className="text-2xl md:text-3xl font-bold text-dark-900 dark:text-white mt-1">{stats?.newMembersThisMonth || 0}</p>
-              <div className={`flex items-center mt-1 md:mt-2 text-[9px] md:text-sm font-bold px-2 py-0.5 md:py-1 rounded-full w-fit ${stats?.newMembersTrend >= 0 ? 'text-green-600 bg-green-50 dark:bg-green-900/30' : 'text-red-600 bg-red-50 dark:bg-red-900/30'}`}>
-                <span>{stats?.newMembersTrend > 0 ? `+${stats.newMembersTrend}%` : `${stats?.newMembersTrend || 0}%`}</span>
-              </div>
+              <p className="text-[10px] md:text-xs text-dark-400 dark:text-dark-300 font-medium">Stock Baixo</p>
+              <p className={`text-2xl md:text-3xl font-bold mt-1 ${stats?.lowStockCount > 0 ? 'text-amber-500' : 'text-dark-900 dark:text-white'}`}>
+                {stats?.lowStockCount || 0}
+              </p>
+              <span className="text-[9px] md:text-xs text-dark-400 dark:text-dark-500 font-medium mt-2 block">Produtos p/ Repor</span>
             </div>
-            <div className="stat-card-icon from-purple-500 to-purple-600 h-10 w-10 md:h-12 md:w-12 !p-2 md:!p-3 shadow-purple-500/30">
-              <UserPlusIcon className="h-5 w-5 md:h-6 md:w-6 text-white" />
+            <div className={`stat-card-icon h-10 w-10 md:h-12 md:w-12 !p-2 md:!p-3 shadow-amber-500/30 ${stats?.lowStockCount > 0 ? 'from-amber-400 to-amber-600' : 'from-gray-400 to-gray-600'}`}>
+              <ShoppingBagIcon className="h-5 w-5 md:h-6 md:w-6 text-white" />
             </div>
           </div>
         </motion.div>
@@ -282,17 +285,24 @@ export default function DashboardPage() {
           </ResponsiveContainer>
         </div>
         <div className="card-glass">
-          <h3 className="text-lg font-bold text-dark-900 dark:text-white mb-6">Distribuição</h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <PieChart>
-              <Pie data={stats?.planDistribution || []} cx="50%" cy="50%" outerRadius={80} dataKey="value">
-                {(stats?.planDistribution || []).map((entry, index) => (
-                  <Cell key={index} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
+          <h3 className="text-lg font-bold text-dark-900 dark:text-white mb-6">Produtos Mais Vendidos</h3>
+          <div className="space-y-4 h-[250px] overflow-y-auto pr-2 custom-scrollbar">
+            {(stats?.topProducts || []).map((p, i) => (
+              <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-gray-50/50 dark:bg-dark-700/30 border border-white/5">
+                <div className="flex items-center gap-3">
+                  <div className="h-8 w-8 rounded-lg bg-orange-100 dark:bg-orange-900/20 text-orange-600 flex items-center justify-center font-bold text-xs">#{i+1}</div>
+                  <span className="text-sm font-bold text-dark-800 dark:text-dark-200">{p.name}</span>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs font-bold text-dark-900 dark:text-white">{p.quantity} unid.</p>
+                  <p className="text-[10px] text-gray-500 uppercase tracking-wider">Vendas</p>
+                </div>
+              </div>
+            ))}
+            {(!stats?.topProducts || stats.topProducts.length === 0) && (
+              <p className="text-sm text-dark-400 text-center py-10 italic">Sem vendas este mês.</p>
+            )}
+          </div>
         </div>
       </motion.div>
 

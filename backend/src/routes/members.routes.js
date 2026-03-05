@@ -8,6 +8,7 @@ import { authenticate } from '../middleware/auth.js';
 import { notify } from '../utils/notifier.js';
 
 import { memberStorage } from '../utils/cloudinaryConfig.js';
+import { updateMemberStatuses } from '../utils/autoUpdateStatus.js';
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -27,21 +28,6 @@ const upload = multer({
   }
 });
 
-// Auto-update statuses based on expiration date
-async function updateMemberStatuses() {
-  try {
-    const today = new Date();
-    await prisma.member.updateMany({
-      where: {
-        status: 'ACTIVE',
-        expirationDate: { lt: today }
-      },
-      data: { status: 'INACTIVE' }
-    });
-  } catch (error) {
-    console.error('Error auto-updating member statuses:', error);
-  }
-}
 
 // List members with filters
 router.get('/', authenticate, async (req, res) => {

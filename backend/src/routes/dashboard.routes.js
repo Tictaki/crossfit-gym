@@ -1,6 +1,7 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import { authenticate } from '../middleware/auth.js';
+import { updateMemberStatuses } from '../utils/autoUpdateStatus.js';
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -8,6 +9,9 @@ const prisma = new PrismaClient();
 // Dashboard statistics
 router.get('/stats', authenticate, async (req, res) => {
   try {
+    // 1. Synchronize member statuses with the database first
+    await updateMemberStatuses();
+
     const today = new Date();
     const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
     const firstDayOfLastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
@@ -269,7 +273,7 @@ router.get('/stats', authenticate, async (req, res) => {
     });
 
     res.json({
-      totalMembers: activeMembers,
+      totalMembers,
       activeMembers,
       inactiveMembers,
       monthlyRevenue: revenueThisMonth,
