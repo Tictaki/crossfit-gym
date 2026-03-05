@@ -73,15 +73,15 @@ export default function DashboardLayout({ children }) {
       <div className="lg:pl-[80px] min-h-screen flex flex-col transition-none">
 
         {/* Floating Header */}
-        <div className="sticky top-4 z-30 px-4 sm:px-6 lg:px-6 mb-2">
-          <div className="max-w-7xl mx-auto w-full">
+        <div className="sticky top-4 z-30 px-4 sm:px-6 lg:px-8 mb-2 transition-all duration-300">
+          <div className="max-w-[1600px] mx-auto w-full">
             <Header user={user} setSidebarOpen={setIsSidebarOpen} />
           </div>
         </div>
 
         {/* Page Content */}
-        <main className="flex-1 px-4 sm:px-6 lg:px-6 pb-8 pt-2 relative z-10">
-          <div className="max-w-7xl mx-auto w-full">
+        <main className="flex-1 px-4 sm:px-6 lg:px-8 pb-8 pt-2 relative z-10 transition-all duration-300">
+          <div className="max-w-[1600px] mx-auto w-full">
             {children}
           </div>
         </main>
