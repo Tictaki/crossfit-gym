@@ -1,16 +1,20 @@
 import express from 'express';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../utils/prisma.js';
 import { authenticate } from '../middleware/auth.js';
 import { updateMemberStatuses } from '../utils/autoUpdateStatus.js';
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 // Dashboard statistics
 router.get('/stats', authenticate, async (req, res) => {
   try {
-    // 1. Synchronize member statuses with the database first
-    await updateMemberStatuses();
+    // 1. Synchronize member statuses with the database (fail-safe)
+    try {
+      await updateMemberStatuses();
+    } catch (syncError) {
+      console.error('Background status sync failed:', syncError);
+      // Non-blocking: continue to fetch stats even if auto-update fails
+    }
 
     const today = new Date();
     const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);

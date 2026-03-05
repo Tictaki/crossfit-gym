@@ -1,5 +1,5 @@
 import express from 'express';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../utils/prisma.js';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
@@ -11,7 +11,6 @@ import { memberStorage } from '../utils/cloudinaryConfig.js';
 import { updateMemberStatuses } from '../utils/autoUpdateStatus.js';
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 const upload = multer({
   storage: memberStorage,
@@ -33,7 +32,12 @@ const upload = multer({
 router.get('/', authenticate, async (req, res) => {
   try {
     console.log(`[Members] List request from user ${req.user.id}. Query:`, req.query);
-    await updateMemberStatuses();
+    // Fail-safe background status sync
+    try {
+      await updateMemberStatuses();
+    } catch (syncError) {
+      console.error('Background status sync failed:', syncError);
+    }
     
     const { search, status, page = 1, limit = 20 } = req.query;
     const where = {};
