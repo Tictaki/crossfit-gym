@@ -272,7 +272,7 @@ router.get('/stats', authenticate, async (req, res) => {
       totalMembers: activeMembers,
       activeMembers,
       inactiveMembers,
-      monthlyRevenue,
+      monthlyRevenue: revenueThisMonth,
       revenueTrend,
       membersTrend,
       newMembersThisMonth: newMembersCount,
@@ -289,7 +289,10 @@ router.get('/stats', authenticate, async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching dashboard stats:', error);
-    res.status(500).json({ error: 'Failed to fetch dashboard statistics' });
+    res.status(500).json({ 
+      error: 'Failed to fetch dashboard statistics',
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined 
+    });
   }
 });
 
