@@ -26,6 +26,7 @@ export default function NewMemberPage() {
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
+    whatsapp: '',
     email: '',
     birthDate: '',
     gender: 'MALE',
@@ -140,17 +141,30 @@ export default function NewMemberPage() {
                 />
               </div>
 
-              <div>
-                <label className="label text-[10px] uppercase tracking-widest font-bold">Telefone *</label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="input-glass h-14"
-                  placeholder="+258 XX XXX XXXX"
-                  required
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="label text-[10px] uppercase tracking-widest font-bold">Telefone *</label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    className="input-glass h-14"
+                    placeholder="+258 XX XXX XXXX"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="label text-[10px] uppercase tracking-widest font-bold text-green-500">WhatsApp (Opcional)</label>
+                  <input
+                    type="tel"
+                    name="whatsapp"
+                    value={formData.whatsapp}
+                    onChange={handleChange}
+                    className="input-glass h-14 border-green-500/20"
+                    placeholder="+258 XX XXX XXXX"
+                  />
+                </div>
               </div>
 
               <div>

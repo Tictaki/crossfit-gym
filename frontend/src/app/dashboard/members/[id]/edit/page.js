@@ -39,6 +39,7 @@ export default function EditMemberPage({ params }) {
     enrollmentDate: '',
     startDate: '',
     expirationDate: '',
+    whatsapp: '',
   });
   
   const [photo, setPhoto] = useState(null);
@@ -63,6 +64,7 @@ export default function EditMemberPage({ params }) {
         enrollmentDate: member.enrollmentDate ? new Date(member.enrollmentDate).toISOString().split('T')[0] : '',
         startDate: member.startDate ? new Date(member.startDate).toISOString().split('T')[0] : '',
         expirationDate: member.expirationDate ? new Date(member.expirationDate).toISOString().split('T')[0] : '',
+        whatsapp: member.whatsapp || '',
       });
       
       if (member.photo) {
@@ -244,6 +246,23 @@ export default function EditMemberPage({ params }) {
                   />
                 </div>
 
+                {/* WhatsApp */}
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-green-600 dark:text-green-500 uppercase tracking-wider flex items-center gap-2">
+                    <CheckIcon className="h-4 w-4" /> WhatsApp (Opcional)
+                  </label>
+                  <input 
+                    type="tel" 
+                    name="whatsapp"
+                    value={formData.whatsapp}
+                    onChange={handleInputChange}
+                    className="input bg-white/50 dark:bg-dark-800/50 border-green-500/20"
+                    placeholder="8X XXX XXXX"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Email */}
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-dark-500 dark:text-dark-200 uppercase tracking-wider flex items-center gap-2">

@@ -186,9 +186,19 @@ export default function MemberDetailsPage({ params }) {
                 {statusLabels[member.status] || member.status}
               </span>
             </h1>
-            <p className="text-gray-500 dark:text-dark-300 dark:text-dark-400 mt-1 flex items-center gap-2">
-              <PhoneIcon className="h-4 w-4" /> {member.phone}
-            </p>
+            <div className="flex flex-wrap gap-x-4 gap-y-1">
+              <p className="text-gray-500 dark:text-dark-300 dark:text-dark-400 mt-1 flex items-center gap-2">
+                <PhoneIcon className="h-4 w-4" /> {member.phone}
+              </p>
+              {member.whatsapp && (
+                <p className="text-green-600 dark:text-green-400 mt-1 flex items-center gap-2 font-medium">
+                  <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.085.005.213.005.324.249l.454 1.109c.045.11.076.223.008.355-.077.15-.115.247-.231.38-.116.133-.242.297-.346.399-.113.111-.23.232-.1.455.13.223.578.953 1.24 1.541.856.762 1.577 1.001 1.808 1.112.23.111.364.093.5-.06.136-.153.579-.673.733-.903.154-.23.308-.192.52-.115.212.077 1.341.633 1.572.748.23.115.385.173.442.271.058.099.058.569-.086.974z"/>
+                  </svg>
+                  {member.whatsapp}
+                </p>
+              )}
+            </div>
           </div>
         </div>
         
@@ -199,6 +209,19 @@ export default function MemberDetailsPage({ params }) {
           >
             <QrCodeIcon className="h-5 w-5" />
             QR Code
+          </button>
+          <button 
+            onClick={() => {
+              const message = `Olá *${member.name}*! 💪\n\nAqui é da *Crosstraining Gym*. Gostaríamos de entrar em contacto.`;
+              const targetPhone = (member.whatsapp || member.phone).replace(/[^0-9]/g, '');
+              window.open(`https://wa.me/${targetPhone}?text=${encodeURIComponent(message)}`, '_blank');
+            }}
+            className="btn-secondary text-green-600 hover:bg-green-50 border-green-100"
+          >
+            <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.085.005.213.005.324.249l.454 1.109c.045.11.076.223.008.355-.077.15-.115.247-.231.38-.116.133-.242.297-.346.399-.113.111-.23.232-.1.455.13.223.578.953 1.24 1.541.856.762 1.577 1.001 1.808 1.112.23.111.364.093.5-.06.136-.153.579-.673.733-.903.154-.23.308-.192.52-.115.212.077 1.341.633 1.572.748.23.115.385.173.442.271.058.099.058.569-.086.974z"/>
+            </svg>
+            WhatsApp
           </button>
           <Link href={`/dashboard/members/${id}/edit`} className="btn-secondary text-blue-600 hover:bg-blue-50 border-blue-100">
             <PencilSquareIcon className="h-5 w-5" />

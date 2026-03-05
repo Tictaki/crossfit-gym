@@ -77,10 +77,23 @@ router.put('/profile', authenticate, upload.single('photo'), async (req, res) =>
     
     res.json(user);
   } catch (error) {
-    console.error('CRITICAL: Error updating profile:', error);
-    res.status(500).json({ 
-      error: 'Erro ao atualizar perfil',
+    console.error('❌ CRITICAL: Error updating profile:', error);
+    
+    // Provide a more descriptive error message based on the error type
+    let errorMessage = 'Erro ao atualizar perfil';
+    let statusCode = 500;
+
+    if (error.code === 'P2002') {
+      errorMessage = 'Este email já está em uso por outro utilizador.';
+      statusCode = 409;
+    } else if (error.message?.includes('Cloudinary')) {
+      errorMessage = 'Erro ao carregar a imagem para o Cloudinary. Verifique as credenciais.';
+    }
+
+    res.status(statusCode).json({ 
+      error: errorMessage,
       message: error.message,
+      code: error.code,
       stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
   }

@@ -64,8 +64,15 @@ async function handler(request, { params }) {
       
       // If backend returned an error, relay it instead of a generic 502
       if (!response.ok) {
-        console.error(`Backend error (${response.status}):`, data);
-        return NextResponse.json(data, { 
+        console.error(`❌ Backend error (${response.status}) on ${request.method} ${targetUrl}:`, data);
+        return NextResponse.json({
+          ...data,
+          _proxyContext: {
+            targetUrl,
+            method: request.method,
+            status: response.status
+          }
+        }, { 
           status: response.status,
           headers: responseHeaders 
         });

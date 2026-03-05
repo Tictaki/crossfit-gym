@@ -56,6 +56,7 @@ router.get('/', authenticate, async (req, res) => {
       where.OR = [
         { name: { contains: search, mode: 'insensitive' } },
         { phone: { contains: search } },
+        { whatsapp: { contains: search } },
         { email: { contains: search, mode: 'insensitive' } }
       ];
     }
@@ -133,6 +134,7 @@ router.post('/', authenticate, upload.single('photo'), async (req, res) => {
     const { 
       name, 
       phone, 
+      whatsapp,
       email,
       birthDate, 
       gender, 
@@ -156,6 +158,7 @@ router.post('/', authenticate, upload.single('photo'), async (req, res) => {
     let memberData = {
       name,
       phone,
+      whatsapp: whatsapp || null,
       email: email || null,
       birthDate: birthDate ? new Date(birthDate) : null,
       gender,
@@ -258,11 +261,12 @@ router.post('/', authenticate, upload.single('photo'), async (req, res) => {
 // Update member
 router.put('/:id', authenticate, upload.single('photo'), async (req, res) => {
   try {
-    const { name, phone, email, birthDate, gender, notes, enrollmentDate, startDate, expirationDate } = req.body;
+    const { name, phone, whatsapp, email, birthDate, gender, notes, enrollmentDate, startDate, expirationDate } = req.body;
     
     const updateData = {
       name,
       phone,
+      whatsapp: whatsapp || null,
       email: email === '' ? null : email,
       birthDate: birthDate ? new Date(birthDate) : undefined,
       gender,

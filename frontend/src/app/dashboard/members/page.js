@@ -205,7 +205,7 @@ export default function MembersPage() {
                         <button
                           onClick={() => {
                             const message = `Olá *${member.name}*! 💪\n\nAqui é da *Crosstraining Gym*. Gostaríamos de entrar em contacto.`;
-                            const phone = member.phone.replace(/[^0-9]/g, '');
+                            const phone = (member.whatsapp || member.phone).replace(/[^0-9]/g, '');
                             window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
                           }}
                           className="flex items-center justify-center p-3 sm:p-2 rounded-2xl bg-green-500 text-white sm:bg-green-500/10 sm:text-green-600 sm:hover:bg-green-500 sm:hover:text-white transition-all shadow-md sm:shadow-sm active:scale-90"
