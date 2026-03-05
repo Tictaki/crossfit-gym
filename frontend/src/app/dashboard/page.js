@@ -21,9 +21,41 @@ import { formatCurrency } from '@/lib/utils';
 
 const COLORS = ['#f50707', '#3b82f6', '#10b981', '#f59e0b'];
 
+const CustomTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-dark-900/95 backdrop-blur-md border border-white/10 p-4 rounded-2xl shadow-2xl">
+        <p className="text-white font-bold mb-3 border-b border-white/10 pb-2">{label}</p>
+        <div className="space-y-2">
+          {payload.map((entry, index) => (
+            <div key={index} className="flex items-center justify-between gap-8">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }}></div>
+                <span className="text-xs text-dark-300 font-medium">{entry.name}</span>
+              </div>
+              <span className="text-xs font-bold text-white">{formatCurrency(entry.value)}</span>
+            </div>
+          ))}
+          {payload.length > 1 && (
+            <div className="pt-2 mt-2 border-t border-white/5 flex items-center justify-between text-[10px]">
+              <span className="text-dark-400">Diferença</span>
+              <span className={`font-bold ${payload[0].value >= payload[1].value ? 'text-green-500' : 'text-red-500'}`}>
+                {payload[0].value >= payload[1].value ? '+' : ''}
+                {formatCurrency(payload[0].value - payload[1].value)}
+              </span>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+  return null;
+};
+
 export default function DashboardPage() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showYoY, setShowYoY] = useState(false);
 
   useEffect(() => {
     loadStats();
@@ -202,29 +234,111 @@ export default function DashboardPage() {
         </Link>
       </div>
 
-      {/* Charts Section */}
-      {stats?.chartData && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Revenue Chart */}
-          <div className="card-glass lg:col-span-2">
-            <h3 className="text-lg font-bold text-dark-900 dark:text-white mb-6">Evolução de Receita</h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={stats.chartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(200, 200, 200, 0.1)" />
-                <XAxis dataKey="name" stroke="rgba(100, 100, 100, 0.6)" />
-                <YAxis stroke="rgba(100, 100, 100, 0.6)" />
-                <Tooltip 
-                  contentStyle={{
-                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: '8px'
-                  }}
+      {/* Financial Comparison Chart */}
+      {stats?.revenueComparison && (
+        <div className="card-glass p-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+            <div>
+              <h3 className="text-xl font-bold text-dark-900 dark:text-white">Desempenho Financeiro</h3>
+              <p className="text-sm text-dark-400 dark:text-dark-300 mt-1">Comparação de receitas ao longo do ano</p>
+            </div>
+            <div className="flex items-center gap-3 bg-gray-100 dark:bg-dark-700/50 p-1 rounded-xl w-fit">
+              <button 
+                onClick={() => setShowYoY(false)}
+                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${!showYoY ? 'bg-white dark:bg-dark-600 text-primary-600 shadow-sm' : 'text-dark-500 hover:text-dark-700 dark:hover:text-dark-200'}`}
+              >
+                Ano Atual
+              </button>
+              <button 
+                onClick={() => setShowYoY(true)}
+                className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${showYoY ? 'bg-white dark:bg-dark-600 text-primary-600 shadow-sm' : 'text-dark-500 hover:text-dark-700 dark:hover:text-dark-200'}`}
+              >
+                vs Ano Anterior
+              </button>
+            </div>
+          </div>
+
+          <div className="h-[400px] w-100%">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={stats.revenueComparison} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorCurrent" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#f50707" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#f50707" stopOpacity={0}/>
+                  </linearGradient>
+                  <linearGradient id="colorPrevious" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#94a3b8" stopOpacity={0.2}/>
+                    <stop offset="95%" stopColor="#94a3b8" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(200, 200, 200, 0.05)" vertical={false} />
+                <XAxis 
+                  dataKey="month" 
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: 'rgba(100, 100, 100, 0.6)', fontSize: 12, fontWeight: 500 }}
+                  dy={10}
                 />
-                <Legend />
-                <Line type="monotone" dataKey="revenue" stroke="#f50707" strokeWidth={2} dot={false} />
-              </LineChart>
+                <YAxis 
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: 'rgba(100, 100, 100, 0.6)', fontSize: 12, fontWeight: 500 }}
+                  tickFormatter={(val) => `MZN ${val/1000}k`}
+                />
+                <Tooltip 
+                  content={<CustomTooltip />}
+                  cursor={{ stroke: 'rgba(245, 7, 7, 0.2)', strokeWidth: 2 }}
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="current" 
+                  stroke="#f50707" 
+                  strokeWidth={4}
+                  fillOpacity={1}
+                  fill="url(#colorCurrent)"
+                  name="Ano Atual"
+                  animationDuration={1500}
+                />
+                {showYoY && (
+                  <Area 
+                    type="monotone" 
+                    dataKey="previous" 
+                    stroke="#94a3b8" 
+                    strokeWidth={2}
+                    strokeDasharray="5 5"
+                    fillOpacity={1}
+                    fill="url(#colorPrevious)"
+                    name="Ano Anterior"
+                    animationDuration={1500}
+                  />
+                )}
+              </AreaChart>
             </ResponsiveContainer>
           </div>
+        </div>
+      )}
+
+      {/* Plan Distribution & Secondary Charts */}
+      {(stats?.chartData || stats?.planDistribution) && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Recent Revenue (Small) */}
+          {stats?.chartData && (
+            <div className="card-glass lg:col-span-2">
+              <h3 className="text-lg font-bold text-dark-900 dark:text-white mb-6">Faturação Recente</h3>
+              <ResponsiveContainer width="100%" height={250}>
+                <BarChart data={stats.chartData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(200, 200, 200, 0.1)" vertical={false} />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} stroke="rgba(100, 100, 100, 0.6)" />
+                  <YAxis axisLine={false} tickLine={false} stroke="rgba(100, 100, 100, 0.6)" />
+                  <Tooltip 
+                    cursor={{ fill: 'rgba(200, 200, 200, 0.1)' }}
+                    contentStyle={{ backgroundColor: 'rgba(0, 0, 0, 0.8)', border: 'none', borderRadius: '10px', color: '#fff' }}
+                  />
+                  <Bar dataKey="revenue" fill="#f50707" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          )}
 
           {/* Plan Distribution */}
           {stats?.planDistribution && (
