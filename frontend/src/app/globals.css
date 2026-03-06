@@ -9,13 +9,13 @@
   }
 
   html {
-    @apply bg-black text-white antialiased overflow-x-hidden;
+    @apply bg-black text-white antialiased;
     margin: 0;
     padding: 0;
   }
 
   body {
-    @apply text-dark-900 font-sans antialiased transition-colors duration-300 overflow-x-hidden;
+    @apply text-dark-900 font-sans antialiased transition-colors duration-300;
     overscroll-behavior-y: none;
     min-height: 100dvh;
     margin: 0;

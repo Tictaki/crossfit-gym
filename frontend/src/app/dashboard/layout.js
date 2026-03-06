@@ -33,9 +33,14 @@ export default function DashboardLayout({ children }) {
   }, [router]);
 
   useEffect(() => {
+    let lastScrollY = window.scrollY;
+    
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
       
+      // Threshold to avoid flicker (10px)
+      if (Math.abs(currentScrollY - lastScrollY) < 10) return;
+
       // Show if scrolling up OR at the very top
       if (currentScrollY < lastScrollY || currentScrollY < 10) {
         setIsVisible(true);
@@ -45,12 +50,12 @@ export default function DashboardLayout({ children }) {
         setIsVisible(false);
       }
       
-      setLastScrollY(currentScrollY);
+      lastScrollY = currentScrollY;
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
+  }, []);
 
   const loadSettings = async () => {
     try {
