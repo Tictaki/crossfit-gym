@@ -16,7 +16,7 @@ import {
   ShoppingBagIcon,
   ArchiveBoxIcon,
 } from '@heroicons/react/24/outline';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell, PieChart, Pie } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell, PieChart, Pie, RadialBarChart, RadialBar, Legend } from 'recharts';
 import { motion } from 'framer-motion';
 import { formatCurrency } from '@/lib/utils';
 
@@ -292,18 +292,62 @@ export default function DashboardPage() {
 
       {/* Grid for Charts & Lists */}
       <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="card-glass lg:col-span-2">
-          <h3 className="text-lg font-bold text-dark-900 dark:text-white mb-6">Faturação Recente</h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={stats?.chartData || []}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(200, 200, 200, 0.1)" vertical={false} />
-              <XAxis dataKey="name" axisLine={false} tickLine={false} stroke="rgba(100, 100, 100, 0.6)" />
-              <YAxis axisLine={false} tickLine={false} stroke="rgba(100, 100, 100, 0.6)" />
-              <Tooltip cursor={{ fill: 'rgba(200, 200, 200, 0.1)' }} content={<CustomTooltip />} />
-              <Bar name="Serviços" dataKey="payments" stackId="revenue" fill="#f50707" radius={[0, 0, 0, 0]} />
-              <Bar name="Loja" dataKey="sales" stackId="revenue" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+        <div className="card-glass lg:col-span-2 relative overflow-hidden">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-bold text-dark-900 dark:text-white">Faturação Recente</h3>
+            <div className="flex gap-4">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-primary-600"></div>
+                <span className="text-[10px] font-bold text-dark-400 uppercase tracking-wider">Serviços</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                <span className="text-[10px] font-bold text-dark-400 uppercase tracking-wider">Loja</span>
+              </div>
+            </div>
+          </div>
+          <div className="h-[250px] relative">
+            <ResponsiveContainer width="100%" height="100%">
+              <RadialBarChart 
+                cx="50%" 
+                cy="50%" 
+                innerRadius="30%" 
+                outerRadius="100%" 
+                barSize={15} 
+                data={[
+                  {
+                    name: 'Vendas Loja',
+                    value: stats?.chartData?.[stats.chartData.length - 1]?.sales || 0,
+                    fill: '#3b82f6',
+                  },
+                  {
+                    name: 'Serviços Gym',
+                    value: stats?.chartData?.[stats.chartData.length - 1]?.payments || 0,
+                    fill: '#f50707',
+                  }
+                ]}
+                startAngle={90}
+                endAngle={450}
+              >
+                <RadialBar
+                  minAngle={15}
+                  background={{ fill: 'rgba(255,255,255,0.05)' }}
+                  clockWise
+                  dataKey="value"
+                  cornerRadius={10}
+                />
+                <Tooltip content={<CustomTooltip />} />
+              </RadialBarChart>
+            </ResponsiveContainer>
+            
+            {/* Center Label */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+              <p className="text-[10px] font-bold text-dark-400 uppercase tracking-widest mb-1">Total Mês</p>
+              <p className="text-2xl font-black text-dark-900 dark:text-white font-outfit">
+                {formatCurrency(stats?.chartData?.[stats.chartData.length - 1]?.revenue || 0)}
+              </p>
+            </div>
+          </div>
         </div>
         <div className="card-glass">
           <h3 className="text-lg font-bold text-dark-900 dark:text-white mb-6">Produtos Mais Vendidos</h3>
