@@ -106,7 +106,10 @@ export default function DashboardPage() {
         formattedData.dailyActivity = formattedData.dailyActivity.map(d => ({
           date: new Date(d.date).toLocaleDateString('pt-PT', { month: 'short', day: 'numeric' }),
           checkIns: d.checkIns || 0,
-          activeMembersCount: d.activeMembersCount || 0
+          activeMembersCount: d.activeMembersCount || 0,
+          revenue: d.revenue || 0,
+          payments: d.payments || 0,
+          sales: d.sales || 0
         }));
       }
       setStats(formattedData);
@@ -274,8 +277,9 @@ export default function DashboardPage() {
                 <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: 'rgba(100, 100, 100, 0.6)', fontSize: 12 }} dy={10} />
                 <YAxis axisLine={false} tickLine={false} tick={{ fill: 'rgba(100, 100, 100, 0.6)', fontSize: 12 }} tickFormatter={(val) => `MZN ${val/1000}k`} />
                 <Tooltip content={<CustomTooltip />} />
-                <Area type="monotone" dataKey="current" stroke="#f50707" strokeWidth={4} fill="url(#colorCurrent)" animationDuration={1000} />
-                {showYoY && <Area type="monotone" dataKey="previous" stroke="#94a3b8" strokeWidth={2} strokeDasharray="5 5" fill="url(#colorPrev)" animationDuration={1000} />}
+                <Area type="monotone" name="Total Serviços (Planos)" dataKey="currentPayments" stroke="#f50707" strokeWidth={4} fill="url(#colorCurrent)" animationDuration={1000} />
+                <Area type="monotone" name="Vendas Loja (Produtos)" dataKey="currentSales" stroke="#3b82f6" strokeWidth={4} fill="url(#colorPrev)" animationDuration={1000} fillOpacity={0.1} />
+                {showYoY && <Area type="monotone" name="Total Ano Anterior" dataKey="previous" stroke="#94a3b8" strokeWidth={2} strokeDasharray="5 5" fill="none" animationDuration={1000} />}
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -291,8 +295,9 @@ export default function DashboardPage() {
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(200, 200, 200, 0.1)" vertical={false} />
               <XAxis dataKey="name" axisLine={false} tickLine={false} stroke="rgba(100, 100, 100, 0.6)" />
               <YAxis axisLine={false} tickLine={false} stroke="rgba(100, 100, 100, 0.6)" />
-              <Tooltip cursor={{ fill: 'rgba(200, 200, 200, 0.1)' }} />
-              <Bar dataKey="revenue" fill="#f50707" radius={[4, 4, 0, 0]} />
+              <Tooltip cursor={{ fill: 'rgba(200, 200, 200, 0.1)' }} content={<CustomTooltip />} />
+              <Bar name="Serviços" dataKey="payments" stackId="revenue" fill="#f50707" radius={[0, 0, 0, 0]} />
+              <Bar name="Loja" dataKey="sales" stackId="revenue" fill="#3b82f6" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -327,8 +332,9 @@ export default function DashboardPage() {
                <AreaChart data={stats.dailyActivity}>
                  <XAxis dataKey="date" hide />
                  <YAxis hide />
-                 <Tooltip />
-                 <Area type="monotone" dataKey="checkIns" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.1} />
+                 <Tooltip content={<CustomTooltip />} />
+                 <Area type="monotone" name="Faturação Produtos" dataKey="sales" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.2} strokeWidth={2} />
+                 <Area type="monotone" name="Faturação Serviços" dataKey="payments" stroke="#f50707" fill="#f50707" fillOpacity={0.2} strokeWidth={2} />
                </AreaChart>
              </ResponsiveContainer>
            </div>

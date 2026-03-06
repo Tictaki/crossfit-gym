@@ -167,7 +167,13 @@ router.get('/stats', authenticate, async (req, res) => {
 
     // Initialize map
     monthNames.forEach((name, index) => {
-      comparisonMap.set(index, { month: name, current: 0, previous: 0 });
+      comparisonMap.set(index, { 
+        month: name, 
+        current: 0, 
+        previous: 0,
+        currentSales: 0,
+        currentPayments: 0
+      });
     });
 
     // Process payments
@@ -177,8 +183,12 @@ router.get('/stats', authenticate, async (req, res) => {
       const y = pDate.getFullYear();
       const amount = parseFloat(p.amount) || 0;
       const entry = comparisonMap.get(m);
-      if (y === currentYear) entry.current += amount;
-      else if (y === lastYear) entry.previous += amount;
+      if (y === currentYear) {
+        entry.current += amount;
+        entry.currentPayments += amount;
+      } else if (y === lastYear) {
+        entry.previous += amount;
+      }
     });
 
     // Process sales
@@ -188,8 +198,12 @@ router.get('/stats', authenticate, async (req, res) => {
       const y = sDate.getFullYear();
       const amount = parseFloat(s.totalAmount) || 0;
       const entry = comparisonMap.get(m);
-      if (y === currentYear) entry.current += amount;
-      else if (y === lastYear) entry.previous += amount;
+      if (y === currentYear) {
+        entry.current += amount;
+        entry.currentSales += amount;
+      } else if (y === lastYear) {
+        entry.previous += amount;
+      }
     });
 
     const revenueComparison = Array.from(comparisonMap.values());
@@ -263,9 +277,17 @@ router.get('/stats', authenticate, async (req, res) => {
       const date = new Date(fourteenDaysAgo);
       date.setDate(date.getDate() + i);
       const dateStr = date.toISOString().split('T')[0];
-      dailyActivityMap.set(dateStr, { date: dateStr, checkIns: 0, activeMembersCount: 0 });
+      dailyActivityMap.set(dateStr, { 
+        date: dateStr, 
+        checkIns: 0, 
+        activeMembersCount: 0,
+        revenue: 0,
+        payments: 0,
+        sales: 0
+      });
     }
 
+    // Process daily checkins
     dailyCheckinsRaw.forEach(r => {
       const dateStr = new Date(r.date).toISOString().split('T')[0];
       if (dailyActivityMap.has(dateStr)) dailyActivityMap.get(dateStr).checkIns = Number(r.count);
@@ -274,6 +296,39 @@ router.get('/stats', authenticate, async (req, res) => {
     dailyActiveMembers.forEach(r => {
       const dateStr = new Date(r.date).toISOString().split('T')[0];
       if (dailyActivityMap.has(dateStr)) dailyActivityMap.get(dateStr).activeMembersCount = Number(r.count);
+    });
+
+    // Fetch daily financial data for the last 14 days
+    const dailyPaymentsRaw = await prisma.$queryRaw`
+      SELECT DATE("paymentDate") as date, SUM(amount) as total 
+      FROM "Payment" 
+      WHERE "paymentDate" >= ${fourteenDaysAgo} 
+      GROUP BY DATE("paymentDate")
+    `;
+
+    const dailySalesRaw = await prisma.$queryRaw`
+      SELECT DATE("saleDate") as date, SUM("totalAmount") as total 
+      FROM "Sale" 
+      WHERE "saleDate" >= ${fourteenDaysAgo} 
+      GROUP BY DATE("saleDate")
+    `;
+
+    dailyPaymentsRaw.forEach(r => {
+      const dateStr = new Date(r.date).toISOString().split('T')[0];
+      if (dailyActivityMap.has(dateStr)) {
+        const amount = parseFloat(r.total) || 0;
+        dailyActivityMap.get(dateStr).payments = amount;
+        dailyActivityMap.get(dateStr).revenue += amount;
+      }
+    });
+
+    dailySalesRaw.forEach(r => {
+      const dateStr = new Date(r.date).toISOString().split('T')[0];
+      if (dailyActivityMap.has(dateStr)) {
+        const amount = parseFloat(r.total) || 0;
+        dailyActivityMap.get(dateStr).sales = amount;
+        dailyActivityMap.get(dateStr).revenue += amount;
+      }
     });
 
     res.json({
