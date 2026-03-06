@@ -35,7 +35,7 @@
   .dark body {
     @apply bg-dark-950 text-white bg-none;
     background-color: #000000;
-    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('/bg-dark.jpg');
+    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.15)), url('/bg-dark.jpg');
     background-size: cover;
     background-attachment: fixed;
     background-position: center;
