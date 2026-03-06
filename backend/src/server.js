@@ -14,6 +14,7 @@ import expenseRoutes from './routes/expenses.routes.js';
 import accountingRoutes from './routes/accounting.routes.js';
 import settingsRoutes from './routes/settings.routes.js';
 import productsRoutes from './routes/products.routes.js';
+import fixedCostsRoutes from './routes/fixed-costs.routes.js';
 
 import { createServer } from 'http';
 import { Server } from 'socket.io';
@@ -105,6 +106,7 @@ app.use('/api/expenses', expenseRoutes);
 app.use('/api/accounting', accountingRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/products', productsRoutes);
+app.use('/api/fixed-costs', fixedCostsRoutes);
 
 // Health check
 app.get('/health', (req, res) => {

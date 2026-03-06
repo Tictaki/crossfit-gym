@@ -33,11 +33,16 @@ router.get('/summary', authenticate, async (req, res) => {
         where: where,
         _sum: { amount: true },
         _count: true
+      }),
+      prisma.fixedCost.aggregate({
+        _sum: { amount: true }
       })
     ]);
     
+    const fixedCostsTotal = parseFloat(fixedCosts?._sum?.amount || 0);
+    const variableExpensesTotal = parseFloat(expenses._sum.amount || 0);
     const totalRevenue = parseFloat(payments._sum.amount || 0);
-    const totalExpenses = parseFloat(expenses._sum.amount || 0);
+    const totalExpenses = variableExpensesTotal + fixedCostsTotal;
     const netProfit = totalRevenue - totalExpenses;
     
     res.json({
@@ -47,6 +52,8 @@ router.get('/summary', authenticate, async (req, res) => {
       },
       expenses: {
         total: totalExpenses,
+        variable: variableExpensesTotal,
+        fixed: fixedCostsTotal,
         count: expenses._count
       },
       netProfit
@@ -97,9 +104,16 @@ router.get('/trends', authenticate, async (req, res) => {
     expenseTrends.forEach(e => {
       const m = e.month.toISOString();
       if (!trendsMap[m]) {
-        trendsMap[m] = { month: m, revenue: 0, expenses: parseFloat(e.expenses) };
+        trendsMap[m] = { month: m, revenue: 0, expenses: parseFloat(e.expenses) + fixedCostsMonthly };
       } else {
-        trendsMap[m].expenses = parseFloat(e.expenses);
+        trendsMap[m].expenses = parseFloat(e.expenses) + fixedCostsMonthly;
+      }
+    });
+
+    // Ensure all months have at least fixed costs even if no transactions
+    Object.keys(trendsMap).forEach(m => {
+      if (trendsMap[m].expenses === 0) {
+        trendsMap[m].expenses = fixedCostsMonthly;
       }
     });
 

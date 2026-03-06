@@ -191,6 +191,13 @@ export const accountingAPI = {
   trends: (params) => api.get('/accounting/trends', { params }),
 };
 
+// Fixed Costs API
+export const fixedCostsAPI = {
+  list: () => api.get('/fixed-costs'),
+  create: (data) => api.post('/fixed-costs', data),
+  delete: (id) => api.delete(`/fixed-costs/${id}`),
+};
+
 // Settings API (Uploads go direct to backend)
 export const settingsAPI = {
   get: () => api.get('/settings'),

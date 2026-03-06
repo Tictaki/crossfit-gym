@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { accountingAPI, expensesAPI } from '@/lib/api';
+import { accountingAPI, expensesAPI, fixedCostsAPI } from '@/lib/api';
 import {
   BanknotesIcon,
   ArrowTrendingUpIcon,
@@ -33,9 +33,12 @@ export default function AccountingPage() {
   const toast = useToast();
   const [summary, setSummary] = useState(null);
   const [expenses, setExpenses] = useState([]);
+  const [fixedCosts, setFixedCosts] = useState([]);
   const [trends, setTrends] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isFixedCostModalOpen, setIsFixedCostModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('variable'); // 'variable' or 'fixed'
   
   // Form State
   const [newExpense, setNewExpense] = useState({
@@ -43,6 +46,12 @@ export default function AccountingPage() {
     amount: '',
     category: 'OTHER',
     date: new Date().toISOString().split('T')[0]
+  });
+
+  const [newFixedCost, setNewFixedCost] = useState({
+    description: '',
+    amount: '',
+    category: 'SALARIES'
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCustomCategory, setIsCustomCategory] = useState(false);
@@ -57,14 +66,16 @@ export default function AccountingPage() {
   const loadData = async () => {
     try {
       setLoading(true);
-      const [summaryRes, expensesRes, trendsRes] = await Promise.all([
+      const [summaryRes, expensesRes, trendsRes, fixedCostsRes] = await Promise.all([
         accountingAPI.summary(),
         expensesAPI.list(),
-        accountingAPI.trends()
+        accountingAPI.trends(),
+        fixedCostsAPI.list()
       ]);
       setSummary(summaryRes.data);
       setExpenses(expensesRes.data.expenses);
       setTrends(trendsRes.data);
+      setFixedCosts(fixedCostsRes.data);
     } catch (err) {
       console.error('Error loading accounting data:', err);
     } finally {
@@ -99,6 +110,27 @@ export default function AccountingPage() {
     }
   };
 
+  const handleAddFixedCost = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      await fixedCostsAPI.create(newFixedCost);
+      setIsFixedCostModalOpen(false);
+      setNewFixedCost({
+        description: '',
+        amount: '',
+        category: 'SALARIES'
+      });
+      loadData();
+      toast.success('Custo fixo registado com sucesso!');
+    } catch (err) {
+      console.error('Error adding fixed cost:', err);
+      toast.error('Erro ao registar custo fixo');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const handleDeleteExpense = async (id) => {
     if (await confirm({
       title: 'Apagar Despesa?',
@@ -114,6 +146,25 @@ export default function AccountingPage() {
       } catch (err) {
         console.error('Error deleting expense:', err);
         toast.error('Erro ao apagar despesa');
+      }
+    }
+  };
+
+  const handleDeleteFixedCost = async (id) => {
+    if (await confirm({
+      title: 'Remover Custo Fixo?',
+      message: 'Este custo deixará de ser contabilizado nos meses futuros. Continuar?',
+      confirmText: 'Remover',
+      cancelText: 'Cancelar',
+      variant: 'danger'
+    })) {
+      try {
+        await fixedCostsAPI.delete(id);
+        loadData();
+        toast.success('Custo fixo removido com sucesso!');
+      } catch (err) {
+        console.error('Error deleting fixed cost:', err);
+        toast.error('Erro ao remover custo fixo');
       }
     }
   };
@@ -170,9 +221,15 @@ export default function AccountingPage() {
           <h3 className="text-2xl md:text-3xl font-bold text-red-500">
             {formatCurrency(summary?.expenses?.total)}
           </h3>
-          <div className="mt-4 flex items-center gap-2 text-[10px] md:text-xs font-bold text-dark-500 dark:text-dark-200">
-            <span className="px-1.5 py-0.5 rounded-md bg-red-500/10 text-red-500">{summary?.expenses?.count}</span>
-            <span>Registos</span>
+          <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-[9px] md:text-[10px] font-bold text-dark-500 dark:text-dark-200">
+            <span className="flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
+              Variáveis: {formatCurrency(summary?.expenses?.variable)}
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+              Fixos: {formatCurrency(summary?.expenses?.fixed)}
+            </span>
           </div>
         </div>
 
@@ -200,57 +257,145 @@ export default function AccountingPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Expenses List */}
         <div className="card-glass p-0 overflow-hidden">
-          <div className="p-6 border-b border-white/10 flex items-center justify-between">
-            <h3 className="text-lg font-bold text-dark-900 dark:text-white uppercase tracking-tight">
-              Despesas Recentes
-            </h3>
-            <button className="p-2 rounded-xl bg-dark-100 dark:bg-dark-800 text-dark-500 dark:text-dark-200 hover:scale-110 transition-transform">
-              <FunnelIcon className="h-5 w-5" />
-            </button>
+          <div className="p-6 border-b border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex bg-dark-100 dark:bg-dark-800 p-1 rounded-xl">
+              <button 
+                onClick={() => setActiveTab('variable')}
+                className={`px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${
+                  activeTab === 'variable' 
+                    ? 'bg-white dark:bg-dark-700 text-dark-900 dark:text-white shadow-sm' 
+                    : 'text-dark-400 hover:text-dark-600 dark:text-dark-400 dark:hover:text-white'
+                }`}
+              >
+                Variáveis
+              </button>
+              <button 
+                onClick={() => setActiveTab('fixed')}
+                className={`px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${
+                  activeTab === 'fixed' 
+                    ? 'bg-white dark:bg-dark-700 text-dark-900 dark:text-white shadow-sm' 
+                    : 'text-dark-400 hover:text-dark-600 dark:text-dark-400 dark:hover:text-white'
+                }`}
+              >
+                Custos Fixos
+              </button>
+            </div>
+            
+            {activeTab === 'fixed' && (
+              <button 
+                onClick={() => setIsFixedCostModalOpen(true)}
+                className="btn-primary py-2 px-4 shadow-glow-sm !text-[10px]"
+              >
+                <PlusIcon className="h-4 w-4" />
+                Novo Custo Fixo
+              </button>
+            )}
           </div>
-          <div className="overflow-x-auto table-container">
-            <table className="table min-w-full table-responsive-cards border-none mt-0">
-              <thead className="bg-dark-50 dark:bg-dark-800/50">
-                <tr>
-                  <th className="px-6 py-4 text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Data</th>
-                  <th className="px-6 py-4 text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Descrição</th>
-                  <th className="px-6 py-4 text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Categoria</th>
-                  <th className="px-6 py-4 text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Valor</th>
-                  <th className="px-6 py-4"></th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/5">
-                {expenses.map((expense) => (
-                  <tr key={expense.id} className="hover:bg-white/5 transition-colors">
-                    <td className="px-6 py-4 font-bold text-xs text-dark-500 dark:text-dark-200" data-label="Data">
-                      {new Date(expense.date).toLocaleDateString('pt-PT')}
-                    </td>
-                    <td className="px-6 py-4 font-bold text-dark-900 dark:text-white" data-label="Descrição">
-                      {expense.description}
-                    </td>
-                    <td className="px-6 py-4" data-label="Categoria">
-                      <span className={`px-2 py-1 rounded-lg text-[9px] font-bold uppercase tracking-tighter text-white ${EXPENSE_CATEGORIES.find(c => c.value === expense.category)?.color || 'bg-gray-500'}`}>
-                        {EXPENSE_CATEGORIES.find(c => c.value === expense.category)?.label || expense.category}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 font-bold text-red-500" data-label="Valor">
-                      -{formatCurrency(expense.amount)}
-                    </td>
-                    <td className="px-6 py-4" data-label="Ações">
-                      <div className="flex items-center justify-center sm:justify-end">
-                        <button 
-                          onClick={() => handleDeleteExpense(expense.id)}
-                          className="flex items-center justify-center p-3 sm:p-2 text-dark-400 hover:text-red-500 hover:bg-red-500/10 rounded-2xl sm:rounded-xl transition-all active:scale-95 bg-dark-50 dark:bg-dark-800/50 sm:bg-transparent"
-                        >
-                          <TrashIcon className="h-6 w-6 sm:h-4 sm:w-4" />
-                        </button>
-                      </div>
-                    </td>
+
+          {activeTab === 'variable' ? (
+            <div className="overflow-x-auto table-container">
+              <table className="table min-w-full table-responsive-cards border-none mt-0">
+                <thead className="bg-dark-50 dark:bg-dark-800/50">
+                  <tr>
+                    <th className="px-6 py-4 text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Data</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Descrição</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Categoria</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Valor</th>
+                    <th className="px-6 py-4"></th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-white/5">
+                  {expenses.map((expense) => (
+                    <tr key={expense.id} className="hover:bg-white/5 transition-colors">
+                      <td className="px-6 py-4 font-bold text-xs text-dark-500 dark:text-dark-200" data-label="Data">
+                        {new Date(expense.date).toLocaleDateString('pt-PT')}
+                      </td>
+                      <td className="px-6 py-4 font-bold text-dark-900 dark:text-white" data-label="Descrição">
+                        {expense.description}
+                      </td>
+                      <td className="px-6 py-4" data-label="Categoria">
+                        <span className={`px-2 py-1 rounded-lg text-[9px] font-bold uppercase tracking-tighter text-white ${EXPENSE_CATEGORIES.find(c => c.value === expense.category)?.color || 'bg-gray-500'}`}>
+                          {EXPENSE_CATEGORIES.find(c => c.value === expense.category)?.label || expense.category}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 font-bold text-red-500" data-label="Valor">
+                        -{formatCurrency(expense.amount)}
+                      </td>
+                      <td className="px-6 py-4" data-label="Ações">
+                        <div className="flex items-center justify-center sm:justify-end">
+                          <button 
+                            onClick={() => handleDeleteExpense(expense.id)}
+                            className="flex items-center justify-center p-3 sm:p-2 text-dark-400 hover:text-red-500 hover:bg-red-500/10 rounded-2xl sm:rounded-xl transition-all active:scale-95 bg-dark-50 dark:bg-dark-800/50 sm:bg-transparent"
+                          >
+                            <TrashIcon className="h-6 w-6 sm:h-4 sm:w-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                  {expenses.length === 0 && (
+                    <tr>
+                      <td colSpan="5" className="px-6 py-12 text-center text-dark-500 dark:text-dark-400 font-medium">
+                        Nenhuma despesa variável registada.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="overflow-x-auto table-container">
+              <table className="table min-w-full table-responsive-cards border-none mt-0">
+                <thead className="bg-dark-50 dark:bg-dark-800/50">
+                  <tr>
+                    <th className="px-6 py-4 text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Descrição</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Categoria</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Valor Mensal</th>
+                    <th className="px-6 py-4"></th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5">
+                  {fixedCosts.map((cost) => (
+                    <tr key={cost.id} className="hover:bg-white/5 transition-colors">
+                      <td className="px-6 py-4 font-bold text-dark-900 dark:text-white" data-label="Descrição">
+                        {cost.description}
+                      </td>
+                      <td className="px-6 py-4" data-label="Categoria">
+                        <span className={`px-2 py-1 rounded-lg text-[9px] font-bold uppercase tracking-tighter text-white ${EXPENSE_CATEGORIES.find(c => c.value === cost.category)?.color || 'bg-amber-500'}`}>
+                          {EXPENSE_CATEGORIES.find(c => c.value === cost.category)?.label || cost.category}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 font-bold text-amber-500" data-label="Valor">
+                        -{formatCurrency(cost.amount)}
+                      </td>
+                      <td className="px-6 py-4" data-label="Ações">
+                        <div className="flex items-center justify-center sm:justify-end">
+                          <button 
+                            onClick={() => handleDeleteFixedCost(cost.id)}
+                            className="flex items-center justify-center p-3 sm:p-2 text-dark-400 hover:text-red-500 hover:bg-red-500/10 rounded-2xl sm:rounded-xl transition-all active:scale-95 bg-dark-50 dark:bg-dark-800/50 sm:bg-transparent"
+                          >
+                            <TrashIcon className="h-6 w-6 sm:h-4 sm:w-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                  {fixedCosts.length === 0 && (
+                    <tr>
+                      <td colSpan="4" className="px-6 py-12 text-center text-dark-500 dark:text-dark-400 font-medium">
+                        Nenhum custo fixo registado. Adicione salários, renda, etc.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+              <div className="p-4 bg-primary-500/5 border-t border-white/10">
+                <p className="text-[10px] text-dark-400 dark:text-dark-300 font-medium italic">
+                  * Os custos fixos são subtraídos automaticamente da receita todos os meses.
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Trends Chart Placeholder & Summary */}
@@ -362,7 +507,6 @@ export default function AccountingPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest px-2">Categoria</label>
                 <label className="text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest px-2">Categoria</label>
                 <div className="relative">
                   <button

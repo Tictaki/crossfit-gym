@@ -271,3 +271,14 @@ enum ExpenseCategory {
   TAXES
   OTHER
 }
+
+model FixedCost {
+  id          String   @id @default(uuid())
+  description String
+  amount      Decimal  @db.Decimal(10, 2)
+  category    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([category])
+}
