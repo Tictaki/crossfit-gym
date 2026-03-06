@@ -140,49 +140,66 @@ export default function DashboardPage() {
       </motion.div>
 
       {/* Stats Cards */}
-      <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+      <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
         {/* Active Members Card */}
-        <motion.div whileHover={{ x: 5 }} className="brutal-border hover:bg-dark-900/60 transition-all">
-          <div className="flex flex-col gap-1">
-            <span className="premium-label">Membros Ativos</span>
-            <div className="text-premium-display text-5xl mb-2">{stats?.activeMembers || 0}</div>
-            <div className="flex items-center gap-2">
-              <div className={`flex items-center text-[9px] font-black px-1.5 py-0.5 rounded-sm ${stats?.membersTrend >= 0 ? 'text-green-500 bg-green-500/10' : 'text-red-500 bg-red-500/10'}`}>
-                {stats?.membersTrend >= 0 ? '▲' : '▼'} {Math.abs(stats?.membersTrend || 0)}%
-              </div>
-              <span className="text-premium-meta opacity-60">Total: {stats?.totalMembers || 0}</span>
+        <motion.div whileHover={{ scale: 1.02 }} className="card-aura card-aura-hover p-8 group">
+          <div className="flex flex-col gap-2">
+            <span className="premium-label opacity-70">Membros Ativos</span>
+            <div className="text-premium-display text-6xl mb-2 flex items-baseline gap-2">
+              {stats?.activeMembers || 0}
+              <span className="text-sm font-black text-green-500 bg-green-500/10 px-2 py-1 rounded-full">
+                {stats?.membersTrend >= 0 ? '↗' : '↘'} {Math.abs(stats?.membersTrend || 0)}%
+              </span>
             </div>
+            <div className="text-premium-meta opacity-40">Capacidade Total: {stats?.totalMembers || 0}</div>
+          </div>
+          <div className="absolute top-4 right-4 p-3 bg-blue-500/5 rounded-full group-hover:bg-blue-500/10 transition-colors">
+            <UsersIcon className="h-5 w-5 text-blue-500" />
           </div>
         </motion.div>
 
         {/* Monthly Revenue Card */}
-        <motion.div whileHover={{ x: 5 }} className="brutal-border border-green-500 hover:bg-dark-900/60 transition-all">
-          <div className="flex flex-col gap-1">
-            <span className="premium-label">Receita Mensal</span>
+        <motion.div whileHover={{ scale: 1.02 }} className="card-aura card-aura-hover p-8 border-l-0 group">
+          <div className="flex flex-col gap-2">
+            <span className="premium-label opacity-70">Receita Mensal</span>
             <div className="text-premium-display text-4xl mb-2 text-green-500">{formatCurrency(stats?.monthlyRevenue || 0)}</div>
-            <div className={`flex items-center text-[9px] font-black px-1.5 py-0.5 rounded-sm w-fit ${stats?.revenueTrend >= 0 ? 'text-green-500 bg-green-500/10' : 'text-red-500 bg-red-500/10'}`}>
-                {stats?.revenueTrend >= 0 ? '▲' : '▼'} {Math.abs(stats?.revenueTrend || 0)}% <span className="ml-1 opacity-70">VS ANTERIOR</span>
+            <div className="flex items-center gap-2">
+              <span className={`text-[10px] font-black px-2 py-1 rounded-full ${stats?.revenueTrend >= 0 ? 'text-green-500 bg-green-500/10' : 'text-red-500 bg-red-500/10'}`}>
+                {stats?.revenueTrend >= 0 ? '↗' : '↘'} {Math.abs(stats?.revenueTrend || 0)}%
+              </span>
+              <span className="text-premium-meta opacity-40 uppercase">VS ANTERIOR</span>
             </div>
+          </div>
+          <div className="absolute top-4 right-4 p-3 bg-green-500/5 rounded-full group-hover:bg-green-500/10 transition-colors">
+            <BanknotesIcon className="h-5 w-5 text-green-500" />
           </div>
         </motion.div>
 
         {/* Pending Payments Card */}
-        <motion.div whileHover={{ x: 5 }} className="brutal-border border-red-500 hover:bg-dark-900/60 transition-all">
-          <div className="flex flex-col gap-1">
-            <span className="premium-label">Pendentes</span>
+        <motion.div whileHover={{ scale: 1.02 }} className="card-aura card-aura-hover p-8 group">
+          <div className="flex flex-col gap-2">
+            <span className="premium-label opacity-70">Pendentes</span>
             <div className="text-premium-display text-4xl mb-2 text-red-500">{formatCurrency(stats?.pendingPayments || 0)}</div>
-            <div className="text-premium-meta text-red-500/60">Ação Requerida</div>
+            <div className="text-premium-meta text-red-500/40 flex items-center gap-1">
+              <ExclamationCircleIcon className="h-3 w-3" /> Ação Requerida
+            </div>
+          </div>
+          <div className="absolute top-4 right-4 p-3 bg-red-500/5 rounded-full group-hover:bg-red-500/10 transition-colors">
+            <ExclamationCircleIcon className="h-5 w-5 text-red-500" />
           </div>
         </motion.div>
 
         {/* Low Stock Card */}
-        <motion.div whileHover={{ x: 5 }} className="brutal-border border-amber-500 hover:bg-dark-900/60 transition-all">
-          <div className="flex flex-col gap-1">
-            <span className="premium-label">Stock Alerta</span>
+        <motion.div whileHover={{ scale: 1.02 }} className="card-aura card-aura-hover p-8 group">
+          <div className="flex flex-col gap-2">
+            <span className="premium-label opacity-70">Stock Alerta</span>
             <div className={`text-premium-display text-5xl mb-2 ${stats?.lowStockCount > 0 ? 'text-amber-500' : 'text-white'}`}>
               {stats?.lowStockCount || 0}
             </div>
-            <div className="text-premium-meta opacity-60">Produtos p/ Repor</div>
+            <div className="text-premium-meta opacity-40">Produtos p/ Repor</div>
+          </div>
+          <div className="absolute top-4 right-4 p-3 bg-amber-500/5 rounded-full group-hover:bg-amber-500/10 transition-colors">
+            <ShoppingBagIcon className="h-5 w-5 text-amber-500" />
           </div>
         </motion.div>
       </motion.div>
@@ -214,7 +231,7 @@ export default function DashboardPage() {
 
       {/* Main Income Chart */}
       {stats?.revenueComparison && (
-        <motion.div variants={itemVariants} className="card-glass p-6">
+        <motion.div variants={itemVariants} className="card-aura p-10">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
             <div>
               <h2 className="text-2xl font-black uppercase tracking-tighter">Performance Financeira</h2>
@@ -267,8 +284,8 @@ export default function DashboardPage() {
       )}
 
       {/* Grid for Charts & Lists */}
-      <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="card-glass lg:col-span-2 relative overflow-hidden h-auto min-h-[360px] p-6">
+      <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="card-aura lg:col-span-2 relative overflow-hidden h-auto min-h-[400px] p-10">
           <div className="flex items-center justify-between mb-8">
             <div>
               <h2 className="text-2xl font-black uppercase tracking-tighter">Mix de Faturação</h2>
@@ -331,14 +348,14 @@ export default function DashboardPage() {
             </ResponsiveContainer>
           </div>
         </div>
-        <div className="card-glass">
-          <h2 className="text-lg font-bold text-dark-900 dark:text-white mb-6">Produtos Mais Vendidos</h2>
+        <div className="card-aura p-10">
+          <h2 className="text-2xl font-black uppercase tracking-tighter mb-8">Best Sellers</h2>
           <div className="space-y-4 h-[250px] overflow-y-auto pr-2 custom-scrollbar">
             {(stats?.topProducts || []).map((p, i) => (
-              <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-gray-50/50 dark:bg-dark-700/30 border border-white/5">
-                <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-lg bg-orange-100 dark:bg-orange-900/20 text-orange-600 flex items-center justify-center font-bold text-xs">#{i+1}</div>
-                  <span className="text-sm font-bold text-dark-800 dark:text-dark-200">{p.name}</span>
+              <div key={i} className="flex items-center justify-between p-4 rounded-3xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all">
+                <div className="flex items-center gap-4">
+                  <div className="h-10 w-10 rounded-2xl bg-orange-500/10 text-orange-500 flex items-center justify-center font-black text-xs">#{i+1}</div>
+                  <span className="text-sm font-black text-white font-display uppercase tracking-tight">{p.name}</span>
                 </div>
                 <div className="text-right">
                   <p className="text-xs font-bold text-dark-900 dark:text-white">{p.quantity} unid.</p>
@@ -412,57 +429,61 @@ export default function DashboardPage() {
 
       <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Expiring Soon */}
-        <div className="brutal-border hover:bg-dark-900/60 transition-all">
+        <div className="card-aura p-10">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-xl font-black uppercase tracking-tighter">Expirações Próximas</h2>
-            <ExclamationCircleIcon className="h-5 w-5 text-amber-500" />
+            <h2 className="text-2xl font-black uppercase tracking-tighter">Expirações Próximas</h2>
+            <div className="p-3 bg-amber-500/10 rounded-2xl text-amber-500">
+              <ExclamationCircleIcon className="h-6 w-6" />
+            </div>
           </div>
           <div className="space-y-4">
             {(stats?.expiringSoon || []).map((m, i) => (
-               <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all cursor-default">
+               <div key={i} className="flex items-center justify-between p-5 rounded-[2rem] bg-white/5 border border-white/5 hover:bg-white/10 transition-all cursor-default">
                  <div className="flex items-center gap-4">
-                   <div className="h-10 w-10 rounded-lg bg-amber-500/10 text-amber-500 flex items-center justify-center font-black text-sm">{m.name.charAt(0)}</div>
+                   <div className="h-12 w-12 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center font-black text-sm">{m.name.charAt(0)}</div>
                    <div>
-                     <p className="text-sm font-black text-white font-display tracking-tight">{m.name}</p>
-                     <p className="text-premium-meta opacity-50">{m.plan?.name}</p>
+                     <p className="text-sm font-black text-white font-display uppercase tracking-tight">{m.name}</p>
+                     <p className="text-premium-meta opacity-40">{m.plan?.name}</p>
                    </div>
                  </div>
                  <div className="text-right">
                    <p className="text-sm font-black text-white font-display">{new Date(m.expirationDate).toLocaleDateString('pt-PT')}</p>
-                   <p className="text-premium-meta text-amber-500/60">PRAZO</p>
+                   <p className="text-premium-meta text-amber-500/60 uppercase">PRAZO</p>
                  </div>
                </div>
             ))}
             {(!stats?.expiringSoon || stats.expiringSoon.length === 0) && (
-              <p className="text-xs text-dark-500 italic text-center py-6">Sem expirações iminentes.</p>
+              <p className="text-sm text-dark-500 italic text-center py-10">Sem expirações iminentes.</p>
             )}
           </div>
         </div>
 
         {/* Recent Activity */}
-        <div className="brutal-border border-blue-500 hover:bg-dark-900/60 transition-all">
+        <div className="card-aura p-10">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-xl font-black uppercase tracking-tighter">Fluxo Recente</h2>
-            <ArrowTrendingUpIcon className="h-5 w-5 text-blue-500" />
+            <h2 className="text-2xl font-black uppercase tracking-tighter">Fluxo Recente</h2>
+            <div className="p-3 bg-blue-500/10 rounded-2xl text-blue-500">
+              <ArrowTrendingUpIcon className="h-6 w-6" />
+            </div>
           </div>
           <div className="space-y-4">
             {(stats?.recentActivity || []).map((r, i) => (
-               <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all cursor-default">
+               <div key={i} className="flex items-center justify-between p-5 rounded-[2rem] bg-white/5 border border-white/5 hover:bg-white/10 transition-all cursor-default">
                  <div className="flex items-center gap-4">
-                   <div className="h-10 w-10 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center"><BanknotesIcon className="h-5 w-5" /></div>
+                   <div className="h-12 w-12 rounded-2xl bg-blue-500/10 text-blue-500 flex items-center justify-center"><BanknotesIcon className="h-6 w-6" /></div>
                    <div>
-                     <p className="text-sm font-black text-white font-display tracking-tight">{r.member?.name}</p>
-                     <p className="text-premium-meta opacity-50">{r.plan?.name}</p>
+                     <p className="text-sm font-black text-white font-display uppercase tracking-tight">{r.member?.name}</p>
+                     <p className="text-premium-meta opacity-40">{r.plan?.name}</p>
                    </div>
                  </div>
                  <div className="text-right">
                    <p className="text-sm font-black text-blue-400 font-display">{formatCurrency(r.amount)}</p>
-                   <p className="text-premium-meta text-blue-500/60">VALOR</p>
+                   <p className="text-premium-meta text-blue-500/60 uppercase">VALOR</p>
                  </div>
                </div>
             ))}
             {(!stats?.recentActivity || stats.recentActivity.length === 0) && (
-              <p className="text-xs text-dark-500 italic text-center py-6">Sem atividade recente.</p>
+              <p className="text-sm text-dark-500 italic text-center py-10">Sem atividade recente.</p>
             )}
           </div>
         </div>
