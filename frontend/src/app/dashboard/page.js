@@ -140,7 +140,7 @@ export default function DashboardPage() {
       </motion.div>
 
       {/* Stats Cards */}
-      <motion.div variants={itemVariants} className="stat-grid">
+      <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {/* Active Members Card */}
         <motion.div whileHover={{ y: -5 }} className="stat-card group !p-4 md:!p-6">
           <div className="flex flex-col md:flex-row md:items-start justify-between gap-2">
@@ -259,7 +259,7 @@ export default function DashboardPage() {
               </button>
             </div>
           </div>
-          <div className="h-[400px]">
+          <div className="h-[300px] md:h-[400px]">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={stats.revenueComparison} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                 <defs>
@@ -277,8 +277,8 @@ export default function DashboardPage() {
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(200, 200, 200, 0.05)" vertical={false} />
-                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: 'rgba(100, 100, 100, 0.6)', fontSize: 12 }} dy={10} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fill: 'rgba(100, 100, 100, 0.6)', fontSize: 12 }} tickFormatter={(val) => `MZN ${val/1000}k`} />
+                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: 'rgba(100, 100, 100, 0.6)', fontSize: 10 }} dy={10} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill: 'rgba(100, 100, 100, 0.6)', fontSize: 10 }} tickFormatter={(val) => `MZN ${val/1000}k`} />
                 <Tooltip content={<CustomTooltip />} />
                 <Area type="monotone" name="Serviços (Planos)" dataKey="currentPayments" stroke="#f50707" strokeWidth={3} fill="url(#colorCurrent)" fillOpacity={1} animationDuration={1000} />
                 <Area type="monotone" name="Loja (Produtos)" dataKey="currentSales" stroke="#3b82f6" strokeWidth={3} fill="url(#colorStore)" fillOpacity={1} animationDuration={1000} />
@@ -292,7 +292,7 @@ export default function DashboardPage() {
 
       {/* Grid for Charts & Lists */}
       <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="card-glass lg:col-span-2 relative overflow-hidden h-[360px]">
+        <div className="card-glass lg:col-span-2 relative overflow-hidden h-auto min-h-[360px] p-6">
           <div className="flex items-center justify-between mb-8">
             <div>
               <h3 className="text-lg font-bold text-dark-900 dark:text-white">Faturação por Categoria</h3>
@@ -377,23 +377,62 @@ export default function DashboardPage() {
         </div>
       </motion.div>
 
-      {/* Additional Sections with Item Stagger */}
-      {stats?.dailyActivity && (
-        <motion.div variants={itemVariants} className="card-glass p-6">
-           <h3 className="text-lg font-bold mb-4 font-outfit text-dark-900 dark:text-white">Atividade Diária</h3>
-           <div className="h-[300px]">
-             <ResponsiveContainer width="100%" height="100%">
-               <AreaChart data={stats.dailyActivity}>
-                 <XAxis dataKey="date" hide />
-                 <YAxis hide />
-                 <Tooltip content={<CustomTooltip />} />
-                 <Area type="monotone" name="Faturação Produtos" dataKey="sales" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.2} strokeWidth={2} />
-                 <Area type="monotone" name="Faturação Serviços" dataKey="payments" stroke="#f50707" fill="#f50707" fillOpacity={0.2} strokeWidth={2} />
-               </AreaChart>
-             </ResponsiveContainer>
-           </div>
-        </motion.div>
-      )}
+      {/* Daily & Hourly Activity Grid */}
+      <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Daily Activity Chart */}
+        {stats?.dailyActivity && (
+          <div className="card-glass p-6">
+            <h3 className="text-lg font-bold mb-4 font-outfit text-dark-900 dark:text-white">Atividade Diária (14 Dias)</h3>
+            <div className="h-[250px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={stats.dailyActivity}>
+                  <XAxis dataKey="date" hide />
+                  <YAxis hide />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Area type="monotone" name="Faturação Produtos" dataKey="sales" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.2} strokeWidth={2} />
+                  <Area type="monotone" name="Faturação Serviços" dataKey="payments" stroke="#f50707" fill="#f50707" fillOpacity={0.2} strokeWidth={2} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        )}
+
+        {/* Hourly Peak Activity Chart */}
+        {stats?.hourlyActivity && (
+          <div className="card-glass p-6">
+            <h3 className="text-lg font-bold mb-4 font-outfit text-dark-900 dark:text-white">Horas de Pico</h3>
+            <div className="h-[250px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={stats.hourlyActivity} margin={{ top: 0, right: 0, left: -25, bottom: 0 }}>
+                  <XAxis 
+                    dataKey="hour" 
+                    axisLine={false} 
+                    tickLine={false} 
+                    tick={{ fill: 'rgba(120, 120, 120, 0.7)', fontSize: 10 }}
+                    interval={3}
+                  />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill: 'rgba(120, 120, 120, 0.7)', fontSize: 10 }} />
+                  <Tooltip 
+                    cursor={{ fill: 'rgba(255, 255, 255, 0.03)', radius: 4 }}
+                    content={({ active, payload, label }) => {
+                      if (active && payload && payload.length) {
+                        return (
+                          <div className="bg-dark-900/95 backdrop-blur-md border border-white/10 p-3 rounded-xl shadow-2xl">
+                            <p className="text-white font-bold text-xs mb-1">{label}</p>
+                            <p className="text-primary-400 font-bold text-sm">{payload[0].value} entradas</p>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
+                  />
+                  <Bar dataKey="count" fill="#f50707" radius={[4, 4, 0, 0]} animationDuration={1000} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        )}
+      </motion.div>
 
       <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Expiring Soon */}

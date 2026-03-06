@@ -36,7 +36,7 @@ const Header = ({ user, setSidebarOpen }) => {
 
   return (
     <header className="bg-transparent z-40 relative">
-      <div className="flex items-center justify-between glass-panel !rounded-2xl !p-3 shadow-glass-premium transition-all duration-300">
+      <div className="flex items-center justify-between glass-panel !rounded-2xl !p-2 md:!p-3 shadow-glass-premium transition-all duration-300">
         <div className="flex items-center gap-3">
           <button 
             onClick={() => setSidebarOpen(true)}
@@ -45,11 +45,11 @@ const Header = ({ user, setSidebarOpen }) => {
             <Bars3Icon className="h-6 w-6" />
           </button>
           
-          <div className="flex flex-col pl-2 lg:pl-0">
-            <h2 className="text-sm md:text-base font-bold text-dark-900 dark:text-white tracking-tight leading-tight">
+          <div className="flex flex-col pl-1 md:pl-0">
+            <h2 className="text-xs md:text-base font-bold text-dark-900 dark:text-white tracking-tight leading-tight">
               Olá, <span className="text-primary-600 dark:text-primary-500">{user?.name?.split(' ')[0] || 'Utilizador'}</span> 👋
             </h2>
-            <p className="text-[10px] sm:text-xs font-semibold text-dark-500 dark:text-dark-300 uppercase tracking-widest">{user?.role?.toLowerCase()}</p>
+            <p className="text-[10px] md:text-xs font-semibold text-dark-500 dark:text-dark-300 uppercase tracking-widest leading-none">{user?.role?.toLowerCase()}</p>
           </div>
         </div>
 
@@ -61,25 +61,18 @@ const Header = ({ user, setSidebarOpen }) => {
             className="flex items-center gap-2 md:gap-3 p-1 rounded-2xl glass-button hover:bg-white/50 dark:hover:bg-dark-800/70 transition-all duration-300 group"
           >
             <div className="h-9 w-9 md:h-11 md:w-11 rounded-full p-[2px] bg-gradient-to-br from-primary-400 to-primary-600 shadow-premium overflow-hidden transition-transform duration-300 group-active:scale-90">
-              <div className="h-full w-full rounded-full bg-white dark:bg-dark-800 flex items-center justify-center overflow-hidden">
+              <div className="h-full w-full rounded-full bg-white dark:bg-dark-800 flex items-center justify-center overflow-hidden relative">
                 {user?.photo ? (
                   <img 
                     src={getImageUrl(user.photo)} 
                     alt="Profile" 
-                    className="w-full h-full object-cover" 
-                    onError={(e) => {
-                      // On error, show initials instead
-                      e.target.style.display = 'none';
-                      if (e.target.nextElement) e.target.nextElement.style.display = 'block';
-                      else {
-                        e.target.parentElement.innerHTML = `<span class="font-bold text-primary-600 dark:text-primary-500 text-lg">${user?.name?.[0] || 'U'}</span>`;
-                      }
-                    }}
+                    className="w-full h-full object-cover object-center aspect-square" 
                   />
-                ) : null}
-                <span className="font-bold text-primary-600 dark:text-primary-500 text-base md:text-lg">
-                  {user?.name?.[0] || 'U'}
-                </span>
+                ) : (
+                  <span className="font-bold text-primary-600 dark:text-primary-500 text-base md:text-lg">
+                    {user?.name?.[0] || 'U'}
+                  </span>
+                )}
               </div>
             </div>
             <ChevronDownIcon className={`h-4 w-4 text-dark-400 dark:text-dark-300 transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />

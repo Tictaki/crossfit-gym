@@ -184,15 +184,15 @@ export default function SettingsPage() {
           <div className="flex flex-col md:flex-row gap-8 items-start">
             {/* Profile Photo */}
             <div className="flex flex-col items-center gap-4">
-              <div className="h-32 w-32 rounded-full overflow-hidden bg-dark-100 dark:bg-dark-800 border-4 border-white dark:border-dark-700 shadow-premium relative group">
+              <div className="h-32 w-32 rounded-full overflow-hidden bg-dark-100 dark:bg-dark-800 border-4 border-white dark:border-dark-700 shadow-premium relative group aspect-square">
                 {profilePreview || userData?.photo ? (
                   <img 
                     src={profilePreview || getImageUrl(userData.photo)} 
                     alt="Profile" 
-                    className="w-full h-full object-cover" 
+                    className="w-full h-full object-cover object-center" 
                   />
                 ) : (
-                  <UserCircleIcon className="h-full w-full text-dark-300 dark:text-dark-600" />
+                  <UserCircleIcon className="h-full w-full text-dark-300 dark:text-dark-600 p-4" />
                 )}
                 <label className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer">
                   <span className="text-white text-xs font-bold uppercase">Alterar</span>

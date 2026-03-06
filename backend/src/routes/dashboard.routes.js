@@ -267,13 +267,15 @@ router.get('/stats', authenticate, async (req, res) => {
     fourteenDaysAgo.setDate(today.getDate() - 14);
     fourteenDaysAgo.setHours(0, 0, 0, 0);
 
-    const [dailyCheckinsRaw, dailyActiveMembers] = await Promise.all([
+    const [dailyCheckinsRaw, dailyActiveMembers, hourlyActivityRaw] = await Promise.all([
       prisma.$queryRaw`SELECT DATE("checkinDatetime") as date, COUNT(*) as count FROM "Checkin" WHERE "checkinDatetime" >= ${fourteenDaysAgo} GROUP BY DATE("checkinDatetime") ORDER BY date ASC`,
-      prisma.$queryRaw`SELECT DATE(c."checkinDatetime") as date, COUNT(DISTINCT c."memberId") as count FROM "Checkin" c WHERE c."checkinDatetime" >= ${fourteenDaysAgo} GROUP BY DATE(c."checkinDatetime") ORDER BY date ASC`
+      prisma.$queryRaw`SELECT DATE(c."checkinDatetime") as date, COUNT(DISTINCT c."memberId") as count FROM "Checkin" c WHERE c."checkinDatetime" >= ${fourteenDaysAgo} GROUP BY DATE(c."checkinDatetime") ORDER BY date ASC`,
+      prisma.$queryRaw`SELECT EXTRACT(HOUR FROM "checkinDatetime") as hour, COUNT(*) as count FROM "Checkin" WHERE "checkinDatetime" >= ${today.getTime() - (7 * 24 * 60 * 60 * 1000)} GROUP BY hour ORDER BY hour ASC`
     ]);
 
     const dailyActivityMap = new Map();
     for (let i = 0; i <= 14; i++) {
+// ... existing map initialization ...
       const date = new Date(fourteenDaysAgo);
       date.setDate(date.getDate() + i);
       const dateStr = date.toISOString().split('T')[0];
@@ -298,7 +300,19 @@ router.get('/stats', authenticate, async (req, res) => {
       if (dailyActivityMap.has(dateStr)) dailyActivityMap.get(dateStr).activeMembersCount = Number(r.count);
     });
 
+    // Process hourly activity
+    const hourlyActivity = Array.from({ length: 24 }, (_, i) => ({
+      hour: `${String(i).padStart(2, '0')}:00`,
+      count: 0
+    }));
+
+    hourlyActivityRaw.forEach(r => {
+      const h = Number(r.hour);
+      if (hourlyActivity[h]) hourlyActivity[h].count = Number(r.count);
+    });
+
     // Fetch daily financial data for the last 14 days
+// ... rest of financial data logic ...
     const dailyPaymentsRaw = await prisma.$queryRaw`
       SELECT DATE("paymentDate") as date, SUM(amount) as total 
       FROM "Payment" 
@@ -348,7 +362,8 @@ router.get('/stats', authenticate, async (req, res) => {
       chartData,
       revenueComparison,
       planDistribution,
-      dailyActivity: Array.from(dailyActivityMap.values())
+      dailyActivity: Array.from(dailyActivityMap.values()),
+      hourlyActivity
     });
   } catch (error) {
     console.error('Error fetching dashboard stats:', error);
