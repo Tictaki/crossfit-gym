@@ -149,6 +149,15 @@ router.post('/', authenticate, upload.single('photo'), async (req, res) => {
     }
 
     const today = new Date();
+
+    // Validate required fields
+    if (!name || !phone || !gender) {
+      return res.status(400).json({ error: 'Nome, telefone e sexo são obrigatórios' });
+    }
+    if (!birthDate) {
+      return res.status(400).json({ error: 'Data de nascimento é obrigatória' });
+    }
+
     let memberData = {
       name,
       phone,
@@ -248,7 +257,12 @@ router.post('/', authenticate, upload.single('photo'), async (req, res) => {
     res.status(201).json(member);
   } catch (error) {
     console.error('Error creating member:', error);
-    res.status(500).json({ error: 'Erro ao criar membro' });
+    res.status(500).json({ 
+      error: error.message?.includes('Unique constraint') 
+        ? 'Este número de telefone já está registado' 
+        : 'Erro ao criar membro',
+      message: error.message
+    });
   }
 });
 

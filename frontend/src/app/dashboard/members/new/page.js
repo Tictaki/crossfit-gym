@@ -57,12 +57,21 @@ export default function NewMemberPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    // Client-side validation
+    if (!formData.birthDate) {
+      setError('Data de nascimento é obrigatória');
+      return;
+    }
+
     setLoading(true);
 
     try {
       const data = new FormData();
+      // Always append all fields - do NOT filter falsy values for required fields
       Object.keys(formData).forEach(key => {
-        if (formData[key]) {
+        // Only skip truly undefined/null, but keep empty strings for optional fields
+        if (formData[key] !== undefined && formData[key] !== null) {
           data.append(key, formData[key]);
         }
       });
@@ -74,8 +83,9 @@ export default function NewMemberPage() {
       toast.success('Membro criado com sucesso!');
       router.push(`/dashboard/members/${response.data.id}`);
     } catch (err) {
-      setError(err.response?.data?.error || 'Erro ao criar membro');
-      toast.error(err.response?.data?.error || 'Erro ao criar membro');
+      const msg = err.response?.data?.error || err.response?.data?.message || 'Erro ao criar membro';
+      setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
