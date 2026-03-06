@@ -13,13 +13,19 @@ import { notificationService } from '@/lib/notifications';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useRouter } from 'next/navigation';
+import { createPortal } from 'react-dom';
 
 export default function NotificationsModal({ isOpen, onClose, onUpdate }) {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState({ page: 1, limit: 20, pages: 1, total: 0 });
   const [unreadOnly, setUnreadOnly] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const fetchNotifications = async (page = 1, append = false) => {
     setLoading(true);
@@ -97,9 +103,9 @@ export default function NotificationsModal({ isOpen, onClose, onUpdate }) {
     }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-[100] overflow-hidden">
       <div className="absolute inset-0 bg-dark-950/40 backdrop-blur-sm animate-fade-in" onClick={onClose} />
       
@@ -236,6 +242,7 @@ export default function NotificationsModal({ isOpen, onClose, onUpdate }) {
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
