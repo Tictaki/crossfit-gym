@@ -6,11 +6,13 @@ import { notificationService } from '@/lib/notifications';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useRouter } from 'next/navigation';
+import NotificationsModal from '../dashboard/NotificationsModal';
 
 export default function NotificationBell() {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const dropdownRef = useRef(null);
   const router = useRouter();
@@ -167,17 +169,22 @@ export default function NotificationBell() {
           <div className="p-2 border-t border-white/20 dark:border-dark-700/50 bg-white/20 dark:bg-dark-800/20 text-center">
             <button 
               onClick={() => {
-                // Future: push to full notifications page
-                // router.push('/dashboard/notifications');
+                setIsModalOpen(true);
                 setIsOpen(false);
               }}
-              className="text-xs font-medium text-dark-500 dark:text-dark-400 hover:text-dark-900 dark:hover:text-white transition-colors"
+              className="text-xs font-bold text-dark-500 dark:text-dark-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors uppercase tracking-wider"
             >
-              Ver todas
+              Ver Todas as Notificações
             </button>
           </div>
         </div>
       )}
+
+      <NotificationsModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)}
+        onUpdate={(newCount) => setUnreadCount(newCount)}
+      />
     </div>
   );
 }
