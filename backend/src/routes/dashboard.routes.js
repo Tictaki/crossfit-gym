@@ -215,12 +215,12 @@ router.get('/stats', authenticate, async (req, res) => {
     
     const monthlyPayments = await prisma.$queryRaw`
       SELECT DATE_TRUNC('month', "paymentDate") as month, SUM(amount) as total
-      FROM "Payment" WHERE "paymentDate" >= ${sixMonthsAgo} GROUP BY month ORDER BY month ASC
+      FROM "Payment" WHERE "paymentDate" >= ${sixMonthsAgo}::timestamp GROUP BY month ORDER BY month ASC
     `;
 
     const monthlySales = await prisma.$queryRaw`
       SELECT DATE_TRUNC('month', "saleDate") as month, SUM("totalAmount") as total
-      FROM "Sale" WHERE "saleDate" >= ${sixMonthsAgo} GROUP BY month ORDER BY month ASC
+      FROM "Sale" WHERE "saleDate" >= ${sixMonthsAgo}::timestamp GROUP BY month ORDER BY month ASC
     `;
 
     const revenueMap = new Map();
@@ -267,10 +267,13 @@ router.get('/stats', authenticate, async (req, res) => {
     fourteenDaysAgo.setDate(today.getDate() - 14);
     fourteenDaysAgo.setHours(0, 0, 0, 0);
 
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(today.getDate() - 7);
+
     const [dailyCheckinsRaw, dailyActiveMembers, hourlyActivityRaw] = await Promise.all([
-      prisma.$queryRaw`SELECT DATE("checkinDatetime") as date, COUNT(*) as count FROM "Checkin" WHERE "checkinDatetime" >= ${fourteenDaysAgo} GROUP BY DATE("checkinDatetime") ORDER BY date ASC`,
-      prisma.$queryRaw`SELECT DATE(c."checkinDatetime") as date, COUNT(DISTINCT c."memberId") as count FROM "Checkin" c WHERE c."checkinDatetime" >= ${fourteenDaysAgo} GROUP BY DATE(c."checkinDatetime") ORDER BY date ASC`,
-      prisma.$queryRaw`SELECT EXTRACT(HOUR FROM "checkinDatetime") as hour, COUNT(*) as count FROM "Checkin" WHERE "checkinDatetime" >= ${today.getTime() - (7 * 24 * 60 * 60 * 1000)} GROUP BY hour ORDER BY hour ASC`
+      prisma.$queryRaw`SELECT DATE("checkinDatetime") as date, COUNT(*) as count FROM "Checkin" WHERE "checkinDatetime" >= ${fourteenDaysAgo}::timestamp GROUP BY DATE("checkinDatetime") ORDER BY date ASC`,
+      prisma.$queryRaw`SELECT DATE(c."checkinDatetime") as date, COUNT(DISTINCT c."memberId") as count FROM "Checkin" c WHERE c."checkinDatetime" >= ${fourteenDaysAgo}::timestamp GROUP BY DATE(c."checkinDatetime") ORDER BY date ASC`,
+      prisma.$queryRaw`SELECT EXTRACT(HOUR FROM "checkinDatetime") as hour, COUNT(*) as count FROM "Checkin" WHERE "checkinDatetime" >= ${sevenDaysAgo}::timestamp GROUP BY hour ORDER BY hour ASC`
     ]);
 
     const dailyActivityMap = new Map();
@@ -316,14 +319,14 @@ router.get('/stats', authenticate, async (req, res) => {
     const dailyPaymentsRaw = await prisma.$queryRaw`
       SELECT DATE("paymentDate") as date, SUM(amount) as total 
       FROM "Payment" 
-      WHERE "paymentDate" >= ${fourteenDaysAgo} 
+      WHERE "paymentDate" >= ${fourteenDaysAgo}::timestamp 
       GROUP BY DATE("paymentDate")
     `;
 
     const dailySalesRaw = await prisma.$queryRaw`
       SELECT DATE("saleDate") as date, SUM("totalAmount") as total 
       FROM "Sale" 
-      WHERE "saleDate" >= ${fourteenDaysAgo} 
+      WHERE "saleDate" >= ${fourteenDaysAgo}::timestamp 
       GROUP BY DATE("saleDate")
     `;
 
