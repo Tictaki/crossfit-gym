@@ -5,7 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { settingsAPI, UPLOAD_URL, getImageUrl } from '@/lib/api';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
-import BottomNav from '@/components/layout/BottomNav';
+import Header from '@/components/layout/Header';
 import ThemeToggle from '@/components/layout/ThemeToggle';
 import { useTheme } from '@/context/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -19,7 +19,7 @@ export default function DashboardLayout({ children }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [backgroundImage, setBackgroundImage] = useState(null);
   const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -33,24 +33,31 @@ export default function DashboardLayout({ children }) {
   }, [router]);
 
   useEffect(() => {
-    let lastScrollY = window.scrollY;
+    let lastY = window.scrollY;
     
     const handleScroll = () => {
-      const currentScrollY = window.scrollY;
+      const currentY = window.scrollY;
       
-      // Threshold to avoid flicker (10px)
-      if (Math.abs(currentScrollY - lastScrollY) < 10) return;
+      // Update scrolled state for visual styles (threshold 20px)
+      setIsScrolled(currentY > 20);
 
-      // Show if scrolling up OR at the very top
-      if (currentScrollY < lastScrollY || currentScrollY < 10) {
+      // Show immediately if near top
+      if (currentY < 10) {
         setIsVisible(true);
-      } 
-      // Hide if scrolling down AND past a small threshold
-      else if (currentScrollY > lastScrollY && currentScrollY > 10) {
-        setIsVisible(false);
+        lastY = currentY;
+        return;
       }
-      
-      lastScrollY = currentScrollY;
+
+      // Hide only after significant downward movement (50px) to prevent accidental hide
+      if (currentY > lastY + 50) {
+        setIsVisible(false);
+        lastY = currentY;
+      } 
+      // Show immediately on ANY upward scroll
+      else if (currentY < lastY - 5) {
+        setIsVisible(true);
+        lastY = currentY;
+      }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -104,13 +111,22 @@ export default function DashboardLayout({ children }) {
 
         {/* Floating Header */}
         <motion.div 
-          className="sticky top-4 z-30 px-4 sm:px-6 lg:px-8 mb-2 transition-all duration-300"
+          className="sticky top-4 z-30 px-4 sm:px-6 lg:px-8 mb-2"
           initial={{ y: 0 }}
-          animate={{ y: isVisible ? 0 : "-120%" }}
-          transition={{ duration: 0.3, ease: "easeInOut" }}
+          animate={{ 
+            y: isVisible ? 0 : "-150%",
+            scale: isVisible ? 1 : 0.95,
+            opacity: isVisible ? 1 : 0
+          }}
+          transition={{ 
+            type: "spring", 
+            stiffness: 400, 
+            damping: 30,
+            mass: 0.8
+          }}
         >
-          <div className="max-w-[1600px] mx-auto w-full">
-            <Header user={user} setSidebarOpen={setIsSidebarOpen} />
+          <div className={`max-w-[1600px] mx-auto w-full transition-all duration-500 ${isScrolled ? 'scale-[0.98]' : 'scale-100'}`}>
+            <Header user={user} setSidebarOpen={setIsSidebarOpen} isScrolled={isScrolled} />
           </div>
         </motion.div>
 
@@ -122,15 +138,6 @@ export default function DashboardLayout({ children }) {
         </main>
       </div>
 
-      {/* Mobile Bottom Navigation */}
-      <motion.div 
-        className="lg:hidden fixed bottom-0 left-0 right-0 z-40"
-        initial={{ y: 0 }}
-        animate={{ y: isVisible ? 0 : "120%" }}
-        transition={{ duration: 0.3, ease: "easeInOut" }}
-      >
-        <BottomNav user={user} />
-      </motion.div>
     </div>
   );
 }
