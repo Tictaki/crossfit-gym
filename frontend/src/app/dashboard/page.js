@@ -295,7 +295,7 @@ export default function DashboardPage() {
         <div className="card-glass lg:col-span-2 relative overflow-hidden h-auto min-h-[360px] p-6">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h3 className="text-lg font-bold text-dark-900 dark:text-white">Faturação por Categoria</h3>
+              <h2 className="text-lg font-bold text-dark-900 dark:text-white">Faturação por Categoria</h2>
               <p className="text-[10px] text-dark-400 font-medium uppercase tracking-wider mt-0.5">Últimos 6 meses</p>
             </div>
             <div className="flex gap-4">
@@ -356,7 +356,7 @@ export default function DashboardPage() {
           </div>
         </div>
         <div className="card-glass">
-          <h3 className="text-lg font-bold text-dark-900 dark:text-white mb-6">Produtos Mais Vendidos</h3>
+          <h2 className="text-lg font-bold text-dark-900 dark:text-white mb-6">Produtos Mais Vendidos</h2>
           <div className="space-y-4 h-[250px] overflow-y-auto pr-2 custom-scrollbar">
             {(stats?.topProducts || []).map((p, i) => (
               <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-gray-50/50 dark:bg-dark-700/30 border border-white/5">
@@ -382,7 +382,7 @@ export default function DashboardPage() {
         {/* Daily Activity Chart */}
         {stats?.dailyActivity && (
           <div className="card-glass p-6">
-            <h3 className="text-lg font-bold mb-4 font-outfit text-dark-900 dark:text-white">Atividade Diária (14 Dias)</h3>
+            <h2 className="text-lg font-bold mb-4 font-outfit text-dark-900 dark:text-white">Atividade Diária (14 Dias)</h2>
             <div className="h-[250px]">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={stats.dailyActivity}>
@@ -400,7 +400,7 @@ export default function DashboardPage() {
         {/* Hourly Peak Activity Chart */}
         {stats?.hourlyActivity && (
           <div className="card-glass p-6">
-            <h3 className="text-lg font-bold mb-4 font-outfit text-dark-900 dark:text-white">Horas de Pico</h3>
+            <h2 className="text-lg font-bold mb-4 font-outfit text-dark-900 dark:text-white">Horas de Pico</h2>
             <div className="h-[250px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={stats.hourlyActivity} margin={{ top: 0, right: 0, left: -25, bottom: 0 }}>
@@ -437,10 +437,10 @@ export default function DashboardPage() {
       <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Expiring Soon */}
         <div className="card-glass p-6">
-          <h3 className="font-bold text-dark-900 dark:text-white mb-6 flex items-center gap-2">
+          <h2 className="font-bold text-dark-900 dark:text-white mb-6 flex items-center gap-2">
             <ExclamationCircleIcon className="h-5 w-5 text-yellow-500" />
             Expirações Próximas
-          </h3>
+          </h2>
           <div className="space-y-4">
             {(stats?.expiringSoon || []).map((m, i) => (
                <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-gray-50/50 dark:bg-dark-700/30 border border-white/5">

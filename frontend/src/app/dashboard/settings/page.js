@@ -210,8 +210,9 @@ export default function SettingsPage() {
             {/* Personal Details */}
             <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
               <div className="space-y-2">
-                <label className="label dark:text-dark-300">Nome Completo</label>
+                <label htmlFor="full-name" className="label dark:text-dark-300">Nome Completo</label>
                 <input 
+                  id="full-name"
                   type="text" 
                   className="input" 
                   value={profileData.name}
@@ -220,8 +221,9 @@ export default function SettingsPage() {
                 />
               </div>
               <div className="space-y-2">
-                <label className="label dark:text-dark-300">Email</label>
+                <label htmlFor="profile-email" className="label dark:text-dark-300">Email</label>
                 <input 
+                  id="profile-email"
                   type="email" 
                   className="input" 
                   value={profileData.email}
@@ -230,8 +232,9 @@ export default function SettingsPage() {
                 />
               </div>
               <div className="space-y-2">
-                <label className="label dark:text-dark-300">Nova Palavra-passe</label>
+                <label htmlFor="new-password" className="label dark:text-dark-300">Nova Palavra-passe</label>
                 <input 
+                  id="new-password"
                   type="password" 
                   className="input" 
                   value={profileData.password}
@@ -240,8 +243,9 @@ export default function SettingsPage() {
                 />
               </div>
               <div className="space-y-2">
-                <label className="label dark:text-dark-300">Confirmar Palavra-passe</label>
+                <label htmlFor="confirm-password" className="label dark:text-dark-300">Confirmar Palavra-passe</label>
                 <input 
+                  id="confirm-password"
                   type="password" 
                   className="input" 
                   value={profileData.confirmPassword}

@@ -116,6 +116,7 @@ const Sidebar = ({ isOpen, setIsOpen, user }) => {
           <button
             onClick={() => setIsOpen(false)}
             className="lg:hidden ml-auto p-2 rounded-xl text-dark-500 hover:bg-black/5 dark:hover:bg-white/10 transition-all flex-shrink-0"
+            aria-label="Fechar menu lateral"
           >
             <XMarkIcon className="h-5 w-5" />
           </button>

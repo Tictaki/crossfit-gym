@@ -41,6 +41,7 @@ const Header = ({ user, setSidebarOpen }) => {
           <button 
             onClick={() => setSidebarOpen(true)}
             className="lg:hidden p-2.5 rounded-xl glass-button text-dark-800 dark:text-gray-200 active:scale-90"
+            aria-label="Abrir menu lateral"
           >
             <Bars3Icon className="h-6 w-6" />
           </button>
@@ -56,10 +57,12 @@ const Header = ({ user, setSidebarOpen }) => {
         <div className="flex items-center gap-3 relative" ref={dropdownRef}>
           <NotificationBell />
           
-          <button 
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center gap-2 md:gap-3 p-1 rounded-2xl glass-button hover:bg-white/50 dark:hover:bg-dark-800/70 transition-all duration-300 group"
-          >
+            <button 
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="flex items-center gap-2 md:gap-3 p-1 rounded-2xl glass-button hover:bg-white/50 dark:hover:bg-dark-800/70 transition-all duration-300 group"
+              aria-label="Menu do perfil"
+              aria-expanded={isDropdownOpen}
+            >
             <div className="h-9 w-9 md:h-11 md:w-11 rounded-full p-[2px] bg-gradient-to-br from-primary-400 to-primary-600 shadow-premium overflow-hidden transition-transform duration-300 group-active:scale-90">
               <div className="h-full w-full rounded-full bg-white dark:bg-dark-800 flex items-center justify-center overflow-hidden relative">
                 {user?.photo ? (
