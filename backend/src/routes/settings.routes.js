@@ -12,6 +12,16 @@ const router = express.Router();
 const upload = multer({
   storage: backgroundStorage,
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+});
+
+// Diagnostic endpoint to check if Cloudinary vars are set
+router.get('/cloudinary-check', (req, res) => {
+  res.json({
+    hasCloudName: !!process.env.CLOUDINARY_CLOUD_NAME,
+    hasApiKey: !!process.env.CLOUDINARY_API_KEY,
+    hasApiSecret: !!process.env.CLOUDINARY_API_SECRET
+  });
+});
   fileFilter: (req, file, cb) => {
     const allowedTypes = /jpeg|jpg|png|webp/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
