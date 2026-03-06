@@ -189,11 +189,11 @@ export default function AccountingPage() {
         </div>
         
         <button 
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => activeTab === 'fixed' ? setIsFixedCostModalOpen(true) : setIsModalOpen(true)}
           className="btn-primary shadow-glow-sm"
         >
           <PlusIcon className="h-5 w-5" />
-          Registar Despesa
+          {activeTab === 'fixed' ? 'Novo Custo Fixo' : 'Registar Despesa'}
         </button>
       </div>
 
@@ -594,6 +594,83 @@ export default function AccountingPage() {
         </div>
       )}
 
+
+      {/* Fixed Cost Modal */}
+      {isFixedCostModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-dark-950/60 backdrop-blur-xl animate-fade-in" onClick={() => setIsFixedCostModalOpen(false)} />
+          
+          <div className="relative w-full max-w-lg bg-white dark:bg-dark-900 rounded-[2.5rem] shadow-2xl animate-slide-up border border-white/20 dark:border-dark-700/50 overflow-hidden">
+            <div className="p-8 pb-0 flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-dark-900 dark:text-white">Novo Custo Fixo</h2>
+                <p className="text-dark-400 dark:text-dark-300 font-medium">Salários, Renda e contas mensais</p>
+              </div>
+              <button 
+                onClick={() => setIsFixedCostModalOpen(false)}
+                className="p-3 rounded-2xl bg-dark-100 dark:bg-dark-800 text-dark-500 dark:text-dark-200 hover:scale-110 transition-transform"
+              >
+                <XMarkIcon className="h-6 w-6" />
+              </button>
+            </div>
+
+            <form onSubmit={handleAddFixedCost} className="p-8 space-y-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest px-2">Descrição</label>
+                <input
+                  required
+                  type="text"
+                  placeholder="Ex: Salário Treinador X"
+                  className="input-glass"
+                  value={newFixedCost.description}
+                  onChange={(e) => setNewFixedCost({ ...newFixedCost, description: e.target.value })}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest px-2">Valor Mensal (MZN)</label>
+                  <input
+                    required
+                    type="number"
+                    step="0.01"
+                    placeholder="0.00"
+                    className="input-glass"
+                    value={newFixedCost.amount}
+                    onChange={(e) => setNewFixedCost({ ...newFixedCost, amount: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest px-2">Categoria</label>
+                  <select
+                    className="input-glass"
+                    value={newFixedCost.category}
+                    onChange={(e) => setNewFixedCost({ ...newFixedCost, category: e.target.value })}
+                  >
+                    {EXPENSE_CATEGORIES.map(cat => (
+                      <option key={cat.value} value={cat.value}>{cat.label}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <button 
+                disabled={isSubmitting}
+                className="w-full py-6 bg-dark-900 dark:bg-white text-white dark:text-dark-900 rounded-[2rem] font-bold uppercase tracking-[0.2em] text-sm transition-all duration-300 shadow-xl hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3 mt-4"
+              >
+                {isSubmitting ? (
+                  <div className="h-5 w-5 border-2 border-dark-900/30 border-t-dark-900 rounded-full animate-spin" />
+                ) : (
+                  <>
+                    <BanknotesIcon className="h-5 w-5" />
+                    Registar Custo Fixo
+                  </>
+                )}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
 
     </div>
   );
