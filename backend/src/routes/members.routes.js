@@ -79,7 +79,11 @@ router.get('/', authenticate, async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching members:', error);
-    res.status(500).json({ error: 'Failed to fetch members' });
+    res.status(500).json({ 
+      error: 'Failed to fetch members',
+      message: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 });
 
