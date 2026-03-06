@@ -292,61 +292,67 @@ export default function DashboardPage() {
 
       {/* Grid for Charts & Lists */}
       <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="card-glass lg:col-span-2 relative overflow-hidden">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-bold text-dark-900 dark:text-white">Faturação Recente</h3>
+        <div className="card-glass lg:col-span-2 relative overflow-hidden h-[360px]">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h3 className="text-lg font-bold text-dark-900 dark:text-white">Faturação por Categoria</h3>
+              <p className="text-[10px] text-dark-400 font-medium uppercase tracking-wider mt-0.5">Últimos 6 meses</p>
+            </div>
             <div className="flex gap-4">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-primary-600"></div>
-                <span className="text-[10px] font-bold text-dark-400 uppercase tracking-wider">Serviços</span>
+                <div className="w-2.5 h-2.5 rounded-full bg-primary-600 shadow-sm shadow-primary-500/20"></div>
+                <span className="text-[11px] font-bold text-dark-500 dark:text-dark-300">Serviços</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-                <span className="text-[10px] font-bold text-dark-400 uppercase tracking-wider">Loja</span>
+                <div className="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-sm shadow-blue-500/20"></div>
+                <span className="text-[11px] font-bold text-dark-500 dark:text-dark-300">Loja</span>
               </div>
             </div>
           </div>
-          <div className="h-[250px] relative">
+          
+          <div className="h-[240px]">
             <ResponsiveContainer width="100%" height="100%">
-              <RadialBarChart 
-                cx="50%" 
-                cy="50%" 
-                innerRadius="30%" 
-                outerRadius="100%" 
-                barSize={15} 
-                data={[
-                  {
-                    name: 'Vendas Loja',
-                    value: stats?.chartData?.[stats.chartData.length - 1]?.sales || 0,
-                    fill: '#3b82f6',
-                  },
-                  {
-                    name: 'Serviços Gym',
-                    value: stats?.chartData?.[stats.chartData.length - 1]?.payments || 0,
-                    fill: '#f50707',
-                  }
-                ]}
-                startAngle={90}
-                endAngle={450}
+              <BarChart 
+                data={stats?.chartData || []} 
+                margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+                barGap={8}
               >
-                <RadialBar
-                  minAngle={15}
-                  background={{ fill: 'rgba(255,255,255,0.05)' }}
-                  clockWise
-                  dataKey="value"
-                  cornerRadius={10}
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(200, 200, 200, 0.05)" vertical={false} />
+                <XAxis 
+                  dataKey="name" 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{ fill: 'rgba(120, 120, 120, 0.7)', fontSize: 11, fontWeight: 600 }} 
+                  dy={10}
                 />
-                <Tooltip content={<CustomTooltip />} />
-              </RadialBarChart>
+                <YAxis 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{ fill: 'rgba(120, 120, 120, 0.7)', fontSize: 11, fontWeight: 600 }}
+                  tickFormatter={(val) => `MZN ${val >= 1000 ? (val/1000).toFixed(0) + 'k' : val}`}
+                />
+                <Tooltip 
+                  cursor={{ fill: 'rgba(255, 255, 255, 0.03)', radius: 8 }} 
+                  content={<CustomTooltip />} 
+                />
+                <Bar 
+                  name="Serviços" 
+                  dataKey="payments" 
+                  stackId="a" 
+                  fill="#f50707" 
+                  radius={[0, 0, 0, 0]} 
+                  animationDuration={1500}
+                />
+                <Bar 
+                  name="Loja" 
+                  dataKey="sales" 
+                  stackId="a" 
+                  fill="#3b82f6" 
+                  radius={[6, 6, 0, 0]} 
+                  animationDuration={1500}
+                />
+              </BarChart>
             </ResponsiveContainer>
-            
-            {/* Center Label */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-              <p className="text-[10px] font-bold text-dark-400 uppercase tracking-widest mb-1">Total Mês</p>
-              <p className="text-2xl font-black text-dark-900 dark:text-white font-outfit">
-                {formatCurrency(stats?.chartData?.[stats.chartData.length - 1]?.revenue || 0)}
-              </p>
-            </div>
           </div>
         </div>
         <div className="card-glass">
