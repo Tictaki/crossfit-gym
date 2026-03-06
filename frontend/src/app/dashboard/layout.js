@@ -8,6 +8,7 @@ import Header from '@/components/layout/Header';
 import BottomNav from '@/components/layout/BottomNav';
 import ThemeToggle from '@/components/layout/ThemeToggle';
 import { useTheme } from '@/context/ThemeContext';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function DashboardLayout({ children }) {
   const { isDarkMode } = useTheme();
@@ -17,6 +18,8 @@ export default function DashboardLayout({ children }) {
   const [loading, setLoading] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [backgroundImage, setBackgroundImage] = useState(null);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -28,6 +31,26 @@ export default function DashboardLayout({ children }) {
     }
     setLoading(false);
   }, [router]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      // Show if scrolling up OR at the very top
+      if (currentScrollY < lastScrollY || currentScrollY < 10) {
+        setIsVisible(true);
+      } 
+      // Hide if scrolling down AND past a small threshold
+      else if (currentScrollY > lastScrollY && currentScrollY > 10) {
+        setIsVisible(false);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
 
   const loadSettings = async () => {
     try {
@@ -75,11 +98,16 @@ export default function DashboardLayout({ children }) {
       <div className="lg:pl-[80px] min-h-screen flex flex-col transition-none">
 
         {/* Floating Header */}
-        <div className="sticky top-4 z-30 px-4 sm:px-6 lg:px-8 mb-2 transition-all duration-300">
+        <motion.div 
+          className="sticky top-4 z-30 px-4 sm:px-6 lg:px-8 mb-2 transition-all duration-300"
+          initial={{ y: 0 }}
+          animate={{ y: isVisible ? 0 : -100 }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+        >
           <div className="max-w-[1600px] mx-auto w-full">
             <Header user={user} setSidebarOpen={setIsSidebarOpen} />
           </div>
-        </div>
+        </motion.div>
 
         {/* Page Content */}
         <main className="flex-1 px-4 sm:px-6 lg:px-8 pb-8 pt-2 relative z-10 transition-all duration-300">
@@ -90,9 +118,14 @@ export default function DashboardLayout({ children }) {
       </div>
 
       {/* Mobile Bottom Navigation */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40">
+      <motion.div 
+        className="lg:hidden fixed bottom-0 left-0 right-0 z-40"
+        initial={{ y: 0 }}
+        animate={{ y: isVisible ? 0 : 100 }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
+      >
         <BottomNav user={user} />
-      </div>
+      </motion.div>
     </div>
   );
 }
