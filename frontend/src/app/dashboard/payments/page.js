@@ -168,7 +168,7 @@ export default function PaymentsPage() {
             />
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 flex-[2]">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 flex-[2]">
             <div className="relative">
               <CalendarIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-dark-300 pointer-events-none" />
               <input 
@@ -306,7 +306,7 @@ export default function PaymentsPage() {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-center" data-label="Ações">
-                        <div className="flex items-center justify-center gap-4 sm:gap-2">
+                        <div className="flex items-center justify-center sm:justify-end gap-3 sm:gap-2">
                           <button
                             onClick={() => {
                               const token = localStorage.getItem('token');
@@ -315,17 +315,17 @@ export default function PaymentsPage() {
                               const phone = (payment.member?.phone || '').replace(/[^0-9]/g, '');
                               window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
                             }}
-                            className="flex items-center justify-center p-3 sm:p-2 bg-green-500 text-white rounded-2xl sm:bg-green-500/10 sm:text-green-600 sm:hover:bg-green-500 sm:hover:text-white transition-all shadow-md sm:shadow-sm active:scale-90"
+                            className="flex items-center justify-center p-3.5 sm:p-2.5 bg-green-500 text-white rounded-2xl sm:bg-green-500/10 sm:text-green-600 sm:hover:bg-green-500 sm:hover:text-white transition-all shadow-lg sm:shadow-sm active:scale-95 group/btn"
                             title="Partilhar WhatsApp"
                           >
-                            <ShareIcon className="h-6 w-6 sm:h-5 sm:w-5" />
+                            <ShareIcon className="h-6 w-6 sm:h-5 sm:w-5 group-hover/btn:rotate-12 transition-transform" />
                           </button>
                           <button 
                             onClick={() => handleDownloadReceipt(payment)}
-                            className="flex items-center justify-center p-3 sm:p-2 bg-primary-500 text-white rounded-2xl sm:bg-primary-500/10 sm:text-primary-600 sm:hover:bg-primary-500 sm:hover:text-white transition-all shadow-md sm:shadow-sm active:scale-90"
+                            className="flex items-center justify-center p-3.5 sm:p-2.5 bg-primary-500 text-white rounded-2xl sm:bg-primary-500/10 sm:text-primary-600 sm:hover:bg-primary-500 sm:hover:text-white transition-all shadow-lg sm:shadow-sm active:scale-95 group/btn"
                             title="Ver Fatura"
                           >
-                            <EyeIcon className="h-6 w-6 sm:h-5 sm:w-5" />
+                            <EyeIcon className="h-6 w-6 sm:h-5 sm:w-5 group-hover/btn:scale-110 transition-transform" />
                           </button>
                         </div>
                       </td>

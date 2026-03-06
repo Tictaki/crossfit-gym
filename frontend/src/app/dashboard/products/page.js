@@ -317,11 +317,11 @@ export default function ProductsPage() {
                     </div>
                     
                     {userRole === 'ADMIN' && (
-                      <div className="absolute top-3 right-3 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onClick={(e) => { e.stopPropagation(); handleOpenModal(product); }} className="p-2.5 bg-white/90 dark:bg-dark-800/90 backdrop-blur-md rounded-xl text-blue-500 shadow-lg border border-white/20 active:scale-90 transition-all">
+                      <div className="absolute top-3 right-3 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-20">
+                        <button onClick={(e) => { e.stopPropagation(); handleOpenModal(product); }} className="p-3 bg-white/90 dark:bg-dark-800/90 backdrop-blur-md rounded-2xl text-blue-500 shadow-lg border border-white/20 active:scale-90 transition-all">
                           <PencilSquareIcon className="h-5 w-5" />
                         </button>
-                        <button onClick={(e) => { e.stopPropagation(); handleDelete(product.id); }} className="p-2.5 bg-white/90 dark:bg-dark-800/90 backdrop-blur-md rounded-xl text-red-500 shadow-lg border border-white/20 active:scale-90 transition-all">
+                        <button onClick={(e) => { e.stopPropagation(); handleDelete(product.id); }} className="p-3 bg-white/90 dark:bg-dark-800/90 backdrop-blur-md rounded-2xl text-red-500 shadow-lg border border-white/20 active:scale-90 transition-all">
                           <TrashIcon className="h-5 w-5" />
                         </button>
                       </div>
@@ -372,8 +372,8 @@ export default function ProductsPage() {
       ) : (
         <div className="card-glass p-0 overflow-hidden border-none shadow-premium">
           <div className="overflow-x-auto relative z-10">
-            <div className="table-container">
-            <table className="table min-w-full table-responsive-cards mt-0">
+            <div className="table-container p-0 sm:p-4">
+            <table className="table min-w-full table-responsive-cards mt-0 border-none">
               <thead className="bg-dark-900 border-b border-white/10 hidden sm:table-header-group">
                 <tr>
                   <th className="px-6 py-4 text-left text-xs font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Data</th>

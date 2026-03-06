@@ -32,5 +32,25 @@ export const notificationService = {
       console.error('Error marking all notifications as read:', error);
       throw error;
     }
+  },
+
+  // Delete single notification
+  delete: async (id) => {
+    try {
+      await api.delete(`/notifications/${id}`);
+    } catch (error) {
+      console.error('Error deleting notification:', error);
+      throw error;
+    }
+  },
+
+  // Delete all notifications
+  deleteAll: async () => {
+    try {
+      await api.delete('/notifications/clear-all');
+    } catch (error) {
+      console.error('Error clearing all notifications:', error);
+      throw error;
+    }
   }
 };

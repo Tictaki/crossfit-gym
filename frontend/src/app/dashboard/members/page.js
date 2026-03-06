@@ -181,7 +181,7 @@ export default function MembersPage() {
                         </div>
                         <div>
                           <p className="font-bold text-dark-900 dark:text-white leading-tight">{member.name}</p>
-                          <p className="text-[10px] text-dark-400 font-bold uppercase tracking-tighter">ID: #{member.id.substring(0, 8)}</p>
+                          <p className="text-[10px] text-dark-400 dark:text-dark-400 font-bold uppercase tracking-widest mt-0.5">ID: #{member.id.substring(0, 8)}</p>
                         </div>
                       </div>
                     </td>
@@ -201,33 +201,33 @@ export default function MembersPage() {
                     </td>
                     <td className="py-4" data-label="Status">{getStatusBadge(member.status)}</td>
                     <td className="py-4 pr-8 text-right" data-label="Ações">
-                      <div className="flex items-center justify-center sm:justify-end gap-3 sm:gap-1">
+                      <div className="flex items-center justify-center sm:justify-end gap-3 sm:gap-2">
                         <button
                           onClick={() => {
                             const message = `Olá *${member.name}*! 💪\n\nAqui é da *Crosstraining Gym*. Gostaríamos de entrar em contacto.`;
                             const phone = (member.whatsapp || member.phone).replace(/[^0-9]/g, '');
                             window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
                           }}
-                          className="flex items-center justify-center p-3 sm:p-2 rounded-2xl bg-green-500 text-white sm:bg-green-500/10 sm:text-green-600 sm:hover:bg-green-500 sm:hover:text-white transition-all shadow-md sm:shadow-sm active:scale-90"
+                          className="flex items-center justify-center p-3.5 sm:p-2.5 rounded-2xl bg-green-500 text-white sm:bg-green-500/10 sm:text-green-600 sm:hover:bg-green-500 sm:hover:text-white transition-all shadow-lg sm:shadow-sm active:scale-95 group/btn"
                           title="WhatsApp"
                         >
-                          <svg className="h-6 w-6 sm:h-5 sm:w-5" fill="currentColor" viewBox="0 0 24 24">
+                          <svg className="h-6 w-6 sm:h-5 sm:w-5 group-hover/btn:rotate-12 transition-transform" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.085.005.213.005.324.249l.454 1.109c.045.11.076.223.008.355-.077.15-.115.247-.231.38-.116.133-.242.297-.346.399-.113.111-.23.232-.1.455.13.223.578.953 1.24 1.541.856.762 1.577 1.001 1.808 1.112.23.111.364.093.5-.06.136-.153.579-.673.733-.903.154-.23.308-.192.52-.115.212.077 1.341.633 1.572.748.23.115.385.173.442.271.058.099.058.569-.086.974z"/>
                           </svg>
                         </button>
                         <Link 
                           href={`/dashboard/members/${member.id}`}
-                          className="flex items-center justify-center p-3 sm:p-2 rounded-2xl bg-primary-500 text-white sm:bg-primary-500/10 sm:text-primary-600 sm:hover:bg-primary-500 sm:hover:text-white transition-all shadow-md sm:shadow-sm active:scale-90"
+                          className="flex items-center justify-center p-3.5 sm:p-2.5 rounded-2xl bg-primary-500 text-white sm:bg-primary-500/10 sm:text-primary-600 sm:hover:bg-primary-500 sm:hover:text-white transition-all shadow-lg sm:shadow-sm active:scale-95 group/btn"
                           title="Ver Detalhes"
                         >
-                          <EyeIcon className="h-6 w-6 sm:h-5 sm:w-5" />
+                          <EyeIcon className="h-6 w-6 sm:h-5 sm:w-5 group-hover/btn:scale-110 transition-transform" />
                         </Link>
                         <Link 
                           href={`/dashboard/members/${member.id}/edit`}
-                          className="flex items-center justify-center p-3 sm:p-2 rounded-2xl bg-dark-600 text-white sm:bg-dark-500/10 sm:text-dark-600 dark:sm:text-dark-400 dark:sm:hover:bg-dark-700 sm:hover:bg-dark-600 sm:hover:text-white transition-all shadow-md sm:shadow-sm active:scale-90"
+                          className="flex items-center justify-center p-3.5 sm:p-2.5 rounded-2xl bg-dark-600 text-white sm:bg-dark-500/10 sm:text-dark-600 dark:sm:text-dark-400 dark:sm:hover:bg-dark-700 sm:hover:bg-dark-600 sm:hover:text-white transition-all shadow-lg sm:shadow-sm active:scale-95 group/btn"
                           title="Editar"
                         >
-                          <PencilSquareIcon className="h-6 w-6 sm:h-5 sm:w-5" />
+                          <PencilSquareIcon className="h-6 w-6 sm:h-5 sm:w-5 group-hover/btn:-rotate-12 transition-transform" />
                         </Link>
                       </div>
                     </td>

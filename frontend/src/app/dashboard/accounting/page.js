@@ -147,7 +147,7 @@ export default function AccountingPage() {
       </div>
 
       {/* KPI Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
+      <div className="stat-grid">
         <div className="card-glass relative overflow-hidden group p-5 md:p-6">
           <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
             <ArrowTrendingUpIcon className="h-16 w-16 md:h-20 md:w-20 text-green-500" />
@@ -209,7 +209,7 @@ export default function AccountingPage() {
             </button>
           </div>
           <div className="overflow-x-auto table-container">
-            <table className="table min-w-full table-responsive-cards border-none">
+            <table className="table min-w-full table-responsive-cards border-none mt-0">
               <thead className="bg-dark-50 dark:bg-dark-800/50">
                 <tr>
                   <th className="px-6 py-4 text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Data</th>
@@ -237,12 +237,14 @@ export default function AccountingPage() {
                       -{formatCurrency(expense.amount)}
                     </td>
                     <td className="px-6 py-4" data-label="Ações">
-                      <button 
-                        onClick={() => handleDeleteExpense(expense.id)}
-                        className="p-2 text-dark-300 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
-                      >
-                        <TrashIcon className="h-4 w-4" />
-                      </button>
+                      <div className="flex items-center justify-center sm:justify-end">
+                        <button 
+                          onClick={() => handleDeleteExpense(expense.id)}
+                          className="flex items-center justify-center p-3 sm:p-2 text-dark-400 hover:text-red-500 hover:bg-red-500/10 rounded-2xl sm:rounded-xl transition-all active:scale-95 bg-dark-50 dark:bg-dark-800/50 sm:bg-transparent"
+                        >
+                          <TrashIcon className="h-6 w-6 sm:h-4 sm:w-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -307,7 +309,7 @@ export default function AccountingPage() {
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-dark-950/60 backdrop-blur-xl animate-fade-in transition-all" onClick={() => setIsModalOpen(false)} />
           
-          <div className="relative w-full max-w-lg bg-white dark:bg-dark-900 rounded-[2.5rem] shadow-2xl animate-slide-up border border-white/20 dark:border-dark-700/50">
+          <div className="relative w-full max-w-lg bg-white dark:bg-dark-900 rounded-t-[2.5rem] md:rounded-[2.5rem] shadow-2xl animate-slide-up border border-white/20 dark:border-dark-700/50 max-h-[90dvh] overflow-y-auto">
             <div className="p-8 pb-0 flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-bold text-dark-900 dark:text-white">Nova Despesa</h2>

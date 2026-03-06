@@ -103,6 +103,38 @@ export default function NotificationsModal({ isOpen, onClose, onUpdate }) {
     }
   };
 
+  const handleDeleteNotification = async (e, id) => {
+    e.stopPropagation();
+    try {
+      await notificationService.delete(id);
+      const deletedNotification = notifications.find(n => n.id === id);
+      setNotifications(prev => prev.filter(n => n.id !== id));
+      
+      // Update unread count if deleted notification was unread
+      if (deletedNotification && !deletedNotification.read) {
+        const unreadCount = notifications.filter(n => !n.read).length - 1;
+        if (onUpdate) onUpdate(Math.max(0, unreadCount));
+      }
+    } catch (error) {
+      console.error('Error deleting notification', error);
+    }
+  };
+
+  const handleClearAll = async () => {
+    if (!window.confirm('Tem a certeza que deseja limpar todo o histórico de notificações?')) return;
+    
+    try {
+      setLoading(true);
+      await notificationService.deleteAll();
+      setNotifications([]);
+      if (onUpdate) onUpdate(0);
+    } catch (error) {
+      console.error('Error clearing all notifications', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (!isOpen || !mounted) return null;
 
   return createPortal(
@@ -145,6 +177,16 @@ export default function NotificationsModal({ isOpen, onClose, onUpdate }) {
                   >
                     <CheckCircleIcon className="h-3.5 w-3.5" />
                     Marcar tudo como lido
+                  </button>
+                )}
+
+                {notifications.length > 0 && (
+                  <button 
+                    onClick={handleClearAll}
+                    className="text-xs font-bold text-red-600 dark:text-red-400 hover:underline flex items-center gap-1"
+                  >
+                    <TrashIcon className="h-3.5 w-3.5" />
+                    Limpar histórico
                   </button>
                 )}
               </div>
@@ -205,6 +247,15 @@ export default function NotificationsModal({ isOpen, onClose, onUpdate }) {
                             <span>•</span>
                             <span>{formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true, locale: ptBR })}</span>
                           </div>
+                        </div>
+                        <div className="flex-shrink-0 flex items-center">
+                          <button
+                            onClick={(e) => handleDeleteNotification(e, notification.id)}
+                            className="p-2 opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all"
+                            title="Apagar"
+                          >
+                            <TrashIcon className="h-4 w-4" />
+                          </button>
                         </div>
                       </div>
                     </div>

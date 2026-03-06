@@ -184,11 +184,11 @@
     }
 
     .table-responsive-cards tbody tr {
-      @apply block mb-4 glass-strong p-4 hover:bg-white/60 dark:hover:bg-dark-800/60 transition-all border border-white/20 dark:border-white/10 rounded-3xl mt-2 mx-2;
+      @apply block mb-6 glass-strong p-5 hover:bg-white/60 dark:hover:bg-dark-800/60 transition-all border border-white/30 dark:border-white/10 rounded-3xl mt-2 mx-1 shadow-lg;
     }
 
     .table-responsive-cards tbody td {
-      @apply flex justify-between items-center py-3 px-0 border-b border-white/10 dark:border-white/5 last:border-0 text-right whitespace-normal;
+      @apply flex justify-between items-center py-3.5 px-1 border-b border-white/10 dark:border-white/5 last:border-0 text-right whitespace-normal min-h-[3rem];
     }
 
     .table-responsive-cards tbody td::before {
@@ -450,7 +450,7 @@
 
   /* Dashboard Utilities */
   .stat-grid {
-    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6;
+    @apply grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6;
   }
 
   .chart-container {

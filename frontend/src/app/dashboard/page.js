@@ -138,7 +138,7 @@ export default function DashboardPage() {
       </motion.div>
 
       {/* Stats Cards */}
-      <motion.div variants={itemVariants} className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
+      <motion.div variants={itemVariants} className="stat-grid">
         {/* Active Members Card */}
         <motion.div whileHover={{ y: -5 }} className="stat-card group !p-4 md:!p-6">
           <div className="flex flex-col md:flex-row md:items-start justify-between gap-2">
@@ -210,7 +210,7 @@ export default function DashboardPage() {
       </motion.div>
 
       {/* Quick Access Buttons */}
-      <motion.div variants={itemVariants} className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4">
+      <motion.div variants={itemVariants} className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-6">
         {[
           { icon: UserPlusIcon, label: 'Novo Membro', href: '/dashboard/members/new', color: 'blue' },
           { icon: BanknotesIcon, label: 'Pagamentos', href: '/dashboard/payments', color: 'green' },

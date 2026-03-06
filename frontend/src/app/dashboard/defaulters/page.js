@@ -136,7 +136,7 @@ export default function DefaultersPage() {
                         </div>
                         <div>
                           <p className="font-bold text-dark-900 dark:text-white leading-tight">{member.name}</p>
-                          <p className="text-[10px] text-dark-400 font-bold uppercase tracking-tighter">{member.phone}</p>
+                          <p className="text-[10px] text-dark-400 font-bold uppercase tracking-widest mt-0.5">{member.phone}</p>
                         </div>
                       </div>
                     </td>
@@ -158,20 +158,20 @@ export default function DefaultersPage() {
                       </span>
                     </td>
                     <td className="py-4 pr-8 text-right" data-label="Ações">
-                      <div className="flex items-center justify-end gap-2">
+                      <div className="flex items-center justify-center sm:justify-end gap-3 sm:gap-2">
                         <button 
                           onClick={() => sendWhatsAppMessage(member)}
-                          className="p-2 bg-green-500/10 text-green-600 hover:bg-green-500 hover:text-white rounded-xl transition-all shadow-sm group/btn"
+                          className="flex items-center justify-center p-3.5 sm:p-2.5 bg-green-500 text-white sm:bg-green-500/10 sm:text-green-600 sm:hover:bg-green-500 sm:hover:text-white rounded-2xl transition-all shadow-lg sm:shadow-sm active:scale-95 group/btn"
                           title="Enviar Cobrança WhatsApp"
                         >
-                          <ChatBubbleLeftRightIcon className="h-5 w-5" />
+                          <ChatBubbleLeftRightIcon className="h-6 w-6 sm:h-5 sm:w-5 group-hover/btn:rotate-12 transition-transform" />
                         </button>
                         <Link 
                           href={`/dashboard/members/${member.id}`}
-                          className="p-2 bg-primary-500/10 text-primary-600 hover:bg-primary-500 hover:text-white rounded-xl transition-all shadow-sm"
+                          className="flex items-center justify-center p-3.5 sm:p-2.5 bg-primary-500 text-white sm:bg-primary-500/10 sm:text-primary-600 sm:hover:bg-primary-500 sm:hover:text-white rounded-2xl transition-all shadow-lg sm:shadow-sm active:scale-95 group/btn"
                           title="Ver Perfil"
                         >
-                          <UserIcon className="h-5 w-5" />
+                          <UserIcon className="h-6 w-6 sm:h-5 sm:w-5 group-hover/btn:scale-110 transition-transform" />
                         </Link>
                       </div>
                     </td>

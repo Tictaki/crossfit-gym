@@ -14,6 +14,9 @@ import prisma from './prisma.js';
 export const notify = async ({ action, message, actorId, entity, entityId }) => {
   try {
     const recipients = await prisma.user.findMany({
+      where: {
+        NOT: { id: actorId }
+      },
       select: { id: true }
     });
 
