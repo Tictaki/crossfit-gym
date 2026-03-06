@@ -83,7 +83,7 @@ const Sidebar = ({ isOpen, setIsOpen, user }) => {
         style={{ width: isExpanded ? '260px' : '80px' }}
         className={`
           fixed top-0 left-0 h-screen z-[90]
-          bg-white/80 dark:bg-dark-900/80 backdrop-blur-2xl
+          bg-white/40 dark:bg-dark-900/40 backdrop-blur-2xl
           border-r border-black/5 dark:border-white/10
           flex flex-col
           transition-[width,transform] duration-300 ease-in-out
