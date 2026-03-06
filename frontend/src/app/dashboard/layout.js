@@ -5,7 +5,6 @@ import { useRouter, usePathname } from 'next/navigation';
 import { settingsAPI, UPLOAD_URL, getImageUrl } from '@/lib/api';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
-import Header from '@/components/layout/Header';
 import ThemeToggle from '@/components/layout/ThemeToggle';
 import { useTheme } from '@/context/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
