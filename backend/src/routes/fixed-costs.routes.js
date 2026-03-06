@@ -21,7 +21,7 @@ router.get('/', authenticate, async (req, res) => {
 // Create a new fixed cost
 router.post('/', authenticate, requireAdmin, async (req, res) => {
   try {
-    const { description, amount, category } = req.body;
+    const { description, amount, category, invoiceNumber, dueDate } = req.body;
     
     if (!description || !amount || !category) {
       return res.status(400).json({ error: 'Description, amount, and category are required' });
@@ -31,7 +31,9 @@ router.post('/', authenticate, requireAdmin, async (req, res) => {
       data: {
         description,
         amount: parseFloat(amount),
-        category
+        category,
+        invoiceNumber,
+        dueDate: dueDate ? new Date(dueDate) : null
       }
     });
 

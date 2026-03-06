@@ -45,13 +45,17 @@ export default function AccountingPage() {
     description: '',
     amount: '',
     category: 'OTHER',
-    date: new Date().toISOString().split('T')[0]
+    date: new Date().toISOString().split('T')[0],
+    dueDate: '',
+    invoiceNumber: ''
   });
 
   const [newFixedCost, setNewFixedCost] = useState({
     description: '',
     amount: '',
-    category: 'SALARIES'
+    category: 'SALARIES',
+    invoiceNumber: '',
+    dueDate: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCustomCategory, setIsCustomCategory] = useState(false);
@@ -96,7 +100,9 @@ export default function AccountingPage() {
         description: '',
         amount: '',
         category: 'OTHER',
-        date: new Date().toISOString().split('T')[0]
+        date: new Date().toISOString().split('T')[0],
+        dueDate: '',
+        invoiceNumber: ''
       });
       setIsCustomCategory(false);
       setCustomCategory('');
@@ -119,7 +125,9 @@ export default function AccountingPage() {
       setNewFixedCost({
         description: '',
         amount: '',
-        category: 'SALARIES'
+        category: 'SALARIES',
+        invoiceNumber: '',
+        dueDate: ''
       });
       loadData();
       toast.success('Custo fixo registado com sucesso!');
@@ -300,6 +308,8 @@ export default function AccountingPage() {
                     <th className="px-6 py-4 text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Data</th>
                     <th className="px-6 py-4 text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Descrição</th>
                     <th className="px-6 py-4 text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Categoria</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Fatura</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Prazo</th>
                     <th className="px-6 py-4 text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Valor</th>
                     <th className="px-6 py-4"></th>
                   </tr>
@@ -317,6 +327,12 @@ export default function AccountingPage() {
                         <span className={`px-2 py-1 rounded-lg text-[9px] font-bold uppercase tracking-tighter text-white ${EXPENSE_CATEGORIES.find(c => c.value === expense.category)?.color || 'bg-gray-500'}`}>
                           {EXPENSE_CATEGORIES.find(c => c.value === expense.category)?.label || expense.category}
                         </span>
+                      </td>
+                      <td className="px-6 py-4 font-bold text-dark-500 dark:text-dark-300 text-[10px]" data-label="Fatura">
+                        {expense.invoiceNumber || '-'}
+                      </td>
+                      <td className="px-6 py-4 font-bold text-[10px] text-dark-500 dark:text-dark-300" data-label="Prazo">
+                        {expense.dueDate ? new Date(expense.dueDate).toLocaleDateString('pt-PT') : '-'}
                       </td>
                       <td className="px-6 py-4 font-bold text-red-500" data-label="Valor">
                         -{formatCurrency(expense.amount)}
@@ -350,6 +366,8 @@ export default function AccountingPage() {
                   <tr>
                     <th className="px-6 py-4 text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Descrição</th>
                     <th className="px-6 py-4 text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Categoria</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Fatura</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Prazo</th>
                     <th className="px-6 py-4 text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Valor Mensal</th>
                     <th className="px-6 py-4"></th>
                   </tr>
@@ -364,6 +382,12 @@ export default function AccountingPage() {
                         <span className={`px-2 py-1 rounded-lg text-[9px] font-bold uppercase tracking-tighter text-white ${EXPENSE_CATEGORIES.find(c => c.value === cost.category)?.color || 'bg-amber-500'}`}>
                           {EXPENSE_CATEGORIES.find(c => c.value === cost.category)?.label || cost.category}
                         </span>
+                      </td>
+                      <td className="px-6 py-4 font-bold text-dark-500 dark:text-dark-300 text-[10px]" data-label="Fatura">
+                        {cost.invoiceNumber || '-'}
+                      </td>
+                      <td className="px-6 py-4 font-bold text-[10px] text-dark-500 dark:text-dark-300" data-label="Prazo">
+                        {cost.dueDate ? new Date(cost.dueDate).toLocaleDateString('pt-PT') : '-'}
                       </td>
                       <td className="px-6 py-4 font-bold text-amber-500" data-label="Valor">
                         -{formatCurrency(cost.amount)}
@@ -495,13 +519,35 @@ export default function AccountingPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest px-2">Data</label>
+                  <label className="text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest px-2">Data Registo</label>
                   <input
                     required
                     type="date"
                     className="input-glass uppercase"
                     value={newExpense.date}
                     onChange={(e) => setNewExpense({ ...newExpense, date: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest px-2">Nº Fatura (Opcional)</label>
+                  <input
+                    type="text"
+                    placeholder="Ex: FT-2024-001"
+                    className="input-glass"
+                    value={newExpense.invoiceNumber}
+                    onChange={(e) => setNewExpense({ ...newExpense, invoiceNumber: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest px-2">Prazo de Pagamento</label>
+                  <input
+                    type="date"
+                    className="input-glass uppercase"
+                    value={newExpense.dueDate}
+                    onChange={(e) => setNewExpense({ ...newExpense, dueDate: e.target.value })}
                   />
                 </div>
               </div>

@@ -129,8 +129,10 @@ model Expense {
   description String
   amount      Decimal  @db.Decimal(10, 2)
   category    String
-  date        DateTime @default(now())
-  processedBy String
+  date          DateTime @default(now())
+  dueDate       DateTime?
+  invoiceNumber String?
+  processedBy   String
   createdAt   DateTime @default(now())
   user        User     @relation(fields: [processedBy], references: [id])
 
@@ -276,9 +278,11 @@ model FixedCost {
   id          String   @id @default(uuid())
   description String
   amount      Decimal  @db.Decimal(10, 2)
-  category    String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  category      String
+  invoiceNumber String?
+  dueDate       DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   @@index([category])
 }
