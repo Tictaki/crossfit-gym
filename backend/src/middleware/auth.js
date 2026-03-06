@@ -1,15 +1,20 @@
 import jwt from 'jsonwebtoken';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import prisma from '../utils/prisma.js';
 
 export const authenticate = async (req, res, next) => {
   try {
-    const token = req.headers.authorization?.replace('Bearer ', '');
+    const authHeader = req.headers.authorization || req.headers['Authorization'];
     
-    if (!token) {
-      return res.status(401).json({ error: 'Authentication required' });
+    if (!authHeader) {
+      const headerKeys = Object.keys(req.headers);
+      console.log('🔒 Auth Failed. Headers received:', headerKeys);
+      return res.status(401).json({ 
+        error: 'Authentication required',
+        receivedHeaders: headerKeys
+      });
     }
+
+    const token = authHeader.replace('Bearer ', '');
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await prisma.user.findUnique({

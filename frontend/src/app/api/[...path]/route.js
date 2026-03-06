@@ -28,6 +28,17 @@ async function handler(request, { params }) {
     }
   });
 
+  // Ensure Authorization is explicitly captured if present
+  const auth = request.headers.get('authorization') || request.headers.get('Authorization');
+  if (auth) {
+    headers.set('Authorization', auth);
+  }
+
+  // Debug: verify if Authorization makes it through
+  if (!headers.has('Authorization')) {
+    console.warn(`[Proxy] No Authorization header for ${request.method} ${targetUrl}`);
+  }
+
   const fetchOptions = {
     method: request.method,
     headers,
