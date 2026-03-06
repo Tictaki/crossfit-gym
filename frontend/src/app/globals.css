@@ -46,7 +46,7 @@
   h4,
   h5,
   h6 {
-    @apply font-bold;
+    @apply font-display font-bold;
   }
 
   h1 {
@@ -302,6 +302,27 @@
 
   .glass-divider {
     @apply h-px bg-gradient-to-r from-transparent via-white/30 dark:via-white/10 to-transparent;
+  }
+
+  /* PREMIUM TYPOGRAPHY HIERARCHY */
+  .text-premium-display {
+    @apply font-display font-black tracking-tight leading-none;
+  }
+
+  .text-premium-meta {
+    @apply text-[9px] font-bold uppercase tracking-[0.2em] text-dark-400 dark:text-dark-400;
+  }
+
+  .text-premium-num {
+    @apply font-display font-black tracking-tighter;
+  }
+
+  .brutal-border {
+    @apply border-0 border-l-4 border-primary-500 bg-dark-900/40 p-5 rounded-r-2xl;
+  }
+
+  .premium-label {
+    @apply text-[10px] font-black uppercase tracking-[0.25em] text-dark-500 dark:text-dark-400 mb-1;
   }
 }
 

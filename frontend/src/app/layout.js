@@ -2,9 +2,18 @@ import { ThemeProvider } from '@/context/ThemeContext'
 import { ToastProvider } from '@/context/ToastContext'
 import { ConfirmModalProvider } from '@/context/ConfirmModalContext'
 import './globals.css'
-import { Inter } from 'next/font/google'
+import { Inter, Poppins } from 'next/font/google'
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ 
+  subsets: ['latin'],
+  variable: '--font-inter',
+})
+
+const poppins = Poppins({
+  weight: ['400', '500', '600', '700', '800', '900'],
+  subsets: ['latin'],
+  variable: '--font-poppins',
+})
 
 export const metadata = {
   title: 'Crosstraining Gym - Gestão',
@@ -38,7 +47,7 @@ export default function RootLayout({ children }) {
       <head>
         <link rel="manifest" href="/manifest.json" crossOrigin="use-credentials" />
       </head>
-      <body className={`${inter.className} bg-black`}>
+      <body className={`${inter.variable} ${poppins.variable} font-sans bg-black`}>
         <ThemeProvider>
           <ToastProvider>
             <ConfirmModalProvider>
