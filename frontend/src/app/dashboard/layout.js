@@ -101,7 +101,7 @@ export default function DashboardLayout({ children }) {
         <motion.div 
           className="sticky top-4 z-30 px-4 sm:px-6 lg:px-8 mb-2 transition-all duration-300"
           initial={{ y: 0 }}
-          animate={{ y: isVisible ? 0 : -100 }}
+          animate={{ y: isVisible ? 0 : "-120%" }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
         >
           <div className="max-w-[1600px] mx-auto w-full">
@@ -121,7 +121,7 @@ export default function DashboardLayout({ children }) {
       <motion.div 
         className="lg:hidden fixed bottom-0 left-0 right-0 z-40"
         initial={{ y: 0 }}
-        animate={{ y: isVisible ? 0 : 100 }}
+        animate={{ y: isVisible ? 0 : "120%" }}
         transition={{ duration: 0.3, ease: "easeInOut" }}
       >
         <BottomNav user={user} />
