@@ -60,12 +60,11 @@ const CustomTooltip = ({ active, payload, label }) => {
               <span className="text-xs font-bold text-white">{formatCurrency(entry.value)}</span>
             </div>
           ))}
-          {payload.length > 1 && (
+          {payload.length >= 2 && (
             <div className="pt-2 mt-2 border-t border-white/5 flex items-center justify-between text-[10px]">
-              <span className="text-dark-400">Diferença</span>
-              <span className={`font-bold ${payload[0].value >= payload[1].value ? 'text-green-500' : 'text-red-500'}`}>
-                {payload[0].value >= payload[1].value ? '+' : ''}
-                {formatCurrency(payload[0].value - payload[1].value)}
+              <span className="text-dark-400">Total Acumulado</span>
+              <span className="font-bold text-white">
+                {formatCurrency(payload.reduce((acc, entry) => acc + (entry.value || 0), 0))}
               </span>
             </div>
           )}
@@ -272,14 +271,19 @@ export default function DashboardPage() {
                     <stop offset="5%" stopColor="#94a3b8" stopOpacity={0.2}/>
                     <stop offset="95%" stopColor="#94a3b8" stopOpacity={0}/>
                   </linearGradient>
+                  <linearGradient id="colorStore" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                  </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(200, 200, 200, 0.05)" vertical={false} />
                 <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: 'rgba(100, 100, 100, 0.6)', fontSize: 12 }} dy={10} />
                 <YAxis axisLine={false} tickLine={false} tick={{ fill: 'rgba(100, 100, 100, 0.6)', fontSize: 12 }} tickFormatter={(val) => `MZN ${val/1000}k`} />
                 <Tooltip content={<CustomTooltip />} />
-                <Area type="monotone" name="Total Serviços (Planos)" dataKey="currentPayments" stroke="#f50707" strokeWidth={4} fill="url(#colorCurrent)" animationDuration={1000} />
-                <Area type="monotone" name="Vendas Loja (Produtos)" dataKey="currentSales" stroke="#3b82f6" strokeWidth={4} fill="url(#colorPrev)" animationDuration={1000} fillOpacity={0.1} />
-                {showYoY && <Area type="monotone" name="Total Ano Anterior" dataKey="previous" stroke="#94a3b8" strokeWidth={2} strokeDasharray="5 5" fill="none" animationDuration={1000} />}
+                <Area type="monotone" name="Serviços (Planos)" dataKey="currentPayments" stroke="#f50707" strokeWidth={3} fill="url(#colorCurrent)" fillOpacity={1} animationDuration={1000} />
+                <Area type="monotone" name="Loja (Produtos)" dataKey="currentSales" stroke="#3b82f6" strokeWidth={3} fill="url(#colorStore)" fillOpacity={1} animationDuration={1000} />
+                <Area type="monotone" name="Faturação Total" dataKey="current" stroke="#ffffff" strokeWidth={2} strokeDasharray="5 5" fill="none" animationDuration={1000} />
+                {showYoY && <Area type="monotone" name="Ano Anterior" dataKey="previous" stroke="#94a3b8" strokeWidth={2} fill="url(#colorPrev)" fillOpacity={0.5} animationDuration={1000} />}
               </AreaChart>
             </ResponsiveContainer>
           </div>
