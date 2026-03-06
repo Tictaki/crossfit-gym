@@ -1,5 +1,5 @@
 import express from 'express';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../utils/prisma.js';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
@@ -9,7 +9,6 @@ import { networkInterfaces } from 'os';
 import { productStorage } from '../utils/cloudinaryConfig.js';
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 const upload = multer({
   storage: productStorage,
