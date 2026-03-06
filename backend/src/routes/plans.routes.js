@@ -111,6 +111,14 @@ router.delete('/:id', authenticate, requireAdmin, async (req, res) => {
       where: { id }
     });
     
+    await notify({
+      action: 'DELETE',
+      message: `Plano eliminado permanentemente: ID #${id.substring(0, 8)}`,
+      actorId: req.user.id,
+      entity: 'PLAN',
+      entityId: id
+    });
+
     res.json({ message: 'Plano apagado permanentemente com sucesso' });
   } catch (error) {
     console.error('Error deleting plan:', error);

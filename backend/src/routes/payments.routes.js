@@ -208,7 +208,7 @@ router.post('/', authenticate, async (req, res) => {
     // Notify about new payment
     await notify({
       action: 'CREATE',
-      message: `Pagamento recebido: ${finalAmount} MZN - ${result.member.name} (${result.plan.name})`,
+      message: `Pagamento recebido: ${finalAmount} MZN - ${result.payment.member.name} (${result.payment.plan.name})`,
       actorId: req.user.id,
       entity: 'PAYMENT',
       entityId: result.payment.id

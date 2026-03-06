@@ -13,6 +13,8 @@
     "concurrently": "^9.2.1"
   },
   "dependencies": {
+    "cloudinary": "^2.9.0",
+    "next-cloudinary": "^6.17.5",
     "wrangler": "^4.66.0"
   }
 }

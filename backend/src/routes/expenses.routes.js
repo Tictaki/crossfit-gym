@@ -1,6 +1,7 @@
 import express from 'express';
 import prisma from '../utils/prisma.js';
 import { authenticate, requireAdmin } from '../middleware/auth.js';
+import { notify } from '../utils/notifier.js';
 
 const router = express.Router();
 
@@ -70,6 +71,14 @@ router.post('/', authenticate, async (req, res) => {
     });
     
     res.status(201).json(expense);
+
+    await notify({
+      action: 'CREATE',
+      message: `Nova despesa registada: ${expense.description} (${expense.amount} MZN)`,
+      actorId: req.user.id,
+      entity: 'EXPENSE',
+      entityId: expense.id
+    });
   } catch (error) {
     console.error('Error creating expense:', error);
     res.status(500).json({ error: 'Failed to create expense' });
@@ -82,6 +91,15 @@ router.delete('/:id', authenticate, requireAdmin, async (req, res) => {
     await prisma.expense.delete({
       where: { id: req.params.id }
     });
+
+    await notify({
+      action: 'DELETE',
+      message: `Despesa removida: ID #${req.params.id.substring(0, 8)}`,
+      actorId: req.user.id,
+      entity: 'EXPENSE',
+      entityId: req.params.id
+    });
+
     res.json({ message: 'Expense deleted successfully' });
   } catch (error) {
     console.error('Error deleting expense:', error);

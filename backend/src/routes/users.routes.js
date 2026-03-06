@@ -2,6 +2,7 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import prisma from '../utils/prisma.js';
 import { authenticate, requireAdmin } from '../middleware/auth.js';
+import { notify } from '../utils/notifier.js';
 
 import multer from 'multer';
 import path from 'path';
@@ -75,6 +76,14 @@ router.put('/profile', authenticate, upload.single('photo'), async (req, res) =>
     });
     
     res.json(user);
+
+    await notify({
+      action: 'UPDATE',
+      message: `Perfil atualizado pelo utilizador: ${user.name}`,
+      actorId: req.user.id,
+      entity: 'USER',
+      entityId: user.id
+    });
   } catch (error) {
     console.error('❌ CRITICAL: Error updating profile:', error);
     
@@ -160,6 +169,14 @@ router.post('/', authenticate, requireAdmin, async (req, res) => {
     
     console.log('✓ User created successfully:', user.id);
     res.status(201).json(user);
+
+    await notify({
+      action: 'CREATE',
+      message: `Novo utilizador do staff criado: ${user.name} (${user.role})`,
+      actorId: req.user.id,
+      entity: 'USER',
+      entityId: user.id
+    });
   } catch (error) {
     console.error('❌ Error creating user:', error.message);
     
@@ -207,6 +224,14 @@ router.put('/:id', authenticate, requireAdmin, async (req, res) => {
     });
     
     res.json(user);
+
+    await notify({
+      action: 'UPDATE',
+      message: `Utilizador do staff atualizado pelo administrador: ${user.name}`,
+      actorId: req.user.id,
+      entity: 'USER',
+      entityId: user.id
+    });
   } catch (error) {
     console.error('Error updating user:', error);
     res.status(500).json({ error: 'Failed to update user' });
@@ -218,6 +243,14 @@ router.delete('/:id', authenticate, requireAdmin, async (req, res) => {
   try {
     await prisma.user.delete({
       where: { id: req.params.id }
+    });
+
+    await notify({
+      action: 'DELETE',
+      message: `Utilizador do staff removido: ID #${req.params.id.substring(0, 8)}`,
+      actorId: req.user.id,
+      entity: 'USER',
+      entityId: req.params.id
     });
     
     res.json({ message: 'User deleted successfully' });

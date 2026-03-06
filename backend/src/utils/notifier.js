@@ -13,13 +13,7 @@ import prisma from './prisma.js';
  */
 export const notify = async ({ action, message, actorId, entity, entityId }) => {
   try {
-    // 1. Find all active users except the actor
-    // detailed notifications are for everyone except the person who did it (to avoid noise)
     const recipients = await prisma.user.findMany({
-      where: {
-        id: { not: actorId },
-        // arguably filter by active status if we had one, for now all users
-      },
       select: { id: true }
     });
 

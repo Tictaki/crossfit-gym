@@ -5,6 +5,7 @@ import path from 'path';
 import fs from 'fs';
 import { authenticate, requireAdmin } from '../middleware/auth.js';
 import { networkInterfaces } from 'os';
+import { notify } from '../utils/notifier.js';
 
 import { productStorage } from '../utils/cloudinaryConfig.js';
 
@@ -97,6 +98,14 @@ router.post('/', authenticate, requireAdmin, upload.single('photo'), async (req,
       }
     });
     res.status(201).json(product);
+
+    await notify({
+      action: 'CREATE',
+      message: `Novo produto adicionado ao stock: ${product.name}`,
+      actorId: req.user.id,
+      entity: 'PRODUCT',
+      entityId: product.id
+    });
   } catch (error) {
     console.error('CRITICAL: Error creating product:', error);
     res.status(500).json({ 
@@ -133,6 +142,14 @@ router.put('/:id', authenticate, requireAdmin, upload.single('photo'), async (re
       data: updateData
     });
     res.json(product);
+
+    await notify({
+      action: 'UPDATE',
+      message: `Produto atualizado: ${product.name} (Stock: ${product.stock})`,
+      actorId: req.user.id,
+      entity: 'PRODUCT',
+      entityId: product.id
+    });
   } catch (error) {
     console.error('CRITICAL: Error updating product:', error);
     res.status(500).json({ 
@@ -157,6 +174,15 @@ router.delete('/:id', authenticate, requireAdmin, async (req, res) => {
     await prisma.product.delete({
       where: { id: req.params.id }
     });
+
+    await notify({
+      action: 'DELETE',
+      message: `Produto removido do sistema: ID #${req.params.id.substring(0, 8)}`,
+      actorId: req.user.id,
+      entity: 'PRODUCT',
+      entityId: req.params.id
+    });
+
     res.json({ message: 'Product deleted successfully' });
   } catch (error) {
     console.error('Error deleting product:', error);
@@ -213,6 +239,14 @@ router.post('/sales', authenticate, async (req, res) => {
     });
 
     res.status(201).json(result);
+
+    await notify({
+      action: 'CREATE',
+      message: `Venda registada: ${quantity}x ${result.product.name} (${totalAmount} MZN)`,
+      actorId: req.user.id,
+      entity: 'PRODUCT',
+      entityId: result.productId
+    });
   } catch (error) {
     console.error('Error recording sale:', error);
     res.status(400).json({ error: error.message || 'Failed to record sale' });
