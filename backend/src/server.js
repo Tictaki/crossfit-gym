@@ -52,11 +52,13 @@ io.on('connection', (socket) => {
 });
 
 // Middleware
-const allowedOrigin = process.env.FRONTEND_URL || '*';
 app.use(cors({
-  origin: allowedOrigin,
+  origin: function(origin, callback) {
+    // Allow any origin by reflecting it back (needed for credentials: true)
+    callback(null, origin || '*');
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control'],
   credentials: true
 }));
 
