@@ -111,11 +111,16 @@ app.get('/health', (req, res) => {
 
 // Error handler
 app.use((err, req, res, next) => {
-  console.error('GLOBAL ERROR:', err.stack);
+  const isErrorObject = err instanceof Error;
+  const message = isErrorObject ? err.message : String(err);
+  const stack = isErrorObject ? err.stack : undefined;
+  
+  console.error(`GLOBAL ERROR [${req.method} ${req.url}]:`, isErrorObject ? stack : err);
+  
   res.status(500).json({ 
     error: 'Internal Server Error',
-    message: err.message,
-    stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    message: message,
+    stack: process.env.NODE_ENV === 'development' ? stack : undefined
   });
 });
 
