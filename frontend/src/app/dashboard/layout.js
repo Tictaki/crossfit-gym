@@ -91,7 +91,7 @@ export default function DashboardLayout({ children }) {
 
       {/* Mobile Bottom Navigation */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40">
-        <BottomNav />
+        <BottomNav user={user} />
       </div>
     </div>
   );

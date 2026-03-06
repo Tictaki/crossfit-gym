@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { dashboardAPI } from '@/lib/api';
 import Link from 'next/link';
 import {
@@ -79,6 +80,17 @@ export default function DashboardPage() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showYoY, setShowYoY] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      const user = JSON.parse(storedUser);
+      if (user.role === 'RECEPTIONIST') {
+        router.push('/dashboard/members');
+      }
+    }
+  }, [router]);
 
   useEffect(() => {
     loadStats();
