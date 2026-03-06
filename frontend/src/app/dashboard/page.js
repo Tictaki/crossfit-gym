@@ -249,7 +249,7 @@ export default function DashboardPage() {
                 onClick={() => setShowYoY(false)}
                 className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${!showYoY ? 'bg-white dark:bg-dark-600 text-primary-600 shadow-sm' : 'text-dark-500'}`}
               >
-                Mês Atual
+                Ano Atual
               </button>
               <button 
                 onClick={() => setShowYoY(true)}
@@ -277,13 +277,13 @@ export default function DashboardPage() {
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(200, 200, 200, 0.05)" vertical={false} />
-                <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: 'rgba(100, 100, 100, 0.6)', fontSize: 12 }} dy={10} tickFormatter={(day) => `Dia ${day}`} />
+                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: 'rgba(100, 100, 100, 0.6)', fontSize: 12 }} dy={10} />
                 <YAxis axisLine={false} tickLine={false} tick={{ fill: 'rgba(100, 100, 100, 0.6)', fontSize: 12 }} tickFormatter={(val) => `MZN ${val/1000}k`} />
-                <Tooltip content={<CustomTooltip />} labelFormatter={(label) => `Dia ${label}`} />
+                <Tooltip content={<CustomTooltip />} />
                 <Area type="monotone" name="Serviços (Planos)" dataKey="currentPayments" stroke="#f50707" strokeWidth={3} fill="url(#colorCurrent)" fillOpacity={1} animationDuration={1000} />
                 <Area type="monotone" name="Loja (Produtos)" dataKey="currentSales" stroke="#3b82f6" strokeWidth={3} fill="url(#colorStore)" fillOpacity={1} animationDuration={1000} />
                 <Area type="monotone" name="Faturação Total" dataKey="current" stroke="#ffffff" strokeWidth={2} strokeDasharray="5 5" fill="none" animationDuration={1000} />
-                {showYoY && <Area type="monotone" name="Mês Anterior" dataKey="previous" stroke="#94a3b8" strokeWidth={2} fill="url(#colorPrev)" fillOpacity={0.5} animationDuration={1000} />}
+                {showYoY && <Area type="monotone" name="Ano Anterior" dataKey="previous" stroke="#94a3b8" strokeWidth={2} fill="url(#colorPrev)" fillOpacity={0.5} animationDuration={1000} />}
               </AreaChart>
             </ResponsiveContainer>
           </div>
