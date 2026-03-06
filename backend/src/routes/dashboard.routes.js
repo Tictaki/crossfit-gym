@@ -147,65 +147,91 @@ router.get('/stats', authenticate, async (req, res) => {
       };
     }));
     
-    // Yearly revenue comparison (Current vs Previous Year)
-    const currentYear = today.getFullYear();
-    const lastYear = currentYear - 1;
-    const firstDayOfLastYear = new Date(lastYear, 0, 1);
-
-    const yearPayments = await prisma.payment.findMany({
-      where: { paymentDate: { gte: firstDayOfLastYear } },
+    // Monthly revenue comparison (Current Month vs Previous Month - Daily Progression)
+    const firstDayOfCurrentMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const firstDayOfPreviousMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+    
+    const currentMonthPayments = await prisma.payment.findMany({
+      where: { paymentDate: { gte: firstDayOfCurrentMonth } },
       select: { amount: true, paymentDate: true }
     });
 
-    const yearSales = await prisma.sale.findMany({
-      where: { saleDate: { gte: firstDayOfLastYear } },
+    const previousMonthPayments = await prisma.payment.findMany({
+      where: { 
+        paymentDate: { 
+          gte: firstDayOfPreviousMonth,
+          lt: firstDayOfCurrentMonth
+        } 
+      },
+      select: { amount: true, paymentDate: true }
+    });
+
+    const currentMonthSales = await prisma.sale.findMany({
+      where: { saleDate: { gte: firstDayOfCurrentMonth } },
       select: { totalAmount: true, saleDate: true }
     });
 
-    const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-    const comparisonMap = new Map();
+    const previousMonthSales = await prisma.sale.findMany({
+      where: { 
+        saleDate: { 
+          gte: firstDayOfPreviousMonth,
+          lt: firstDayOfCurrentMonth
+        } 
+      },
+      select: { totalAmount: true, saleDate: true }
+    });
 
-    // Initialize map
-    monthNames.forEach((name, index) => {
-      comparisonMap.set(index, { 
-        month: name, 
+    const comparisonMap = new Map();
+    // Initialize for 31 days
+    for (let i = 1; i <= 31; i++) {
+      comparisonMap.set(i, { 
+        day: i,
+        month: i.toString(), // For XAxis compatibility
         current: 0, 
         previous: 0,
         currentSales: 0,
         currentPayments: 0
       });
-    });
+    }
 
-    // Process payments
-    yearPayments.forEach(p => {
-      const pDate = new Date(p.paymentDate);
-      const m = pDate.getMonth();
-      const y = pDate.getFullYear();
+    // Process current month
+    currentMonthPayments.forEach(p => {
+      const d = new Date(p.paymentDate).getDate();
       const amount = parseFloat(p.amount) || 0;
-      const entry = comparisonMap.get(m);
-      if (y === currentYear) {
+      const entry = comparisonMap.get(d);
+      if (entry) {
         entry.current += amount;
         entry.currentPayments += amount;
-      } else if (y === lastYear) {
-        entry.previous += amount;
       }
     });
 
-    // Process sales
-    yearSales.forEach(s => {
-      const sDate = new Date(s.saleDate);
-      const m = sDate.getMonth();
-      const y = sDate.getFullYear();
+    currentMonthSales.forEach(s => {
+      const d = new Date(s.saleDate).getDate();
       const amount = parseFloat(s.totalAmount) || 0;
-      const entry = comparisonMap.get(m);
-      if (y === currentYear) {
+      const entry = comparisonMap.get(d);
+      if (entry) {
         entry.current += amount;
         entry.currentSales += amount;
-      } else if (y === lastYear) {
-        entry.previous += amount;
       }
     });
 
+    // Process previous month
+    previousMonthPayments.forEach(p => {
+      const d = new Date(p.paymentDate).getDate();
+      const amount = parseFloat(p.amount) || 0;
+      const entry = comparisonMap.get(d);
+      if (entry) entry.previous += amount;
+    });
+
+    previousMonthSales.forEach(s => {
+      const d = new Date(s.saleDate).getDate();
+      const amount = parseFloat(s.totalAmount) || 0;
+      const entry = comparisonMap.get(d);
+      if (entry) entry.previous += amount;
+    });
+
+    // Filter out days that haven't happened yet in the current month for a cleaner line?
+    // Actually, showing the whole month is better for projection.
     const revenueComparison = Array.from(comparisonMap.values());
 
     // Monthly revenue chart (last 6 months)
