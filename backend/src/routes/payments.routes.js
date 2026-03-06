@@ -1,5 +1,5 @@
 import express from 'express';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../utils/prisma.js';
 import xlsx from 'xlsx';
 import jwt from 'jsonwebtoken';
 import { authenticate } from '../middleware/auth.js';
@@ -7,7 +7,6 @@ import { generateReceiptPDF } from '../utils/pdfGenerator.js';
 import { notify } from '../utils/notifier.js';
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 // List payments with filters
 router.get('/', authenticate, async (req, res) => {

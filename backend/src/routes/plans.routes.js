@@ -1,10 +1,9 @@
 import express from 'express';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../utils/prisma.js';
 import { authenticate, requireAdmin } from '../middleware/auth.js';
 import { notify } from '../utils/notifier.js';
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 // List all plans
 router.get('/', authenticate, async (req, res) => {

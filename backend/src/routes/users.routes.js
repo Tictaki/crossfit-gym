@@ -1,6 +1,6 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../utils/prisma.js';
 import { authenticate, requireAdmin } from '../middleware/auth.js';
 
 import multer from 'multer';
@@ -10,7 +10,6 @@ import fs from 'fs';
 import { profileStorage } from '../utils/cloudinaryConfig.js';
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 const upload = multer({
   storage: profileStorage,

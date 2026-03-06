@@ -1,10 +1,9 @@
 import express from 'express';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../utils/prisma.js';
 import { authenticate } from '../middleware/auth.js';
 import { updateMemberStatuses } from '../utils/autoUpdateStatus.js';
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 // List check-ins
 router.get('/', authenticate, async (req, res) => {
