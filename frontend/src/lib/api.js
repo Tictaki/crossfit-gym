@@ -119,12 +119,12 @@ export const authAPI = {
   me: () => api.get('/auth/me'),
 };
 
-// Members API
+// Members API (Uploads go direct to backend)
 export const membersAPI = {
   list: (params) => api.get('/members', { params }),
   get: (id) => api.get(`/members/${id}`),
-  create: (data) => api.post('/members', data),
-  update: (id, data) => api.put(`/members/${id}`, data),
+  create: (data) => api.post(`${ROOT_URL}/api/members`, data),
+  update: (id, data) => api.put(`${ROOT_URL}/api/members/${id}`, data),
   suspend: (id) => api.put(`/members/${id}/suspend`),
   activate: (id) => api.put(`/members/${id}/activate`),
   getQRCode: (id) => api.get(`/members/${id}/qrcode`),
@@ -169,12 +169,12 @@ export const reportsAPI = {
   lowFrequency: (params) => api.get('/reports/low-frequency', { params }),
 };
 
-// Users API
+// Users API (Uploads go direct to backend)
 export const usersAPI = {
   list: () => api.get('/users'),
-  create: (data) => api.post('/users', data),
-  update: (id, data) => api.put(`/users/${id}`, data),
-  updateProfile: (data) => api.put('/users/profile', data),
+  create: (data) => api.post(`${ROOT_URL}/api/users`, data),
+  update: (id, data) => api.put(`${ROOT_URL}/api/users/${id}`, data),
+  updateProfile: (data) => api.put(`${ROOT_URL}/api/users/profile`, data),
   delete: (id) => api.delete(`/users/${id}`),
 };
 
@@ -191,18 +191,18 @@ export const accountingAPI = {
   trends: (params) => api.get('/accounting/trends', { params }),
 };
 
-// Settings API
+// Settings API (Uploads go direct to backend)
 export const settingsAPI = {
   get: () => api.get('/settings'),
-  updateBackground: (data) => api.post('/settings/background', data),
+  updateBackground: (data) => api.post(`${ROOT_URL}/api/settings/background`, data),
   removeBackground: (key = 'background_image') => api.delete(`/settings/background?key=${key}`),
 };
 
-// Products API
+// Products API (Uploads go direct to backend)
 export const productsAPI = {
   list: (params) => api.get('/products', { params }),
-  create: (data) => api.post('/products', data),
-  update: (id, data) => api.put(`/products/${id}`, data),
+  create: (data) => api.post(`${ROOT_URL}/api/products`, data),
+  update: (id, data) => api.put(`${ROOT_URL}/api/products/${id}`, data),
   delete: (id) => api.delete(`/products/${id}`),
   recordSale: (data) => api.post('/products/sales', data),
   listSales: () => api.get('/products/sales'),

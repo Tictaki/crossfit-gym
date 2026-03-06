@@ -14,6 +14,10 @@ const nextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'res.cloudinary.com',
+      },
+      {
+        protocol: 'https',
         hostname: 'crossfit-gym-production-944c.up.railway.app',
       },
     ],
