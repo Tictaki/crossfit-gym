@@ -62,17 +62,28 @@ export default function AccountingPage() {
   const [customCategory, setCustomCategory] = useState('');
   const { confirm } = useConfirm();
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+  
+  // Period filter
+  const currentMonthStr = new Date().toISOString().slice(0, 7); // e.g. '2026-03'
+  const [selectedMonth, setSelectedMonth] = useState(currentMonthStr);
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [selectedMonth]);
 
   const loadData = async () => {
     try {
       setLoading(true);
+      // Compute startDate / endDate from selectedMonth
+      const start = new Date(`${selectedMonth}-01T00:00:00.000Z`);
+      const end = new Date(start);
+      end.setMonth(end.getMonth() + 1);
+      const startDate = start.toISOString();
+      const endDate = end.toISOString();
+
       const [summaryRes, expensesRes, trendsRes, fixedCostsRes] = await Promise.all([
-        accountingAPI.summary(),
-        expensesAPI.list(),
+        accountingAPI.summary({ startDate, endDate }),
+        expensesAPI.list({ startDate, endDate }),
         accountingAPI.trends(),
         fixedCostsAPI.list()
       ]);
@@ -196,13 +207,24 @@ export default function AccountingPage() {
           <p className="text-dark-400 dark:text-dark-300 font-medium mt-1 text-sm">Gestão financeira e fluxo de caixa</p>
         </div>
         
-        <button 
-          onClick={() => activeTab === 'fixed' ? setIsFixedCostModalOpen(true) : setIsModalOpen(true)}
-          className="btn-primary shadow-glow-sm"
-        >
-          <PlusIcon className="h-5 w-5" />
-          {activeTab === 'fixed' ? 'Novo Custo Fixo' : 'Registar Despesa'}
-        </button>
+        <div className="flex items-center gap-3 flex-wrap">
+          {/* Month filter */}
+          <div className="relative group">
+            <input
+              type="month"
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              className="input text-sm h-10 pr-4 pl-4 bg-white/60 dark:bg-dark-800/60 border border-white/30 dark:border-dark-700/50 rounded-xl font-bold text-dark-900 dark:text-white cursor-pointer"
+            />
+          </div>
+          <button 
+            onClick={() => activeTab === 'fixed' ? setIsFixedCostModalOpen(true) : setIsModalOpen(true)}
+            className="btn-primary shadow-glow-sm"
+          >
+            <PlusIcon className="h-5 w-5" />
+            {activeTab === 'fixed' ? 'Novo Custo Fixo' : 'Registar Despesa'}
+          </button>
+        </div>
       </div>
 
       {/* KPI Grid */}

@@ -11,19 +11,19 @@ router.get('/summary', authenticate, async (req, res) => {
     
     const where = {};
     if (startDate || endDate) {
-      where.date = {}; // For expenses
+      where.date = {};
       if (startDate) where.date.gte = new Date(startDate);
       if (endDate) where.date.lte = new Date(endDate);
     }
 
     const wherePayments = {};
     if (startDate || endDate) {
-      wherePayments.paymentDate = {}; // For payments
+      wherePayments.paymentDate = {};
       if (startDate) wherePayments.paymentDate.gte = new Date(startDate);
       if (endDate) wherePayments.paymentDate.lte = new Date(endDate);
     }
     
-    const [payments, expenses] = await Promise.all([
+    const [payments, expenses, fixedCosts] = await Promise.all([
       prisma.payment.aggregate({
         where: wherePayments,
         _sum: { amount: true },
@@ -73,6 +73,12 @@ router.get('/trends', authenticate, async (req, res) => {
     startDate.setDate(1);
     startDate.setHours(0, 0, 0, 0);
 
+    // Fetch fixed costs monthly total first
+    const fixedCostsAgg = await prisma.fixedCost.aggregate({
+      _sum: { amount: true }
+    });
+    const fixedCostsMonthly = parseFloat(fixedCostsAgg._sum?.amount || 0);
+
     const revenueTrends = await prisma.$queryRaw`
       SELECT 
         DATE_TRUNC('month', "paymentDate") as month,
@@ -93,12 +99,11 @@ router.get('/trends', authenticate, async (req, res) => {
       ORDER BY month ASC
     `;
 
-    // Merge trends
     const trendsMap = {};
     
     revenueTrends.forEach(r => {
       const m = r.month.toISOString();
-      trendsMap[m] = { month: m, revenue: parseFloat(r.revenue), expenses: 0 };
+      trendsMap[m] = { month: m, revenue: parseFloat(r.revenue), expenses: fixedCostsMonthly };
     });
 
     expenseTrends.forEach(e => {
@@ -107,13 +112,6 @@ router.get('/trends', authenticate, async (req, res) => {
         trendsMap[m] = { month: m, revenue: 0, expenses: parseFloat(e.expenses) + fixedCostsMonthly };
       } else {
         trendsMap[m].expenses = parseFloat(e.expenses) + fixedCostsMonthly;
-      }
-    });
-
-    // Ensure all months have at least fixed costs even if no transactions
-    Object.keys(trendsMap).forEach(m => {
-      if (trendsMap[m].expenses === 0) {
-        trendsMap[m].expenses = fixedCostsMonthly;
       }
     });
 
