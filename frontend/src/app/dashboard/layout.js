@@ -130,7 +130,7 @@ export default function DashboardLayout({ children }) {
         </motion.div>
 
         {/* Page Content */}
-        <main className="flex-1 px-4 sm:px-6 lg:px-8 pb-8 pt-2 relative z-10 transition-all duration-300">
+        <main className="flex-1 px-4 sm:px-6 lg:px-8 pb-8 pt-6 relative z-10 transition-all duration-300">
           <div className="max-w-[1600px] mx-auto w-full">
             {children}
           </div>
