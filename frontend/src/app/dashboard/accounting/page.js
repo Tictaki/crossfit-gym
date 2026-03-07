@@ -211,8 +211,8 @@ export default function AccountingPage() {
           <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
             <ArrowTrendingUpIcon className="h-16 w-16 md:h-20 md:w-20 text-green-500" />
           </div>
-          <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-dark-400 dark:text-dark-300 mb-2">Receita Total</p>
-          <h3 className="text-2xl md:text-3xl font-bold text-green-500">
+          <p className="text-[10px] md:text-[11px] font-black uppercase tracking-[0.2em] text-dark-500 dark:text-dark-200 mb-2">Receita Total</p>
+          <h3 className="text-3xl md:text-4xl font-black text-green-500 tracking-tight">
             {formatCurrency(summary?.revenue?.total)}
           </h3>
           <div className="mt-4 flex items-center gap-2 text-[10px] md:text-xs font-bold text-dark-500 dark:text-dark-200">
@@ -225,17 +225,17 @@ export default function AccountingPage() {
           <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
             <ArrowTrendingDownIcon className="h-16 w-16 md:h-20 md:w-20 text-red-500" />
           </div>
-          <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-dark-400 dark:text-dark-300 mb-2">Despesas Totais</p>
-          <h3 className="text-2xl md:text-3xl font-bold text-red-500">
+          <p className="text-[10px] md:text-[11px] font-black uppercase tracking-[0.2em] text-dark-500 dark:text-dark-200 mb-2">Despesas Totais</p>
+          <h3 className="text-3xl md:text-4xl font-black text-red-500 tracking-tight">
             {formatCurrency(summary?.expenses?.total)}
           </h3>
-          <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-[9px] md:text-[10px] font-bold text-dark-500 dark:text-dark-200">
-            <span className="flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
+          <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] md:text-[11px] font-black text-dark-600 dark:text-dark-100">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-red-400 shadow-sm" />
               Variáveis: {formatCurrency(summary?.expenses?.variable)}
             </span>
-            <span className="flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-amber-500 shadow-sm" />
               Fixos: {formatCurrency(summary?.expenses?.fixed)}
             </span>
           </div>
@@ -249,8 +249,8 @@ export default function AccountingPage() {
           <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
             <BanknotesIcon className={`h-16 w-16 md:h-20 md:w-20 ${summary?.netProfit >= 0 ? 'text-blue-500' : 'text-red-500'}`} />
           </div>
-          <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-dark-400 dark:text-dark-300 mb-2">Lucro Líquido</p>
-          <h3 className={`text-2xl md:text-3xl font-bold ${summary?.netProfit >= 0 ? 'text-blue-500' : 'text-red-500'}`}>
+          <p className="text-[10px] md:text-[11px] font-black uppercase tracking-[0.2em] text-dark-500 dark:text-dark-200 mb-2">Lucro Líquido</p>
+          <h3 className={`text-3xl md:text-4xl font-black tracking-tight ${summary?.netProfit >= 0 ? 'text-blue-500' : 'text-red-500'}`}>
             {formatCurrency(summary?.netProfit)}
           </h3>
           <div className="mt-4 flex items-center gap-2 text-[10px] md:text-xs font-bold text-dark-500 dark:text-dark-200">
@@ -264,9 +264,9 @@ export default function AccountingPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Expenses List */}
-        <div className="card-glass p-0 overflow-hidden">
-          <div className="p-6 border-b border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex bg-dark-100 dark:bg-dark-800 p-1 rounded-xl">
+        <div className="card-glass p-0 overflow-hidden border-2 border-white/10 dark:border-white/5">
+          <div className="p-6 border-b-2 border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white/5">
+            <div className="flex bg-dark-200/50 dark:bg-dark-800 p-1.5 rounded-2xl">
               <button 
                 onClick={() => setActiveTab('variable')}
                 className={`px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${

@@ -91,7 +91,7 @@ export default function DashboardLayout({ children }) {
       {/* Background Image */}
       {backgroundImage && (
         <div
-          className="fixed inset-0 z-0 opacity-50 dark:opacity-40 pointer-events-none"
+          className="fixed inset-0 z-0 opacity-30 dark:opacity-20 pointer-events-none transition-opacity duration-1000"
           style={{
             backgroundImage: `url('${backgroundImage}')`,
             backgroundSize: 'cover',

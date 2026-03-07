@@ -15,7 +15,7 @@
   }
 
   body {
-    @apply text-dark-900 font-sans antialiased transition-colors duration-300;
+    @apply text-dark-950 font-sans antialiased transition-colors duration-300;
     overscroll-behavior-y: none;
     min-height: 100dvh;
     margin: 0;
@@ -130,7 +130,20 @@
   }
 
   .shadow-glow {
-    box-shadow: 0 0 20px 0 rgba(245, 7, 7, 0.3);
+    box-shadow: 0 0 20px 0 rgba(245, 7, 7, 0.4);
+  }
+
+  /* Visibility Boosters */
+  .text-shadow-sm {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  .icon-glow {
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.2));
+  }
+
+  .dark .icon-glow {
+    filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.15));
   }
 
   /* Inputs */
@@ -147,7 +160,7 @@
   }
 
   .input-icon {
-    @apply absolute left-4 text-dark-400 dark:text-dark-300 w-5 h-5;
+    @apply absolute left-4 text-dark-500 dark:text-dark-200 w-5 h-5;
   }
 
   .input-with-icon {
@@ -297,11 +310,11 @@
   }
 
   .glass-card-hover {
-    @apply glass transition-all duration-300 hover:bg-white/40 dark:hover:bg-dark-900/40 hover:shadow-xl hover:-translate-y-1 cursor-pointer;
+    @apply glass transition-all duration-300 hover:bg-white/40 dark:hover:bg-dark-900/40 hover:shadow-2xl hover:-translate-y-1.5 cursor-pointer;
   }
 
   .glass-divider {
-    @apply h-px bg-gradient-to-r from-transparent via-white/30 dark:via-white/10 to-transparent;
+    @apply h-px bg-gradient-to-r from-transparent via-white/40 dark:via-white/20 to-transparent;
   }
 }
 
