@@ -39,9 +39,11 @@ router.get('/summary', authenticate, async (req, res) => {
       })
     ]);
     
+    // Safely parse decimals (Prisma returns null for sum if no records match)
     const fixedCostsTotal = parseFloat(fixedCosts?._sum?.amount || 0);
-    const variableExpensesTotal = parseFloat(expenses._sum.amount || 0);
-    const totalRevenue = parseFloat(payments._sum.amount || 0);
+    const variableExpensesTotal = parseFloat(expenses?._sum?.amount || 0);
+    const totalRevenue = parseFloat(payments?._sum?.amount || 0);
+    
     const totalExpenses = variableExpensesTotal + fixedCostsTotal;
     const netProfit = totalRevenue - totalExpenses;
     

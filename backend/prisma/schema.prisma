@@ -125,16 +125,16 @@ model PaymentAudit {
 }
 
 model Expense {
-  id          String   @id @default(uuid())
-  description String
-  amount      Decimal  @db.Decimal(10, 2)
-  category    String
-  date          DateTime @default(now())
+  id            String    @id @default(uuid())
+  description   String
+  amount        Decimal   @db.Decimal(10, 2)
+  category      String
+  date          DateTime  @default(now())
   dueDate       DateTime?
   invoiceNumber String?
   processedBy   String
-  createdAt   DateTime @default(now())
-  user        User     @relation(fields: [processedBy], references: [id])
+  createdAt     DateTime  @default(now())
+  user          User      @relation(fields: [processedBy], references: [id])
 
   @@index([date])
   @@index([category])
@@ -275,14 +275,14 @@ enum ExpenseCategory {
 }
 
 model FixedCost {
-  id          String   @id @default(uuid())
-  description String
-  amount      Decimal  @db.Decimal(10, 2)
+  id            String    @id @default(uuid())
+  description   String
+  amount        Decimal   @db.Decimal(10, 2)
   category      String
   invoiceNumber String?
   dueDate       DateTime?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   @@index([category])
 }
