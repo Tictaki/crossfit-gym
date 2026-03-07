@@ -36,7 +36,7 @@ const Header = ({ user, setSidebarOpen }) => {
 
   return (
     <header className="bg-transparent z-40 relative">
-      <div className="flex items-center justify-between glass-panel !rounded-2xl !p-2 md:!p-3 shadow-glass-premium transition-all duration-300">
+      <div className="flex items-center justify-between px-2 md:px-3 py-1">
         <div className="flex items-center gap-3">
           <button 
             onClick={() => setSidebarOpen(true)}
