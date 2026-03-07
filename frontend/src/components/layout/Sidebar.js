@@ -16,6 +16,7 @@ import {
   XMarkIcon
 } from '@heroicons/react/24/outline';
 import { memo, useMemo, useCallback, useState, useEffect } from 'react';
+import { settingsAPI } from '@/lib/api';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
@@ -33,6 +34,7 @@ const navigation = [
 const Sidebar = ({ isOpen, setIsOpen, user }) => {
   const pathname = usePathname();
   const [isHovered, setIsHovered] = useState(false);
+  const [gymName, setGymName] = useState('Crosstraining');
 
   // Persist expanded preference in localStorage (optional pin state)
   const [isPinned, setIsPinned] = useState(() => {
@@ -43,6 +45,20 @@ const Sidebar = ({ isOpen, setIsOpen, user }) => {
   });
 
   const isExpanded = isHovered || isPinned || isOpen;
+
+  useEffect(() => {
+    settingsAPI.get().then(res => {
+      if (res.data?.gym_name) setGymName(res.data.gym_name);
+    }).catch(() => {});
+
+    const handleSettingsUpdate = (e) => {
+      if (e.detail?.key === 'gym_name' && e.detail?.value) {
+        setGymName(e.detail.value);
+      }
+    };
+    window.addEventListener('settingsUpdate', handleSettingsUpdate);
+    return () => window.removeEventListener('settingsUpdate', handleSettingsUpdate);
+  }, []);
 
   const filteredNavigation = useMemo(() => {
     return navigation.filter(item => {
@@ -108,7 +124,7 @@ const Sidebar = ({ isOpen, setIsOpen, user }) => {
                 isExpanded ? 'opacity-100 max-w-[200px]' : 'opacity-0 max-w-0'
               }`}
             >
-              <span className="text-sm font-bold text-dark-900 dark:text-white whitespace-nowrap">Crosstraining</span>
+              <span className="text-sm font-bold text-dark-900 dark:text-white whitespace-nowrap">{gymName}</span>
               <span className="text-xs text-dark-400 dark:text-dark-400 whitespace-nowrap">Gym Manager</span>
             </div>
           </div>

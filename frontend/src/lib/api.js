@@ -203,6 +203,7 @@ export const settingsAPI = {
   get: () => api.get('/settings'),
   updateBackground: (data) => api.post(`${ROOT_URL}/api/settings/background`, data),
   removeBackground: (key = 'background_image') => api.delete(`/settings/background?key=${key}`),
+  updateSetting: (key, value) => api.post('/settings', { key, value }),
 };
 
 // Products API (Uploads go direct to backend)

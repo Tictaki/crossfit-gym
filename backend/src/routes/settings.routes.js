@@ -48,6 +48,25 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Upsert a text-based setting (e.g. gym_name)
+router.post('/', authenticate, async (req, res) => {
+  try {
+    const { key, value } = req.body;
+    if (!key || value === undefined) {
+      return res.status(400).json({ error: 'key and value are required' });
+    }
+    const setting = await prisma.setting.upsert({
+      where: { key },
+      update: { value: String(value) },
+      create: { key, value: String(value) }
+    });
+    res.json(setting);
+  } catch (error) {
+    console.error('Error saving setting:', error);
+    res.status(500).json({ error: 'Failed to save setting' });
+  }
+});
+
 // Update background image
 router.post('/background', authenticate, upload.single('background'), async (req, res) => {
   try {

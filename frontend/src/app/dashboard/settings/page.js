@@ -21,6 +21,9 @@ export default function SettingsPage() {
   // App settings state
   const [backgroundPreview, setBackgroundPreview] = useState(null);
   const [uploadingBackground, setUploadingBackground] = useState(false);
+  const [gymName, setGymName] = useState('Crosstraining Gym');
+  const [gymLogo, setGymLogo] = useState(null);
+  const [isUpdatingInfo, setIsUpdatingInfo] = useState(false);
 
   // User profile state
   const [userData, setUserData] = useState(null);
@@ -104,8 +107,37 @@ export default function SettingsPage() {
       if (response.data.background_image) {
         setBackgroundPreview(getImageUrl(response.data.background_image));
       }
+      if (response.data.gym_name) {
+        setGymName(response.data.gym_name);
+      }
+      if (response.data.gym_logo) {
+        setGymLogo(response.data.gym_logo);
+      }
     } catch (error) {
       console.error('Error loading settings:', error);
+    }
+  };
+
+  const handleInfoUpdate = async (key, value) => {
+    try {
+      setIsUpdatingInfo(true);
+      const formData = new FormData();
+      if (value instanceof File) {
+        formData.append('background', value);
+        formData.append('key', key);
+        const res = await settingsAPI.updateBackground(formData);
+        if (key === 'gym_logo') setGymLogo(res.data.backgroundImage);
+      } else {
+        // Save text settings by reusing the upsert pattern via a JSON update
+        await settingsAPI.updateSetting(key, value);
+      }
+      window.dispatchEvent(new CustomEvent('settingsUpdate', { detail: { key, value } }));
+      toast.success('Informação atualizada com sucesso!');
+    } catch (error) {
+      console.error('Error updating info:', error);
+      toast.error('Erro ao atualizar informação.');
+    } finally {
+      setIsUpdatingInfo(false);
     }
   };
 
@@ -170,7 +202,48 @@ export default function SettingsPage() {
 
       {/* Gym Info Section */}
       <div className="card-glass">
-        {/* ... (keep existing gym info) */}
+        <div className="flex items-center gap-3 mb-6 border-b border-gray-100 dark:border-dark-700 pb-4">
+          <BuildingOfficeIcon className="h-6 w-6 text-primary-600" />
+          <h2 className="text-xl font-bold text-dark-900 dark:text-white">Informações do Ginásio</h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+          {/* Gym Logo */}
+          <div className="flex flex-col items-center gap-4">
+            <div className="h-28 w-28 rounded-2xl overflow-hidden bg-white border-2 border-dashed border-dark-200 dark:border-dark-700 flex items-center justify-center relative group p-4 shadow-inner">
+              {gymLogo ? (
+                <img src={getImageUrl(gymLogo)} alt="Gym Logo" className="w-full h-full object-contain" />
+              ) : (
+                <BuildingOfficeIcon className="h-10 w-10 text-dark-300" />
+              )}
+              <label className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer rounded-2xl">
+                <span className="text-white text-[10px] font-bold uppercase">Alterar</span>
+                <input 
+                  type="file" 
+                  className="hidden" 
+                  accept="image/*" 
+                  onChange={(e) => handleInfoUpdate('gym_logo', e.target.files[0])} 
+                />
+              </label>
+            </div>
+            <p className="text-[10px] text-gray-500 dark:text-dark-300 uppercase font-bold tracking-widest">Logo Oficial</p>
+          </div>
+
+          {/* Details */}
+          <div className="flex-1 space-y-4 w-full">
+            <div className="space-y-2">
+              <label className="label dark:text-dark-300">Nome do Ginásio</label>
+              <input 
+                type="text" 
+                className="input" 
+                value={gymName}
+                onChange={(e) => setGymName(e.target.value)}
+                onBlur={() => handleInfoUpdate('gym_name', gymName)}
+                placeholder="Ex: Crosstraining Gym"
+              />
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Profile Section */}

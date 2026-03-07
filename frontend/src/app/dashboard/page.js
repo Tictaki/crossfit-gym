@@ -79,6 +79,7 @@ export default function DashboardPage() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showYoY, setShowYoY] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -112,6 +113,7 @@ export default function DashboardPage() {
         }));
       }
       setStats(formattedData);
+      setLastUpdated(new Date());
     } catch (error) {
       console.error('Error loading stats:', error);
     } finally {
@@ -134,9 +136,17 @@ export default function DashboardPage() {
       animate="visible"
       className="space-y-8 pb-10"
     >
-      <motion.div variants={itemVariants}>
-        <h1 className="text-2xl md:text-4xl font-bold text-dark-900 dark:text-white leading-tight font-outfit">Dashboard</h1>
-        <p className="text-dark-500 dark:text-dark-300 mt-1 md:mt-2 text-sm md:text-base font-medium">Bem-vindo ao painel de controlo do seu ginásio.</p>
+      <motion.div variants={itemVariants} className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
+        <div>
+          <h1 className="text-2xl md:text-4xl font-bold text-dark-900 dark:text-white leading-tight font-outfit">Dashboard</h1>
+          <p className="text-dark-500 dark:text-dark-300 mt-1 md:mt-2 text-sm md:text-base font-medium">Bem-vindo ao painel de controlo do seu ginásio.</p>
+        </div>
+        {lastUpdated && (
+          <div className="flex items-center gap-2 text-[10px] font-bold text-dark-400 uppercase tracking-widest pb-1">
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+            Atualizado às {lastUpdated.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+          </div>
+        )}
       </motion.div>
 
       {/* Stats Cards */}
