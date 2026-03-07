@@ -132,7 +132,7 @@ app.use((err, req, res, next) => {
 export default app;
 
 if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
-  httpServer.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
+  httpServer.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
   });
 }
