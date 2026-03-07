@@ -188,108 +188,106 @@ export default function AccountingPage() {
   return (
     <div className="space-y-8 animate-fade-in pb-10">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
-          <div>
-            <h1 className="text-5xl md:text-8xl font-black tracking-tighter uppercase mb-2">Accounting</h1>
-            <p className="premium-label text-dark-400 tracking-[0.3em]">Financial Intelligence Unit</p>
-          </div>
-          <div className="flex gap-4">
-            <button 
-              onClick={() => activeTab === 'fixed' ? setIsFixedCostModal(true) : setIsModalOpen(true)}
-              className="btn-primary shadow-glow-sm"
-            >
-              <PlusIcon className="h-5 w-5" />
-              {activeTab === 'fixed' ? 'New Fixed Cost' : 'Register Expense'}
-            </button>
-          </div>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-dark-900 dark:text-white uppercase tracking-tight">
+            Contabilidade
+          </h1>
+          <p className="text-dark-400 dark:text-dark-300 font-medium mt-1 text-sm">Gestão financeira e fluxo de caixa</p>
+        </div>
+        
+        <button 
+          onClick={() => activeTab === 'fixed' ? setIsFixedCostModalOpen(true) : setIsModalOpen(true)}
+          className="btn-primary shadow-glow-sm"
+        >
+          <PlusIcon className="h-5 w-5" />
+          {activeTab === 'fixed' ? 'Novo Custo Fixo' : 'Registar Despesa'}
+        </button>
       </div>
 
       {/* KPI Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-          {/* Card: Receitas */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="card-aura p-10 group"
-          >
-            <div className="flex justify-between items-start mb-6">
-              <span className="premium-label opacity-60">Revenue Flux</span>
-              <div className="p-3 bg-green-500/10 rounded-2xl text-green-500">
-                <ArrowUpIcon className="w-6 h-6" />
-              </div>
-            </div>
-            <div className="text-premium-display text-5xl mb-2">
-              {formatCurrency(financialSummary?.totalRevenue)}
-            </div>
-            <div className="text-premium-meta opacity-40">Active Billing Cyde</div>
-          </motion.div>
-
-          {/* Card: Despesas */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="card-aura p-10 group"
-          >
-            <div className="flex justify-between items-start mb-6">
-              <span className="premium-label opacity-60">Burn Rate</span>
-              <div className="p-3 bg-red-500/10 rounded-2xl text-red-500">
-                <ArrowDownIcon className="w-6 h-6" />
-              </div>
-            </div>
-            <div className="text-premium-display text-5xl mb-2 text-red-500">
-              {formatCurrency(financialSummary?.totalExpenses + financialSummary?.totalFixedCosts)}
-            </div>
-            <div className="text-premium-meta opacity-40">Operating Expenses</div>
-          </motion.div>
-
-          {/* Card: Balanço */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-            className="card-aura p-10 group border-primary-500/20"
-          >
-            <div className="flex justify-between items-start mb-6">
-              <span className="premium-label opacity-60">Net Yield</span>
-              <div className="p-3 bg-blue-500/10 rounded-2xl text-blue-500">
-                <BanknotesIcon className="w-6 h-6" />
-              </div>
-            </div>
-            <div className="text-premium-display text-5xl mb-2 text-blue-400">
-              {formatCurrency(financialSummary?.totalRevenue - (financialSummary?.totalExpenses + financialSummary?.totalFixedCosts))}
-            </div>
-            <div className="text-premium-meta opacity-40 italic">Estimated Net Profit</div>
-          </motion.div>
+      <div className="stat-grid">
+        <div className="card-glass relative overflow-hidden group p-5 md:p-6">
+          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+            <ArrowTrendingUpIcon className="h-16 w-16 md:h-20 md:w-20 text-green-500" />
+          </div>
+          <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-dark-400 dark:text-dark-300 mb-2">Receita Total</p>
+          <h3 className="text-2xl md:text-3xl font-bold text-green-500">
+            {formatCurrency(summary?.revenue?.total)}
+          </h3>
+          <div className="mt-4 flex items-center gap-2 text-[10px] md:text-xs font-bold text-dark-500 dark:text-dark-200">
+            <span className="px-1.5 py-0.5 rounded-md bg-green-500/10 text-green-500">{summary?.revenue?.count}</span>
+            <span>Pagamentos</span>
+          </div>
         </div>
+
+        <div className="card-glass relative overflow-hidden group p-5 md:p-6">
+          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+            <ArrowTrendingDownIcon className="h-16 w-16 md:h-20 md:w-20 text-red-500" />
+          </div>
+          <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-dark-400 dark:text-dark-300 mb-2">Despesas Totais</p>
+          <h3 className="text-2xl md:text-3xl font-bold text-red-500">
+            {formatCurrency(summary?.expenses?.total)}
+          </h3>
+          <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-[9px] md:text-[10px] font-bold text-dark-500 dark:text-dark-200">
+            <span className="flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
+              Variáveis: {formatCurrency(summary?.expenses?.variable)}
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+              Fixos: {formatCurrency(summary?.expenses?.fixed)}
+            </span>
+          </div>
+        </div>
+
+        <div className={`card-glass relative overflow-hidden group p-5 md:p-6 sm:col-span-2 xl:col-span-1 transition-all duration-300 ${
+          summary?.netProfit < 0 
+            ? '!bg-red-50/50 dark:!bg-red-900/10 !border-red-200 dark:!border-red-800' 
+            : 'bg-gradient-to-br from-blue-500/10 to-transparent border-blue-100 dark:border-blue-900/30'
+        }`}>
+          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+            <BanknotesIcon className={`h-16 w-16 md:h-20 md:w-20 ${summary?.netProfit >= 0 ? 'text-blue-500' : 'text-red-500'}`} />
+          </div>
+          <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-dark-400 dark:text-dark-300 mb-2">Lucro Líquido</p>
+          <h3 className={`text-2xl md:text-3xl font-bold ${summary?.netProfit >= 0 ? 'text-blue-500' : 'text-red-500'}`}>
+            {formatCurrency(summary?.netProfit)}
+          </h3>
+          <div className="mt-4 flex items-center gap-2 text-[10px] md:text-xs font-bold text-dark-500 dark:text-dark-200">
+            <span className={`px-1.5 py-0.5 rounded-md ${summary?.netProfit >= 0 ? 'bg-blue-500/10 text-blue-500' : 'bg-red-500/10 text-red-500'}`}>
+              {summary?.revenue?.total > 0 ? ((summary?.netProfit / summary?.revenue?.total) * 100).toFixed(1) : 0}%
+            </span>
+            Margem
+          </div>
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Expenses List */}
         <div className="card-glass p-0 overflow-hidden">
           <div className="p-6 border-b border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        {/* Tabs */}
-        <div className="flex gap-4 mb-10 p-2 bg-white/5 backdrop-blur-xl rounded-[2.5rem] w-fit border border-white/10">
-          <button
-            onClick={() => setActiveTab('variable')}
-            className={`px-8 py-4 rounded-[2rem] text-sm font-black uppercase tracking-widest transition-all duration-300 ${
-              activeTab === 'variable'
-                ? 'bg-primary-500 text-white shadow-glow'
-                : 'text-dark-400 hover:text-white'
-            }`}
-          >
-            Variable Costs
-          </button>
-          <button
-            onClick={() => setActiveTab('fixed')}
-            className={`px-8 py-4 rounded-[2rem] text-sm font-black uppercase tracking-widest transition-all duration-300 ${
-              activeTab === 'fixed'
-                ? 'bg-primary-500 text-white shadow-glow'
-                : 'text-dark-400 hover:text-white'
-            }`}
-          >
-            Fixed Costs
-          </button>
-        </div>
+            <div className="flex bg-dark-100 dark:bg-dark-800 p-1 rounded-xl">
+              <button 
+                onClick={() => setActiveTab('variable')}
+                className={`px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${
+                  activeTab === 'variable' 
+                    ? 'bg-white dark:bg-dark-700 text-dark-900 dark:text-white shadow-sm' 
+                    : 'text-dark-400 hover:text-dark-600 dark:text-dark-400 dark:hover:text-white'
+                }`}
+              >
+                Variáveis
+              </button>
+              <button 
+                onClick={() => setActiveTab('fixed')}
+                className={`px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all ${
+                  activeTab === 'fixed' 
+                    ? 'bg-white dark:bg-dark-700 text-dark-900 dark:text-white shadow-sm' 
+                    : 'text-dark-400 hover:text-dark-600 dark:text-dark-400 dark:hover:text-white'
+                }`}
+              >
+                Custos Fixos
+              </button>
+            </div>
             
             {activeTab === 'fixed' && (
               <button 
@@ -302,22 +300,20 @@ export default function AccountingPage() {
             )}
           </div>
 
-          {/* Table Sections */}
-        <div className="card-aura p-0 overflow-hidden">
           {activeTab === 'variable' ? (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-white/5">
-                <tr>
-                  <th className="px-8 py-6 text-left premium-label opacity-40">Date</th>
-                  <th className="px-8 py-6 text-left premium-label opacity-40">Description</th>
-                  <th className="px-8 py-6 text-left premium-label opacity-40">Category</th>
-                  <th className="px-8 py-6 text-left premium-label opacity-40">Invoice #</th>
-                  <th className="px-8 py-6 text-left premium-label opacity-40">Due Date</th>
-                  <th className="px-8 py-6 text-left premium-label opacity-40">Value</th>
-                  <th className="px-8 py-6 text-right premium-label opacity-40">Actions</th>
-                </tr>
-              </thead>
+            <div className="overflow-x-auto table-container">
+              <table className="table min-w-full table-responsive-cards border-none mt-0">
+                <thead className="bg-dark-50 dark:bg-dark-800/50">
+                  <tr>
+                    <th className="px-6 py-4 text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Data</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Descrição</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Categoria</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Fatura</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Prazo</th>
+                    <th className="px-6 py-4 text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Valor</th>
+                    <th className="px-6 py-4"></th>
+                  </tr>
+                </thead>
                 <tbody className="divide-y divide-white/5">
                   {expenses.map((expense) => (
                     <tr key={expense.id} className="hover:bg-white/5 transition-colors">
@@ -355,14 +351,14 @@ export default function AccountingPage() {
                   ))}
                   {expenses.length === 0 && (
                     <tr>
-                      <td colSpan="7" className="px-6 py-12 text-center text-dark-500 dark:text-dark-400 font-medium">
+                      <td colSpan="5" className="px-6 py-12 text-center text-dark-500 dark:text-dark-400 font-medium">
                         Nenhuma despesa variável registada.
                       </td>
                     </tr>
                   )}
                 </tbody>
-            </table>
-          </div>
+              </table>
+            </div>
           ) : (
             <div className="overflow-x-auto table-container">
               <table className="table min-w-full table-responsive-cards border-none mt-0">
@@ -410,7 +406,7 @@ export default function AccountingPage() {
                   ))}
                   {fixedCosts.length === 0 && (
                     <tr>
-                      <td colSpan="6" className="px-6 py-12 text-center text-dark-500 dark:text-dark-400 font-medium">
+                      <td colSpan="4" className="px-6 py-12 text-center text-dark-500 dark:text-dark-400 font-medium">
                         Nenhum custo fixo registado. Adicione salários, renda, etc.
                       </td>
                     </tr>
@@ -713,7 +709,7 @@ export default function AccountingPage() {
                 ) : (
                   <>
                     <BanknotesIcon className="h-5 w-5" />
-                    Register Fixed Cost
+                    Registar Custo Fixo
                   </>
                 )}
               </button>

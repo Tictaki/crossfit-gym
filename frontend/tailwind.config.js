@@ -54,8 +54,7 @@ module.exports = {
         }
       },
       fontFamily: {
-        sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
-        display: ['var(--font-poppins)', 'var(--font-inter)', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
         'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.15)',
@@ -64,8 +63,6 @@ module.exports = {
         'glass-strong': '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
         'premium': '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
         'glow': '0 0 15px rgba(245, 7, 7, 0.5)',
-        'saas-soft': '0 20px 50px -12px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.05)',
-        'saas-elevated': '0 30px 60px -15px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.05)',
       },
       backgroundImage: {
         'gradient-primary': 'linear-gradient(135deg, #f50707 0%, #d90606 100%)',

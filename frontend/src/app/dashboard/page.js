@@ -134,72 +134,79 @@ export default function DashboardPage() {
       animate="visible"
       className="space-y-8 pb-10"
     >
-      <motion.div variants={itemVariants} className="mb-12">
-        <h1 className="text-4xl md:text-7xl font-black tracking-tighter uppercase mb-2">Painel de Controlo</h1>
-        <p className="text-dark-400 font-medium tracking-wide">Monitorização de performance em tempo real</p>
+      <motion.div variants={itemVariants}>
+        <h1 className="text-2xl md:text-4xl font-bold text-dark-900 dark:text-white leading-tight font-outfit">Dashboard</h1>
+        <p className="text-dark-500 dark:text-dark-300 mt-1 md:mt-2 text-sm md:text-base font-medium">Bem-vindo ao painel de controlo do seu ginásio.</p>
       </motion.div>
 
       {/* Stats Cards */}
-      <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+      <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {/* Active Members Card */}
-        <motion.div whileHover={{ scale: 1.02 }} className="card-aura card-aura-hover p-8 group">
-          <div className="flex flex-col gap-2">
-            <span className="premium-label opacity-70">Membros Ativos</span>
-            <div className="text-premium-display text-6xl mb-2 flex items-baseline gap-2">
-              {stats?.activeMembers || 0}
-              <span className="text-sm font-black text-green-500 bg-green-500/10 px-2 py-1 rounded-full">
-                {stats?.membersTrend >= 0 ? '↗' : '↘'} {Math.abs(stats?.membersTrend || 0)}%
-              </span>
+        <motion.div whileHover={{ y: -5 }} className="stat-card group !p-4 md:!p-6">
+          <div className="flex flex-col md:flex-row md:items-start justify-between gap-2">
+            <div>
+              <p className="text-[10px] md:text-xs text-dark-400 dark:text-dark-300 font-medium">Membros Ativos</p>
+              <p className="text-2xl md:text-3xl font-bold text-dark-900 dark:text-white mt-1">{stats?.activeMembers || 0}</p>
+              <div className="flex items-center mt-2 gap-2">
+                <div className={`flex items-center text-[9px] md:text-xs font-bold px-2 py-0.5 rounded-full ${stats?.membersTrend >= 0 ? 'text-green-600 bg-green-50 dark:bg-green-900/30' : 'text-red-600 bg-red-50 dark:bg-red-900/30'}`}>
+                  {stats?.membersTrend >= 0 ? <ArrowTrendingUpIcon className="h-2.5 w-2.5 mr-1" /> : <ArrowTrendingDownIcon className="h-2.5 w-2.5 mr-1" />}
+                  <span>{stats?.membersTrend > 0 ? `+${stats.membersTrend}%` : `${stats?.membersTrend || 0}%`}</span>
+                </div>
+                <span className="text-[9px] md:text-xs text-dark-400">Total: {stats?.totalMembers || 0}</span>
+              </div>
             </div>
-            <div className="text-premium-meta opacity-40">Capacidade Total: {stats?.totalMembers || 0}</div>
-          </div>
-          <div className="absolute top-4 right-4 p-3 bg-blue-500/5 rounded-full group-hover:bg-blue-500/10 transition-colors">
-            <UsersIcon className="h-5 w-5 text-blue-500" />
+            <div className="stat-card-icon from-blue-500 to-blue-600 h-10 w-10 md:h-12 md:w-12 !p-2 md:!p-3 shadow-blue-500/30">
+              <UsersIcon className="h-5 w-5 md:h-6 md:w-6 text-white" />
+            </div>
           </div>
         </motion.div>
 
         {/* Monthly Revenue Card */}
-        <motion.div whileHover={{ scale: 1.02 }} className="card-aura card-aura-hover p-8 border-l-0 group">
-          <div className="flex flex-col gap-2">
-            <span className="premium-label opacity-70">Receita Mensal</span>
-            <div className="text-premium-display text-4xl mb-2 text-green-500">{formatCurrency(stats?.monthlyRevenue || 0)}</div>
-            <div className="flex items-center gap-2">
-              <span className={`text-[10px] font-black px-2 py-1 rounded-full ${stats?.revenueTrend >= 0 ? 'text-green-500 bg-green-500/10' : 'text-red-500 bg-red-500/10'}`}>
-                {stats?.revenueTrend >= 0 ? '↗' : '↘'} {Math.abs(stats?.revenueTrend || 0)}%
-              </span>
-              <span className="text-premium-meta opacity-40 uppercase">VS ANTERIOR</span>
+        <motion.div whileHover={{ y: -5 }} className="stat-card group !p-4 md:!p-6">
+          <div className="flex flex-col md:flex-row md:items-start justify-between gap-2">
+            <div>
+              <p className="text-[10px] md:text-xs text-dark-400 dark:text-dark-300 font-medium">Receita (Mês)</p>
+              <p className="text-2xl md:text-3xl font-bold text-primary-600 mt-1">{formatCurrency(stats?.monthlyRevenue || 0)}</p>
+              <div className={`flex items-center mt-2 text-[9px] md:text-xs font-bold px-2 py-0.5 rounded-full w-fit ${stats?.revenueTrend >= 0 ? 'text-green-600 bg-green-50 dark:bg-green-900/30' : 'text-red-600 bg-red-50 dark:bg-red-900/30'}`}>
+                 <span>{stats?.revenueTrend > 0 ? `+${stats.revenueTrend}%` : `${stats?.revenueTrend || 0}%`} vs anterior</span>
+              </div>
             </div>
-          </div>
-          <div className="absolute top-4 right-4 p-3 bg-green-500/5 rounded-full group-hover:bg-green-500/10 transition-colors">
-            <BanknotesIcon className="h-5 w-5 text-green-500" />
+            <div className="stat-card-icon from-green-500 to-green-600 h-10 w-10 md:h-12 md:w-12 !p-2 md:!p-3 shadow-green-500/30">
+              <BanknotesIcon className="h-5 w-5 md:h-6 md:w-6 text-white" />
+            </div>
           </div>
         </motion.div>
 
         {/* Pending Payments Card */}
-        <motion.div whileHover={{ scale: 1.02 }} className="card-aura card-aura-hover p-8 group">
-          <div className="flex flex-col gap-2">
-            <span className="premium-label opacity-70">Pendentes</span>
-            <div className="text-premium-display text-4xl mb-2 text-red-500">{formatCurrency(stats?.pendingPayments || 0)}</div>
-            <div className="text-premium-meta text-red-500/40 flex items-center gap-1">
-              <ExclamationCircleIcon className="h-3 w-3" /> Ação Requerida
+        <motion.div whileHover={{ y: -5 }} className="stat-card group !p-4 md:!p-6">
+          <div className="flex flex-col md:flex-row md:items-start justify-between gap-2">
+            <div>
+              <p className="text-[10px] md:text-xs text-dark-400 dark:text-dark-300 font-medium">Pagamentos Pendentes</p>
+              <p className="text-2xl md:text-3xl font-bold text-red-600 mt-1">{formatCurrency(stats?.pendingPayments || 0)}</p>
+              <div className="flex items-center mt-2 text-red-600 text-[9px] md:text-xs font-bold bg-red-50 dark:bg-red-900/30 px-2 py-0.5 rounded-full w-fit">
+                <ExclamationCircleIcon className="h-3 w-3 mr-1" />
+                <span>Urgent</span>
+              </div>
             </div>
-          </div>
-          <div className="absolute top-4 right-4 p-3 bg-red-500/5 rounded-full group-hover:bg-red-500/10 transition-colors">
-            <ExclamationCircleIcon className="h-5 w-5 text-red-500" />
+            <div className="stat-card-icon from-red-500 to-red-600 h-10 w-10 md:h-12 md:w-12 !p-2 md:!p-3 shadow-red-500/30">
+              <ExclamationCircleIcon className="h-5 w-5 md:h-6 md:w-6 text-white" />
+            </div>
           </div>
         </motion.div>
 
         {/* Low Stock Card */}
-        <motion.div whileHover={{ scale: 1.02 }} className="card-aura card-aura-hover p-8 group">
-          <div className="flex flex-col gap-2">
-            <span className="premium-label opacity-70">Stock Alerta</span>
-            <div className={`text-premium-display text-5xl mb-2 ${stats?.lowStockCount > 0 ? 'text-amber-500' : 'text-white'}`}>
-              {stats?.lowStockCount || 0}
+        <motion.div whileHover={{ y: -5 }} className="stat-card group !p-4 md:!p-6">
+          <div className="flex flex-col md:flex-row md:items-start justify-between gap-2">
+            <div>
+              <p className="text-[10px] md:text-xs text-dark-400 dark:text-dark-300 font-medium">Stock Baixo</p>
+              <p className={`text-2xl md:text-3xl font-bold mt-1 ${stats?.lowStockCount > 0 ? 'text-amber-500' : 'text-dark-900 dark:text-white'}`}>
+                {stats?.lowStockCount || 0}
+              </p>
+              <span className="text-[9px] md:text-xs text-dark-400 dark:text-dark-500 font-medium mt-2 block">Produtos p/ Repor</span>
             </div>
-            <div className="text-premium-meta opacity-40">Produtos p/ Repor</div>
-          </div>
-          <div className="absolute top-4 right-4 p-3 bg-amber-500/5 rounded-full group-hover:bg-amber-500/10 transition-colors">
-            <ShoppingBagIcon className="h-5 w-5 text-amber-500" />
+            <div className={`stat-card-icon h-10 w-10 md:h-12 md:w-12 !p-2 md:!p-3 shadow-amber-500/30 ${stats?.lowStockCount > 0 ? 'from-amber-400 to-amber-600' : 'from-gray-400 to-gray-600'}`}>
+              <ShoppingBagIcon className="h-5 w-5 md:h-6 md:w-6 text-white" />
+            </div>
           </div>
         </motion.div>
       </motion.div>
@@ -231,11 +238,11 @@ export default function DashboardPage() {
 
       {/* Main Income Chart */}
       {stats?.revenueComparison && (
-        <motion.div variants={itemVariants} className="card-aura p-10">
+        <motion.div variants={itemVariants} className="card-glass p-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
             <div>
-              <h2 className="text-2xl font-black uppercase tracking-tighter">Performance Financeira</h2>
-              <p className="premium-label text-dark-400 mt-1">Metas vs Realidade</p>
+              <h3 className="text-xl font-bold text-dark-900 dark:text-white font-outfit">Desempenho Financeiro</h3>
+              <p className="text-sm text-dark-400 dark:text-dark-300 mt-1">Evolução de receitas e comparação anual</p>
             </div>
             <div className="flex items-center gap-3 bg-gray-100 dark:bg-dark-700/50 p-1 rounded-xl w-fit">
               <button 
@@ -284,12 +291,12 @@ export default function DashboardPage() {
       )}
 
       {/* Grid for Charts & Lists */}
-      <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="card-aura lg:col-span-2 relative overflow-hidden h-auto min-h-[400px] p-10">
+      <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="card-glass lg:col-span-2 relative overflow-hidden h-auto min-h-[360px] p-6">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="text-2xl font-black uppercase tracking-tighter">Mix de Faturação</h2>
-              <p className="premium-label text-dark-400 mt-1">Segmentação por Categoria</p>
+              <h2 className="text-lg font-bold text-dark-900 dark:text-white">Faturação por Categoria</h2>
+              <p className="text-[10px] text-dark-400 font-medium uppercase tracking-wider mt-0.5">Últimos 6 meses</p>
             </div>
             <div className="flex gap-4">
               <div className="flex items-center gap-2">
@@ -348,14 +355,14 @@ export default function DashboardPage() {
             </ResponsiveContainer>
           </div>
         </div>
-        <div className="card-aura p-10">
-          <h2 className="text-2xl font-black uppercase tracking-tighter mb-8">Best Sellers</h2>
+        <div className="card-glass">
+          <h2 className="text-lg font-bold text-dark-900 dark:text-white mb-6">Produtos Mais Vendidos</h2>
           <div className="space-y-4 h-[250px] overflow-y-auto pr-2 custom-scrollbar">
             {(stats?.topProducts || []).map((p, i) => (
-              <div key={i} className="flex items-center justify-between p-4 rounded-3xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all">
-                <div className="flex items-center gap-4">
-                  <div className="h-10 w-10 rounded-2xl bg-orange-500/10 text-orange-500 flex items-center justify-center font-black text-xs">#{i+1}</div>
-                  <span className="text-sm font-black text-white font-display uppercase tracking-tight">{p.name}</span>
+              <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-gray-50/50 dark:bg-dark-700/30 border border-white/5">
+                <div className="flex items-center gap-3">
+                  <div className="h-8 w-8 rounded-lg bg-orange-100 dark:bg-orange-900/20 text-orange-600 flex items-center justify-center font-bold text-xs">#{i+1}</div>
+                  <span className="text-sm font-bold text-dark-800 dark:text-dark-200">{p.name}</span>
                 </div>
                 <div className="text-right">
                   <p className="text-xs font-bold text-dark-900 dark:text-white">{p.quantity} unid.</p>
@@ -429,62 +436,46 @@ export default function DashboardPage() {
 
       <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Expiring Soon */}
-        <div className="card-aura p-10">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-black uppercase tracking-tighter">Expirações Próximas</h2>
-            <div className="p-3 bg-amber-500/10 rounded-2xl text-amber-500">
-              <ExclamationCircleIcon className="h-6 w-6" />
-            </div>
-          </div>
+        <div className="card-glass p-6">
+          <h2 className="font-bold text-dark-900 dark:text-white mb-6 flex items-center gap-2">
+            <ExclamationCircleIcon className="h-5 w-5 text-yellow-500" />
+            Expirações Próximas
+          </h2>
           <div className="space-y-4">
             {(stats?.expiringSoon || []).map((m, i) => (
-               <div key={i} className="flex items-center justify-between p-5 rounded-[2rem] bg-white/5 border border-white/5 hover:bg-white/10 transition-all cursor-default">
-                 <div className="flex items-center gap-4">
-                   <div className="h-12 w-12 rounded-2xl bg-amber-500/10 text-amber-500 flex items-center justify-center font-black text-sm">{m.name.charAt(0)}</div>
+               <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-gray-50/50 dark:bg-dark-700/30 border border-white/5">
+                 <div className="flex items-center gap-3">
+                   <div className="h-10 w-10 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-600 flex items-center justify-center font-bold">{m.name.charAt(0)}</div>
                    <div>
-                     <p className="text-sm font-black text-white font-display uppercase tracking-tight">{m.name}</p>
-                     <p className="text-premium-meta opacity-40">{m.plan?.name}</p>
+                     <p className="text-sm font-bold text-dark-900 dark:text-white">{m.name}</p>
+                     <p className="text-[10px] text-gray-500">{m.plan?.name}</p>
                    </div>
                  </div>
-                 <div className="text-right">
-                   <p className="text-sm font-black text-white font-display">{new Date(m.expirationDate).toLocaleDateString('pt-PT')}</p>
-                   <p className="text-premium-meta text-amber-500/60 uppercase">PRAZO</p>
-                 </div>
+                 <p className="text-xs font-bold text-dark-700 dark:text-dark-200">{new Date(m.expirationDate).toLocaleDateString()}</p>
                </div>
             ))}
-            {(!stats?.expiringSoon || stats.expiringSoon.length === 0) && (
-              <p className="text-sm text-dark-500 italic text-center py-10">Sem expirações iminentes.</p>
-            )}
           </div>
         </div>
 
         {/* Recent Activity */}
-        <div className="card-aura p-10">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-black uppercase tracking-tighter">Fluxo Recente</h2>
-            <div className="p-3 bg-blue-500/10 rounded-2xl text-blue-500">
-              <ArrowTrendingUpIcon className="h-6 w-6" />
-            </div>
-          </div>
+        <div className="card-glass p-6">
+          <h3 className="font-bold text-dark-900 dark:text-white mb-6 flex items-center gap-2">
+            <ArrowTrendingUpIcon className="h-5 w-5 text-green-500" />
+            Atividade Recente
+          </h3>
           <div className="space-y-4">
             {(stats?.recentActivity || []).map((r, i) => (
-               <div key={i} className="flex items-center justify-between p-5 rounded-[2rem] bg-white/5 border border-white/5 hover:bg-white/10 transition-all cursor-default">
-                 <div className="flex items-center gap-4">
-                   <div className="h-12 w-12 rounded-2xl bg-blue-500/10 text-blue-500 flex items-center justify-center"><BanknotesIcon className="h-6 w-6" /></div>
+               <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-white/50 dark:bg-dark-800/50 border border-white/5">
+                 <div className="flex items-center gap-3">
+                   <div className="h-10 w-10 rounded-lg bg-green-100 dark:bg-green-900/20 text-green-600 flex items-center justify-center"><BanknotesIcon className="h-5 w-5" /></div>
                    <div>
-                     <p className="text-sm font-black text-white font-display uppercase tracking-tight">{r.member?.name}</p>
-                     <p className="text-premium-meta opacity-40">{r.plan?.name}</p>
+                     <p className="text-sm font-bold text-dark-900 dark:text-white">{r.member?.name}</p>
+                     <p className="text-[10px] text-gray-400">{r.plan?.name}</p>
                    </div>
                  </div>
-                 <div className="text-right">
-                   <p className="text-sm font-black text-blue-400 font-display">{formatCurrency(r.amount)}</p>
-                   <p className="text-premium-meta text-blue-500/60 uppercase">VALOR</p>
-                 </div>
+                 <p className="text-xs font-bold text-green-600">{formatCurrency(r.amount)}</p>
                </div>
             ))}
-            {(!stats?.recentActivity || stats.recentActivity.length === 0) && (
-              <p className="text-sm text-dark-500 italic text-center py-10">Sem atividade recente.</p>
-            )}
           </div>
         </div>
       </motion.div>

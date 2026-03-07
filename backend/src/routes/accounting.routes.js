@@ -23,7 +23,7 @@ router.get('/summary', authenticate, async (req, res) => {
       if (endDate) wherePayments.paymentDate.lte = new Date(endDate);
     }
     
-    const [payments, expenses, fixedCosts] = await Promise.all([
+    const [payments, expenses] = await Promise.all([
       prisma.payment.aggregate({
         where: wherePayments,
         _sum: { amount: true },
@@ -72,12 +72,6 @@ router.get('/trends', authenticate, async (req, res) => {
     startDate.setMonth(startDate.getMonth() - parseInt(months) + 1);
     startDate.setDate(1);
     startDate.setHours(0, 0, 0, 0);
-    
-    // Calculate total monthly fixed costs for trends
-    const fixedCostsAgg = await prisma.fixedCost.aggregate({
-      _sum: { amount: true }
-    });
-    const fixedCostsMonthly = parseFloat(fixedCostsAgg._sum?.amount || 0);
 
     const revenueTrends = await prisma.$queryRaw`
       SELECT 
