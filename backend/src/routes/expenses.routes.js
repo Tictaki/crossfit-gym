@@ -64,7 +64,7 @@ router.post('/', authenticate, async (req, res) => {
         category,
         date: date ? new Date(date) : new Date(),
         dueDate: dueDate ? new Date(dueDate) : null,
-        invoiceNumber,
+        invoiceNumber: invoiceNumber || null,
         processedBy: req.user.id
       },
       include: {
@@ -83,7 +83,7 @@ router.post('/', authenticate, async (req, res) => {
     });
   } catch (error) {
     console.error('Error creating expense:', error);
-    res.status(500).json({ error: 'Failed to create expense' });
+    res.status(500).json({ error: 'Failed to create expense', details: error.message });
   }
 });
 

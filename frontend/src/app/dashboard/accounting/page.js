@@ -102,10 +102,14 @@ export default function AccountingPage() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      await expensesAPI.create({
+      const payload = {
         ...newExpense,
-        category: isCustomCategory ? customCategory : newExpense.category
-      });
+        category: isCustomCategory ? customCategory : newExpense.category,
+        // Convert empty strings to null/undefined so Prisma doesn't reject them
+        dueDate: newExpense.dueDate || null,
+        invoiceNumber: newExpense.invoiceNumber || null,
+      };
+      await expensesAPI.create(payload);
       setIsModalOpen(false);
       setNewExpense({
         description: '',
@@ -121,7 +125,7 @@ export default function AccountingPage() {
       toast.success('Despesa registada com sucesso!');
     } catch (err) {
       console.error('Error adding expense:', err);
-      toast.error('Erro ao registar despesa');
+      toast.error(err.response?.data?.error || 'Erro ao registar despesa');
     } finally {
       setIsSubmitting(false);
     }
