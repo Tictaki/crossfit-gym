@@ -21,5 +21,4 @@ COPY src ./src
 # Expose port
 EXPOSE 3001
 
-# Start in production mode
-CMD ["npm", "start"]
+CMD ["sh", "-c", "npx prisma migrate deploy && npm start"]
