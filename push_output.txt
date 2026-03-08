@@ -1,0 +1,21 @@
+﻿git : Everything 
+up-to-date
+No linha:1 
+caractere:1
++ git push origin 
+main --force 2>&1 | 
+Out-File 
+push_output.txt 
+-Encodin ...
++ ~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~
+    + CategoryInfo  
+            : NotS  
+  pecified: (Ever   
+ ything up-to-da    
+te:String) [],     
+RemoteException
+    + FullyQualifie 
+   dErrorId : Nati  
+  veCommandError
+ 

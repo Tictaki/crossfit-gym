@@ -131,7 +131,7 @@ app.use((err, req, res, next) => {
 // Export for Vercel
 export default app;
 
-if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+if (!process.env.VERCEL) {
   httpServer.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
   });

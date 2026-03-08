@@ -21,4 +21,4 @@ COPY src ./src
 # Expose port
 EXPOSE 3001
 
-CMD ["sh", "-c", "npx prisma migrate deploy && npm start"]
+CMD ["npm", "start"]

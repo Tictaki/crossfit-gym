@@ -1,0 +1,48 @@
+﻿Checking migration history...
+[
+  {
+    id: '7220896a-ea2c-4b51-8cdc-f96ab5325ff3',
+    migration_name: '20260213073818_init',
+    finished_at: null
+  },
+  {
+    id: '24cbf20f-c361-4144-881d-9982e4955b51',
+    migration_name: '20260308000100_add_fixed_cost',
+    finished_at: 2026-03-08T05:38:49.672Z
+  },
+  {
+    id: '287f112e-e672-4b4c-af00-5af6255d7626',
+    migration_name: '20260308000000_add_expense_due_date',
+    finished_at: 2026-03-08T05:24:31.351Z
+  },
+  {
+    id: 'f91b0f44-a400-4ba9-8e42-0eadded0673c',
+    migration_name: '20260216134726_add_product_management',
+    finished_at: 2026-03-05T05:58:55.606Z
+  },
+  {
+    id: '005c2aa3-e01f-4eb1-9ab4-d8ad8b133b2d',
+    migration_name: '20260215_add_invoice_and_audit',
+    finished_at: 2026-03-05T05:58:54.376Z
+  },
+  {
+    id: 'e5c4b84a-aad1-425b-ad9d-83826d6a6dd7',
+    migration_name: '20260214061957_add_user_photo',
+    finished_at: 2026-03-05T05:58:53.073Z
+  },
+  {
+    id: '89309e90-2183-4cdc-b0ce-489231be4425',
+    migration_name: '20260213092020_add_payment_methods',
+    finished_at: 2026-03-05T05:58:51.746Z
+  },
+  {
+    id: 'dd8304e3-63ea-48c1-aeb3-924d6c911c1f',
+    migration_name: '20260213073818_init',
+    finished_at: 2026-03-04T18:58:40.123Z
+  },
+  {
+    id: '482569ef-89b2-4b1a-a83d-3d962ac13c65',
+    migration_name: '20260216190723_change_expense_category_to_string',
+    finished_at: 2026-03-04T17:55:36.434Z
+  }
+]

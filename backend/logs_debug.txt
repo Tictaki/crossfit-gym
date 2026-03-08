@@ -1,0 +1,100 @@
+﻿~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~
+    + CategoryInfo  
+            : NotS  
+  pecified: (Synt   
+ axError: Ex...i    
+ne 1 column 2):    
+String) [], Rem    
+oteException
+    + FullyQualifie 
+   dErrorId : Nati  
+  veCommandError
+ 
+    at JSON.parse 
+(<anonymous>)
+    at parse 
+(D:\crossfit gym\nod
+e_modules\body-parse
+r\lib\types\json.js:
+92:19)
+    at D:\crossfit g
+ym\node_modules\body
+-parser\lib\read.js:
+128:18
+    at AsyncResource
+.runInAsyncScope (no
+de:async_hooks:214:1
+4)
+    at 
+invokeCallback 
+(D:\crossfit gym\nod
+e_modules\raw-body\i
+ndex.js:238:16)
+    at done 
+(D:\crossfit gym\nod
+e_modules\raw-body\i
+ndex.js:227:7)
+    at IncomingMessa
+ge.onEnd 
+(D:\crossfit gym\nod
+e_modules\raw-body\i
+ndex.js:287:7)
+    at IncomingMessa
+ge.emit 
+(node:events:508:28)
+    at 
+endReadableNT (node:
+internal/streams/rea
+dable:1701:12)
+    at process.proce
+ssTicksAndRejections
+ (node:internal/proc
+ess/task_queues:89:2
+1)
+SyntaxError: 
+Expected property 
+name or '}' in JSON 
+at position 1 (line 
+1 column 2)
+    at JSON.parse 
+(<anonymous>)
+    at parse 
+(D:\crossfit gym\nod
+e_modules\body-parse
+r\lib\types\json.js:
+92:19)
+    at D:\crossfit g
+ym\node_modules\body
+-parser\lib\read.js:
+128:18
+    at AsyncResource
+.runInAsyncScope (no
+de:async_hooks:214:1
+4)
+    at 
+invokeCallback 
+(D:\crossfit gym\nod
+e_modules\raw-body\i
+ndex.js:238:16)
+    at done 
+(D:\crossfit gym\nod
+e_modules\raw-body\i
+ndex.js:227:7)
+    at IncomingMessa
+ge.onEnd 
+(D:\crossfit gym\nod
+e_modules\raw-body\i
+ndex.js:287:7)
+    at IncomingMessa
+ge.emit 
+(node:events:508:28)
+    at 
+endReadableNT (node:
+internal/streams/rea
+dable:1701:12)
+    at process.proce
+ssTicksAndRejections
+ (node:internal/proc
+ess/task_queues:89:2
+1)
