@@ -66,10 +66,11 @@ export default function AccountingPage() {
   // Period filter
   const currentMonthStr = new Date().toISOString().slice(0, 7); // e.g. '2026-03'
   const [selectedMonth, setSelectedMonth] = useState(currentMonthStr);
+  const [filterSource, setFilterSource] = useState('all'); // 'all', 'gym', 'store'
 
   useEffect(() => {
     loadData();
-  }, [selectedMonth]);
+  }, [selectedMonth, filterSource]);
 
   const loadData = async () => {
     try {
@@ -82,9 +83,9 @@ export default function AccountingPage() {
       const endDate = end.toISOString();
 
       const [summaryRes, expensesRes, trendsRes, fixedCostsRes] = await Promise.all([
-        accountingAPI.summary({ startDate, endDate }),
+        accountingAPI.summary({ startDate, endDate, source: filterSource }),
         expensesAPI.list({ startDate, endDate }),
-        accountingAPI.trends(),
+        accountingAPI.trends({ source: filterSource }),
         fixedCostsAPI.list()
       ]);
       setSummary(summaryRes.data);
@@ -221,6 +222,20 @@ export default function AccountingPage() {
               className="input text-sm h-10 pr-4 pl-4 bg-white/60 dark:bg-dark-800/60 border border-white/30 dark:border-dark-700/50 rounded-xl font-bold text-dark-900 dark:text-white cursor-pointer"
             />
           </div>
+          
+          <div className="relative group">
+            <select
+              value={filterSource}
+              onChange={(e) => setFilterSource(e.target.value)}
+              className="input text-sm h-10 pr-10 pl-4 bg-white/60 dark:bg-dark-800/60 border border-white/30 dark:border-dark-700/50 rounded-xl font-bold text-dark-900 dark:text-white cursor-pointer appearance-none"
+            >
+              <option value="all" className="bg-white dark:bg-dark-900">Visão Geral (Tudo)</option>
+              <option value="gym" className="bg-white dark:bg-dark-900">Apenas Ginásio</option>
+              <option value="store" className="bg-white dark:bg-dark-900">Apenas Loja</option>
+            </select>
+            <ChevronDownIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-dark-400 pointer-events-none" />
+          </div>
+
           <button 
             onClick={() => activeTab === 'fixed' ? setIsFixedCostModalOpen(true) : setIsModalOpen(true)}
             className="btn-primary shadow-glow-sm"
@@ -241,9 +256,24 @@ export default function AccountingPage() {
           <h3 className="text-3xl md:text-4xl font-black text-green-500 tracking-tight">
             {formatCurrency(summary?.revenue?.total)}
           </h3>
-          <div className="mt-4 flex items-center gap-2 text-[10px] md:text-xs font-bold text-dark-500 dark:text-dark-200">
-            <span className="px-1.5 py-0.5 rounded-md bg-green-500/10 text-green-500">{summary?.revenue?.count}</span>
-            <span>Pagamentos</span>
+          <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] md:text-[11px] font-black text-dark-600 dark:text-dark-100">
+            {filterSource === 'all' ? (
+              <>
+                <span className="flex items-center gap-1.5" title="Pagamentos de Planos">
+                  <span className="w-2 h-2 rounded-full bg-green-400 shadow-sm" />
+                  Ginásio: {formatCurrency(summary?.revenue?.gym)}
+                </span>
+                <span className="flex items-center gap-1.5" title="Venda de Produtos">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-sm" />
+                  Loja: {formatCurrency(summary?.revenue?.store)}
+                </span>
+              </>
+            ) : (
+              <span className="flex items-center gap-2">
+                <span className="px-1.5 py-0.5 rounded-md bg-green-500/10 text-green-500">{summary?.revenue?.count}</span>
+                <span>{filterSource === 'gym' ? 'Mensalidades' : 'Vendas na Loja'}</span>
+              </span>
+            )}
           </div>
         </div>
 

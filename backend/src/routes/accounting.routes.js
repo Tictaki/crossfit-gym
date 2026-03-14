@@ -7,8 +7,9 @@ const router = express.Router();
 // Financial summary
 router.get('/summary', authenticate, async (req, res) => {
   try {
-    const { startDate, endDate } = req.query;
+    const { startDate, endDate, source = 'all' } = req.query;
     
+    // Expenses query (Always use global expenses)
     const where = {};
     if (startDate || endDate) {
       where.date = {};
@@ -16,6 +17,7 @@ router.get('/summary', authenticate, async (req, res) => {
       if (endDate) where.date.lte = new Date(endDate);
     }
 
+    // Payments date filter (Gym)
     const wherePayments = {};
     if (startDate || endDate) {
       wherePayments.paymentDate = {};
@@ -23,26 +25,44 @@ router.get('/summary', authenticate, async (req, res) => {
       if (endDate) wherePayments.paymentDate.lte = new Date(endDate);
     }
     
-    const [payments, expenses, fixedCosts] = await Promise.all([
-      prisma.payment.aggregate({
-        where: wherePayments,
-        _sum: { amount: true },
-        _count: true
-      }),
-      prisma.expense.aggregate({
-        where: where,
-        _sum: { amount: true },
-        _count: true
-      }),
-      prisma.fixedCost.aggregate({
-        _sum: { amount: true }
-      })
-    ]);
+    // Sales date filter (Store)
+    const whereSales = {};
+    if (startDate || endDate) {
+      whereSales.saleDate = {};
+      if (startDate) whereSales.saleDate.gte = new Date(startDate);
+      if (endDate) whereSales.saleDate.lte = new Date(endDate);
+    }
+    
+    // Start queries based on source
+    const queries = [];
+    
+    // Base expenses query (always runs)
+    const expensesQuery = prisma.expense.aggregate({ where, _sum: { amount: true }, _count: true });
+    const fixedCostsQuery = prisma.fixedCost.aggregate({ _sum: { amount: true } });
+    
+    let paymentsQuery = Promise.resolve(null);
+    let salesQuery = Promise.resolve(null);
+
+    if (source === 'all' || source === 'gym') {
+      paymentsQuery = prisma.payment.aggregate({ where: wherePayments, _sum: { amount: true }, _count: true });
+    }
+    if (source === 'all' || source === 'store') {
+      salesQuery = prisma.sale.aggregate({ where: whereSales, _sum: { totalAmount: true }, _count: true });
+    }
+
+    const [expenses, fixedCosts, payments, sales] = await Promise.all([expensesQuery, fixedCostsQuery, paymentsQuery, salesQuery]);
     
     // Safely parse decimals (Prisma returns null for sum if no records match)
     const fixedCostsTotal = parseFloat(fixedCosts?._sum?.amount || 0);
     const variableExpensesTotal = parseFloat(expenses?._sum?.amount || 0);
-    const totalRevenue = parseFloat(payments?._sum?.amount || 0);
+    
+    const gymRevenue = payments ? parseFloat(payments._sum.amount || 0) : 0;
+    const storeRevenue = sales ? parseFloat(sales._sum.totalAmount || 0) : 0;
+    const totalRevenue = gymRevenue + storeRevenue;
+    
+    const gymCount = payments ? payments._count : 0;
+    const storeCount = sales ? sales._count : 0;
+    const totalCount = gymCount + storeCount;
     
     const totalExpenses = variableExpensesTotal + fixedCostsTotal;
     const netProfit = totalRevenue - totalExpenses;
@@ -50,7 +70,9 @@ router.get('/summary', authenticate, async (req, res) => {
     res.json({
       revenue: {
         total: totalRevenue,
-        count: payments._count
+        gym: gymRevenue,
+        store: storeRevenue,
+        count: totalCount
       },
       expenses: {
         total: totalExpenses,
@@ -69,7 +91,7 @@ router.get('/summary', authenticate, async (req, res) => {
 // Financial trends (monthly revenue vs expenses)
 router.get('/trends', authenticate, async (req, res) => {
   try {
-    const { months = 6 } = req.query;
+    const { months = 6, source = 'all' } = req.query;
     const startDate = new Date();
     startDate.setMonth(startDate.getMonth() - parseInt(months) + 1);
     startDate.setDate(1);
@@ -81,15 +103,40 @@ router.get('/trends', authenticate, async (req, res) => {
     });
     const fixedCostsMonthly = parseFloat(fixedCostsAgg._sum?.amount || 0);
 
-    const revenueTrends = await prisma.$queryRaw`
-      SELECT 
-        DATE_TRUNC('month', "paymentDate") as month,
-        SUM(amount) as revenue
-      FROM "Payment"
-      WHERE "paymentDate" >= ${startDate}
-      GROUP BY month
-      ORDER BY month ASC
-    `;
+    let revenueTrends = [];
+    if (source === 'all' || source === 'gym') {
+      const gymTrends = await prisma.$queryRaw`
+        SELECT 
+          DATE_TRUNC('month', "paymentDate") as month,
+          SUM(amount) as revenue
+        FROM "Payment"
+        WHERE "paymentDate" >= ${startDate}
+        GROUP BY month
+        ORDER BY month ASC
+      `;
+      revenueTrends = [...gymTrends];
+    }
+    
+    if (source === 'all' || source === 'store') {
+      const storeTrends = await prisma.$queryRaw`
+        SELECT 
+          DATE_TRUNC('month', "saleDate") as month,
+          SUM("totalAmount") as revenue
+        FROM "Sale"
+        WHERE "saleDate" >= ${startDate}
+        GROUP BY month
+        ORDER BY month ASC
+      `;
+      // Merge with existing revenueTrends
+      storeTrends.forEach(st => {
+        const existing = revenueTrends.find(rt => rt.month.toISOString() === st.month.toISOString());
+        if (existing) {
+          existing.revenue = (parseFloat(existing.revenue) + parseFloat(st.revenue)).toString();
+        } else {
+          revenueTrends.push(st);
+        }
+      });
+    }
 
     const expenseTrends = await prisma.$queryRaw`
       SELECT 
@@ -104,12 +151,12 @@ router.get('/trends', authenticate, async (req, res) => {
     const trendsMap = {};
     
     revenueTrends.forEach(r => {
-      const m = r.month.toISOString();
+      const m = new Date(r.month).toISOString();
       trendsMap[m] = { month: m, revenue: parseFloat(r.revenue), expenses: fixedCostsMonthly };
     });
 
     expenseTrends.forEach(e => {
-      const m = e.month.toISOString();
+      const m = new Date(e.month).toISOString();
       if (!trendsMap[m]) {
         trendsMap[m] = { month: m, revenue: 0, expenses: parseFloat(e.expenses) + fixedCostsMonthly };
       } else {

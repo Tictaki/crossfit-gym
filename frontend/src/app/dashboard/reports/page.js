@@ -25,6 +25,8 @@ export default function ReportsPage() {
   const [hourlyData, setHourlyData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState(null);
+  const [isExporting, setIsExporting] = useState(false);
+  const [showExportMenu, setShowExportMenu] = useState(false);
 
   useEffect(() => {
     loadAllReports();
@@ -69,6 +71,35 @@ export default function ReportsPage() {
     return null;
   };
 
+  const handleExport = async (format) => {
+    setIsExporting(true);
+    setShowExportMenu(false);
+    try {
+      const response = await reportsAPI.export({ format });
+      
+      const blob = new Blob([response.data], { 
+        type: format === 'pdf' 
+          ? 'application/pdf' 
+          : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+      });
+      
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `relatorio-ginasio.${format === 'xls' ? 'xlsx' : 'pdf'}`);
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error exporting report:', error);
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   if (loading && !lastUpdated) {
     return (
       <div className="flex items-center justify-center h-screen -mt-20">
@@ -97,10 +128,37 @@ export default function ReportsPage() {
           >
             <ArrowPathIcon className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
           </button>
-          <button className="btn-primary flex items-center gap-2 shadow-glow-sm">
-            <ArrowDownTrayIcon className="h-5 w-5" />
-            Exportar
-          </button>
+          
+          <div className="relative">
+            <button 
+              onClick={() => setShowExportMenu(!showExportMenu)}
+              disabled={isExporting}
+              className="btn-primary flex items-center gap-2 shadow-glow-sm disabled:opacity-70"
+            >
+              {isExporting ? <ArrowPathIcon className="h-5 w-5 animate-spin" /> : <ArrowDownTrayIcon className="h-5 w-5" />}
+              {isExporting ? 'Exportando...' : 'Exportar'}
+            </button>
+            
+            {showExportMenu && (
+              <>
+                <div className="fixed inset-0 z-10" onClick={() => setShowExportMenu(false)}></div>
+                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-dark-900 rounded-xl shadow-xl border border-gray-100 dark:border-dark-700/50 py-1 z-20 animate-scale-in origin-top-right">
+                  <button
+                    onClick={() => handleExport('pdf')}
+                    className="w-full text-left px-4 py-2.5 text-sm font-medium text-dark-700 dark:text-dark-200 hover:bg-gray-50 dark:hover:bg-dark-800 transition-colors flex items-center gap-2"
+                  >
+                    Gerar PDF (A4)
+                  </button>
+                  <button
+                    onClick={() => handleExport('xls')}
+                    className="w-full text-left px-4 py-2.5 text-sm font-medium text-dark-700 dark:text-dark-200 hover:bg-gray-50 dark:hover:bg-dark-800 transition-colors flex items-center gap-2"
+                  >
+                    Gerar Excel (.xlsx)
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
 
@@ -229,9 +287,35 @@ export default function ReportsPage() {
           <h4 className="font-bold text-blue-900 dark:text-blue-200 text-lg">Precisa de um relatório personalizado?</h4>
           <p className="text-blue-700 dark:text-blue-300 text-sm mt-1 opacity-80">Podemos exportar dados específicos para Excel ou PDF para uma análise offline mais aprofundada.</p>
         </div>
-        <button className="btn-secondary bg-white dark:bg-dark-800 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800 hover:bg-white dark:hover:bg-dark-700 w-full md:w-auto justify-center px-8 shadow-sm">
-          Solicitar Exportação
-        </button>
+        <div className="relative">
+          <button 
+            onClick={() => setShowExportMenu(!showExportMenu)}
+            disabled={isExporting}
+            className="btn-secondary bg-white dark:bg-dark-800 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800 hover:bg-white dark:hover:bg-dark-700 w-full md:w-auto justify-center px-8 shadow-sm disabled:opacity-70"
+          >
+            {isExporting ? 'Processando...' : 'Solicitar Exportação'}
+          </button>
+          
+          {showExportMenu && (
+            <>
+              <div className="fixed inset-0 z-10" onClick={() => setShowExportMenu(false)}></div>
+              <div className="absolute right-0 bottom-full mb-2 w-48 bg-white dark:bg-dark-900 rounded-xl shadow-xl border border-gray-100 dark:border-dark-700/50 py-1 z-20 animate-scale-in origin-bottom-right">
+                <button
+                  onClick={() => handleExport('pdf')}
+                  className="w-full text-left px-4 py-2.5 text-sm font-medium text-dark-700 dark:text-dark-200 hover:bg-gray-50 dark:hover:bg-dark-800 transition-colors flex items-center gap-2"
+                >
+                  Documento PDF
+                </button>
+                <button
+                  onClick={() => handleExport('xls')}
+                  className="w-full text-left px-4 py-2.5 text-sm font-medium text-dark-700 dark:text-dark-200 hover:bg-gray-50 dark:hover:bg-dark-800 transition-colors flex items-center gap-2"
+                >
+                  Ficheiro Excel
+                </button>
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

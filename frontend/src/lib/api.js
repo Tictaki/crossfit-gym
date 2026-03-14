@@ -167,6 +167,7 @@ export const reportsAPI = {
   defaulters: () => api.get('/reports/defaulters'),
   memberGrowth: (params) => api.get('/reports/member-growth', { params }),
   lowFrequency: (params) => api.get('/reports/low-frequency', { params }),
+  export: (params) => api.get('/reports/export', { params, responseType: 'blob' }),
 };
 
 // Users API (Uploads go direct to backend)
