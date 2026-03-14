@@ -82,16 +82,22 @@ export default function AccountingPage() {
       const startDate = start.toISOString();
       const endDate = end.toISOString();
 
-      const [summaryRes, expensesRes, trendsRes, fixedCostsRes] = await Promise.all([
+      const [summaryRes, expensesRes, trendsRes, fixedCostsRes] = await Promise.allSettled([
         accountingAPI.summary({ startDate, endDate, source }),
         expensesAPI.list({ startDate, endDate }),
         accountingAPI.trends({ source }),
         fixedCostsAPI.list()
       ]);
-      setSummary(summaryRes.data);
-      setExpenses(expensesRes.data.expenses);
-      setTrends(trendsRes.data);
-      setFixedCosts(fixedCostsRes.data);
+
+      if (summaryRes.status === 'fulfilled') setSummary(summaryRes.value.data);
+      if (expensesRes.status === 'fulfilled') setExpenses(expensesRes.value.data.expenses || []);
+      if (trendsRes.status === 'fulfilled') setTrends(trendsRes.value.data || []);
+      if (fixedCostsRes.status === 'fulfilled') setFixedCosts(fixedCostsRes.value.data || []);
+      
+      // Log failures for debugging
+      [summaryRes, expensesRes, trendsRes, fixedCostsRes].forEach((r, i) => {
+        if (r.status === 'rejected') console.error(`Accounting request ${i} failed:`, r.reason);
+      });
     } catch (err) {
       console.error('Error loading accounting data:', err);
     } finally {
