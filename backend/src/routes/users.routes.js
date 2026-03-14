@@ -1,8 +1,7 @@
 import express from 'express';
 import bcrypt from 'bcryptjs';
-import prisma from '../utils/prisma.js';
+import { PrismaClient } from '@prisma/client';
 import { authenticate, requireAdmin } from '../middleware/auth.js';
-import { notify } from '../utils/notifier.js';
 
 import multer from 'multer';
 import path from 'path';
@@ -11,6 +10,7 @@ import fs from 'fs';
 import { profileStorage } from '../utils/cloudinaryConfig.js';
 
 const router = express.Router();
+const prisma = new PrismaClient();
 
 const upload = multer({
   storage: profileStorage,
@@ -23,32 +23,6 @@ const upload = multer({
       return cb(null, true);
     }
     cb(new Error('Somente imagens (jpg, jpeg, png, webp) são permitidas'));
-  }
-});
-
-// Get own profile
-router.get('/profile', authenticate, async (req, res) => {
-  try {
-    const user = await prisma.user.findUnique({
-      where: { id: req.user.id },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        photo: true,
-        createdAt: true
-      }
-    });
-    
-    if (!user) {
-      return res.status(404).json({ error: 'Usuário não encontrado' });
-    }
-    
-    res.json(user);
-  } catch (error) {
-    console.error('Error fetching profile:', error);
-    res.status(500).json({ error: 'Erro ao carregar perfil' });
   }
 });
 
@@ -76,32 +50,11 @@ router.put('/profile', authenticate, upload.single('photo'), async (req, res) =>
     });
     
     res.json(user);
-
-    await notify({
-      action: 'UPDATE',
-      message: `Perfil atualizado pelo utilizador: ${user.name}`,
-      actorId: req.user.id,
-      entity: 'USER',
-      entityId: user.id
-    });
   } catch (error) {
-    console.error('❌ CRITICAL: Error updating profile:', error);
-    
-    // Provide a more descriptive error message based on the error type
-    let errorMessage = 'Erro ao atualizar perfil';
-    let statusCode = 500;
-
-    if (error.code === 'P2002') {
-      errorMessage = 'Este email já está em uso por outro utilizador.';
-      statusCode = 409;
-    } else if (error.message?.includes('Cloudinary')) {
-      errorMessage = 'Erro ao carregar a imagem para o Cloudinary. Verifique as credenciais.';
-    }
-
-    res.status(statusCode).json({ 
-      error: errorMessage,
+    console.error('CRITICAL: Error updating profile:', error);
+    res.status(500).json({ 
+      error: 'Erro ao atualizar perfil',
       message: error.message,
-      code: error.code,
       stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
   }
@@ -169,14 +122,6 @@ router.post('/', authenticate, requireAdmin, async (req, res) => {
     
     console.log('✓ User created successfully:', user.id);
     res.status(201).json(user);
-
-    await notify({
-      action: 'CREATE',
-      message: `Novo utilizador do staff criado: ${user.name} (${user.role})`,
-      actorId: req.user.id,
-      entity: 'USER',
-      entityId: user.id
-    });
   } catch (error) {
     console.error('❌ Error creating user:', error.message);
     
@@ -224,14 +169,6 @@ router.put('/:id', authenticate, requireAdmin, async (req, res) => {
     });
     
     res.json(user);
-
-    await notify({
-      action: 'UPDATE',
-      message: `Utilizador do staff atualizado pelo administrador: ${user.name}`,
-      actorId: req.user.id,
-      entity: 'USER',
-      entityId: user.id
-    });
   } catch (error) {
     console.error('Error updating user:', error);
     res.status(500).json({ error: 'Failed to update user' });
@@ -243,14 +180,6 @@ router.delete('/:id', authenticate, requireAdmin, async (req, res) => {
   try {
     await prisma.user.delete({
       where: { id: req.params.id }
-    });
-
-    await notify({
-      action: 'DELETE',
-      message: `Utilizador do staff removido: ID #${req.params.id.substring(0, 8)}`,
-      actorId: req.user.id,
-      entity: 'USER',
-      entityId: req.params.id
     });
     
     res.json({ message: 'User deleted successfully' });

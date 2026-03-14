@@ -1,10 +1,6 @@
 {
   "name": "crosstraining-gym-management",
   "version": "1.0.0",
-  "workspaces": [
-    "backend",
-    "frontend"
-  ],
   "scripts": {
     "dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
     "start": "npm start --prefix backend"
@@ -13,8 +9,6 @@
     "concurrently": "^9.2.1"
   },
   "dependencies": {
-    "cloudinary": "^2.9.0",
-    "next-cloudinary": "^6.17.5",
     "wrangler": "^4.66.0"
   }
 }
