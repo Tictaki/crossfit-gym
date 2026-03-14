@@ -69,23 +69,23 @@ export default function AccountingPage() {
   const [filterSource, setFilterSource] = useState('all'); // 'all', 'gym', 'store'
 
   useEffect(() => {
-    loadData();
+    loadData(selectedMonth, filterSource);
   }, [selectedMonth, filterSource]);
 
-  const loadData = async () => {
+  const loadData = async (month, source) => {
     try {
       setLoading(true);
       // Compute startDate / endDate from selectedMonth
-      const start = new Date(`${selectedMonth}-01T00:00:00.000Z`);
+      const start = new Date(`${month}-01T00:00:00.000Z`);
       const end = new Date(start);
       end.setMonth(end.getMonth() + 1);
       const startDate = start.toISOString();
       const endDate = end.toISOString();
 
       const [summaryRes, expensesRes, trendsRes, fixedCostsRes] = await Promise.all([
-        accountingAPI.summary({ startDate, endDate, source: filterSource }),
+        accountingAPI.summary({ startDate, endDate, source }),
         expensesAPI.list({ startDate, endDate }),
-        accountingAPI.trends({ source: filterSource }),
+        accountingAPI.trends({ source }),
         fixedCostsAPI.list()
       ]);
       setSummary(summaryRes.data);

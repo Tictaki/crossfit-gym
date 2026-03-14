@@ -33,9 +33,6 @@ router.get('/summary', authenticate, async (req, res) => {
       if (endDate) whereSales.saleDate.lte = new Date(endDate);
     }
     
-    // Start queries based on source
-    const queries = [];
-    
     // Base expenses query (always runs)
     const expensesQuery = prisma.expense.aggregate({ where, _sum: { amount: true }, _count: true });
     const fixedCostsQuery = prisma.fixedCost.aggregate({ _sum: { amount: true } });
@@ -78,7 +75,7 @@ router.get('/summary', authenticate, async (req, res) => {
         total: totalExpenses,
         variable: variableExpensesTotal,
         fixed: fixedCostsTotal,
-        count: expenses._count
+        count: expenses?._count ?? 0
       },
       netProfit
     });
