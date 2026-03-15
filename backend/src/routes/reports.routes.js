@@ -320,8 +320,7 @@ router.get('/export', authenticate, async (req, res) => {
       }
       
       // Footer credits
-      const pageHeight = doc.page.height;
-      const footerY = pageHeight - 40;
+      const footerY = 780; // Safe position above the 50pt bottom margin
       doc.fontSize(8).font('Helvetica')
          .fillColor('#1F2937')
          .text('Powered by IDesign', 50, footerY, { continued: true })
