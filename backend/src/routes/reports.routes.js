@@ -201,22 +201,9 @@ router.get('/export', authenticate, async (req, res) => {
     // Handle XLS format
     if (formatType === 'xls') {
       const workbook = new ExcelJS.Workbook();
-      
-      const logoPath = path.join(process.cwd(), 'src', 'assets', 'logo.png');
-      const hasLogo = fs.existsSync(logoPath);
-      let logoId = null;
-      if (hasLogo) {
-        logoId = workbook.addImage({
-          filename: logoPath,
-          extension: 'png',
-        });
-      }
 
       // Receita por Plano sheet
       const wsPlans = workbook.addWorksheet('Receita por Plano');
-      if (hasLogo) {
-        wsPlans.addImage(logoId, 'A1:B3');
-      }
       wsPlans.columns = [
         { header: 'Plano', key: 'Plano', width: 20 },
         { header: 'Receita (MZN)', key: 'Receita (MZN)', width: 15 },
@@ -226,9 +213,6 @@ router.get('/export', authenticate, async (req, res) => {
       
       // Inadimplentes (Defaulters) sheet
       const wsDefaulters = workbook.addWorksheet('Membros em Atraso');
-      if (hasLogo) {
-        wsDefaulters.addImage(logoId, 'A1:B3');
-      }
       wsDefaulters.columns = [
         { header: 'Nome', key: 'Nome', width: 30 },
         { header: 'Telefone', key: 'Telefone', width: 20 },
@@ -239,9 +223,6 @@ router.get('/export', authenticate, async (req, res) => {
       
       // Estatísticas Gerais sheet
       const wsStats = workbook.addWorksheet('Resumo Diário');
-      if (hasLogo) {
-        wsStats.addImage(logoId, 'A1:B3');
-      }
       wsStats.columns = [
         { header: 'Membros Ativos', key: 'Membros Ativos', width: 15 },
         { header: 'Membros Inativos', key: 'Membros Inativos', width: 15 },
@@ -337,6 +318,15 @@ router.get('/export', authenticate, async (req, res) => {
           y += 20;
         });
       }
+      
+      // Footer credits
+      const pageHeight = doc.page.height;
+      const footerY = pageHeight - 40;
+      doc.fontSize(8).font('Helvetica')
+         .fillColor('#1F2937')
+         .text('Powered by IDesign', 50, footerY, { continued: true })
+         .fillColor('#CC0000')
+         .text('moz', { continued: false });
       
       doc.end();
     }
