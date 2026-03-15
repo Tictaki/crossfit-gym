@@ -5,8 +5,6 @@ import ExcelJS from 'exceljs';
 import PDFDocument from 'pdfkit';
 import path from 'path';
 import fs from 'fs';
-import { format } from 'date-fns';
-import { pt } from 'date-fns/locale';
 
 const router = express.Router();
 
@@ -278,7 +276,7 @@ router.get('/export', authenticate, async (req, res) => {
       }
       
       doc.fillColor(textColor).fontSize(20).font('Helvetica-Bold').text('CROSSTRAINING GYM', 100, 45);
-      doc.fillColor(grayColor).fontSize(10).font('Helvetica').text(`Relatório Gerado: ${format(new Date(), "dd 'de' MMMM, yyyy 'às' HH:mm", { locale: pt })}`, 100, 70);
+      doc.fillColor(grayColor).fontSize(10).font('Helvetica').text(`Relatório Gerado: ${new Date().toLocaleString('pt-PT', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}`, 100, 70);
       
       doc.moveTo(50, 100).lineTo(545, 100).strokeColor('#E5E7EB').lineWidth(1).stroke();
       
