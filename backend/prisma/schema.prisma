@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = "postgresql://postgres:wSWCAzWnAPEgHABfedSipUWlWjlkQUhp@mainline.proxy.rlwy.net:10145/railway?sslmode=no-verify"
 }
 
 model User {
@@ -221,6 +221,19 @@ model NotificationRecipient {
   @@index([read])
 }
 
+model FixedCost {
+  id            String    @id @default(uuid())
+  description   String
+  amount        Decimal   @db.Decimal(10, 2)
+  category      String
+  invoiceNumber String?
+  dueDate       DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([category])
+}
+
 enum Role {
   ADMIN
   RECEPTIONIST
@@ -272,17 +285,4 @@ enum ExpenseCategory {
   MAINTENANCE
   TAXES
   OTHER
-}
-
-model FixedCost {
-  id            String    @id @default(uuid())
-  description   String
-  amount        Decimal   @db.Decimal(10, 2)
-  category      String
-  invoiceNumber String?
-  dueDate       DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  @@index([category])
 }

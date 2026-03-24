@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const OLD_DATABASE_URL = "postgresql://postgres:WgOIoFmUjORDypfnjtfKBHBESKSqTJRE@gondola.proxy.rlwy.net:22762/railway";
+const OLD_DATABASE_URL = "postgresql://postgres:WgOIoFmUjORDypfnjtfKBHBESKSqTJRE@66.33.22.70:5432/railway?sslmode=no-verify";
 const NEW_DATABASE_URL = process.env.DATABASE_URL;
 
 if (!NEW_DATABASE_URL) {
