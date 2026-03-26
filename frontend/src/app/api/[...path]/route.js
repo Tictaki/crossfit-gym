@@ -1,12 +1,30 @@
 import { NextResponse } from 'next/server';
 
 // Railway backend URL - server-side only (no NEXT_PUBLIC_ prefix needed)
-const RAILWAY_API = process.env.RAILWAY_API_URL || process.env.NEXT_PUBLIC_API_URL || 'https://crossfit-gym-production-944c.up.railway.app/api';
+// Normalize Railway backend URL
+const getBackendUrl = () => {
+  let url = process.env.RAILWAY_API_URL || process.env.NEXT_PUBLIC_API_URL || 'https://crossfit-gym-production-944c.up.railway.app';
+  
+  // Remove trailing slashes
+  url = url.replace(/\/+$/, '');
+  
+  // Ensure it ends with /api if it's the backend root
+  if (!url.endsWith('/api')) {
+    url += '/api';
+  }
+  
+  return url;
+};
+
+const RAILWAY_API = getBackendUrl();
 
 async function handler(request, { params }) {
-  const path = params.path?.join('/') || '';
+  const pathParts = params.path || [];
+  const path = pathParts.join('/');
   const { searchParams } = new URL(request.url);
   const query = searchParams.toString();
+  
+  // Construct target URL ensuring exactly one slash between API and path
   const targetUrl = `${RAILWAY_API}/${path}${query ? `?${query}` : ''}`;
 
   // Forward filtered headers from the request

@@ -1,8 +1,8 @@
 # Node.js Backend Dockerfile
 FROM node:20-alpine
 
-# Install OpenSSL required by Prisma
-RUN apk add --no-cache openssl
+# Install dependencies required by Prisma and some native modules
+RUN apk add --no-cache openssl g++ make python3 libstdc++
 
 WORKDIR /app
 
