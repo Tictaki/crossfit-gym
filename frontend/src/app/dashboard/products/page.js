@@ -73,7 +73,7 @@ export default function ProductsPage() {
     // Initialize Socket.io - Use absolute Railway URL in production
     const socketBackendUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
         ? `${window.location.protocol}//${window.location.hostname}:3001`
-        : window.location.origin.replace(/\/api$/, '');
+        : window.location.origin.replace(/\/api$/, ''); // Git detection test comment
     
     const socketInstance = io(socketBackendUrl);
     const sid = user.id || Math.random().toString(36).substring(7);
