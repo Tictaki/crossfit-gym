@@ -3,6 +3,7 @@ import prisma from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
 import { notify } from '@/lib/notifier';
 import { updateMemberStatuses } from '@/lib/autoUpdateStatus';
+import { uploadFile } from '@/lib/storage';
 
 export async function GET(request) {
   try { await requireAuth(); } catch { return NextResponse.json({ error: 'Authentication required' }, { status: 401 }); }
@@ -53,8 +54,14 @@ export async function POST(request) {
       body = Object.fromEntries(formData.entries());
       const photoFile = formData.get('photo');
       if (photoFile && photoFile.size > 0) {
-        // TODO: Phase 4 — upload to Supabase Storage
-        photoUrl = null;
+        try {
+          photoUrl = await uploadFile(photoFile, 'members', photoFile.name);
+        } catch (uploadError) {
+          console.error('Photo upload failed:', uploadError);
+          // Opque as error if upload fails? Or just continue without photo?
+          // Usually better to fail if a photo was explicitly provided but upload failed.
+          throw new Error('Erro ao fazer upload da foto do membro.');
+        }
       }
     } else {
       body = await request.json();

@@ -1,20 +1,38 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
+import { uploadFile, replaceFile } from '@/lib/storage';
+
+// Helper to get current setting value for replacement
+async function getSettingValue(key) {
+  const s = await prisma.setting.findUnique({ where: { key }, select: { value: true } });
+  return s?.value;
+}
 
 export async function POST(request) {
   try { await requireAuth(); } catch { return NextResponse.json({ error: 'Authentication required' }, { status: 401 }); }
   try {
     const contentType = request.headers.get('content-type') || '';
-    let body;
+    let body, photoUrl = null, key = 'background_image';
+    
     if (contentType.includes('multipart/form-data')) {
       const formData = await request.formData();
       body = Object.fromEntries(formData.entries());
-      // TODO: Phase 4 — upload background to Supabase Storage
+      const imageFile = formData.get('photo');
+      if (imageFile && imageFile.size > 0) {
+        try {
+          const oldUrl = await getSettingValue(key);
+          photoUrl = await replaceFile(oldUrl, imageFile, 'settings', imageFile.name);
+        } catch (uploadError) {
+          console.error('Background upload failed:', uploadError);
+          throw new Error('Erro ao fazer upload da imagem de fundo.');
+        }
+      }
     } else {
       body = await request.json();
     }
-    const { key = 'background_image', value } = body;
+    
+    const value = photoUrl || body.value;
     if (!value) return NextResponse.json({ error: 'No image provided' }, { status: 400 });
 
     await prisma.setting.upsert({ where: { key }, update: { value }, create: { key, value } });
@@ -29,7 +47,11 @@ export async function DELETE(request) {
   try {
     const { searchParams } = new URL(request.url);
     const key = searchParams.get('key') || 'background_image';
+    const setting = await prisma.setting.findUnique({ where: { key }, select: { value: true } });
     await prisma.setting.delete({ where: { key } });
+    if (setting?.value) {
+      await deleteFile(setting.value, 'settings');
+    }
     return NextResponse.json({ message: 'Background image removed', key });
   } catch (error) {
     if (error.code === 'P2025') return NextResponse.json({ message: 'Background image already removed' });

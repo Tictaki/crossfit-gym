@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
 import { notify } from '@/lib/notifier';
+import { uploadFile } from '@/lib/storage';
 import { networkInterfaces } from 'os';
 
 // List products
@@ -29,10 +30,19 @@ export async function POST(request) {
 
   try {
     const contentType = request.headers.get('content-type') || '';
-    let body;
+    let body, photoUrl = null;
     if (contentType.includes('multipart/form-data')) {
       const formData = await request.formData();
       body = Object.fromEntries(formData.entries());
+      const imageFile = formData.get('photo');
+      if (imageFile && imageFile.size > 0) {
+        try {
+          photoUrl = await uploadFile(imageFile, 'products', imageFile.name);
+        } catch (uploadError) {
+          console.error('Product image upload failed:', uploadError);
+          throw new Error('Erro ao fazer upload da imagem do produto.');
+        }
+      }
     } else {
       body = await request.json();
     }
@@ -40,7 +50,7 @@ export async function POST(request) {
     const { name, commercialName, description, price, stock, category, packageSize, sku } = body;
     const parseNum = (v, isInt = false) => { if (!v || v === 'null' || v === 'undefined') return isInt ? 0 : 0.0; const p = isInt ? parseInt(v) : parseFloat(v); return isNaN(p) ? 0 : p; };
 
-    const product = await prisma.product.create({ data: { name, commercialName, description, price: parseNum(price), stock: parseNum(stock, true), category, packageSize, sku, photo: null } });
+    const product = await prisma.product.create({ data: { name, commercialName, description, price: parseNum(price), stock: parseNum(stock, true), category, packageSize, sku, photo: photoUrl } });
     await notify({ action: 'CREATE', message: `Novo produto adicionado: ${product.name}`, actorId: user.id, entity: 'PRODUCT', entityId: product.id });
     return NextResponse.json(product, { status: 201 });
   } catch (error) {
