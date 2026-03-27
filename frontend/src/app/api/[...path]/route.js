@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 
 // Railway backend URL - server-side only (no NEXT_PUBLIC_ prefix needed)
