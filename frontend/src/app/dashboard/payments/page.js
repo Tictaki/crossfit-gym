@@ -72,7 +72,7 @@ export default function PaymentsPage() {
 
   const handleDownloadReceipt = (payment) => {
     const token = localStorage.getItem('token');
-    const pdfUrl = `${}/api/payments/${payment.id}/receipt?token=${token}`;
+    const pdfUrl = `/api/payments/${payment.id}/receipt?token=${token}`;
     window.open(pdfUrl, '_blank');
   };
 
@@ -310,7 +310,7 @@ export default function PaymentsPage() {
                           <button
                             onClick={() => {
                               const token = localStorage.getItem('token');
-                              const pdfUrl = `${}/api/payments/${payment.id}/receipt?token=${token}`;
+                              const pdfUrl = `/api/payments/${payment.id}/receipt?token=${token}`;
                               const message = `Olá *${payment.member?.name}*! 💪\n\nAqui está o recibo do seu pagamento na *Crosstraining Gym*. Obrigado pela preferência e bons treinos! 🏋️‍♀️\n\n📄 *Aceda à sua fatura aqui:*\n${pdfUrl}`;
                               const phone = (payment.member?.phone || '').replace(/[^0-9]/g, '');
                               window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
