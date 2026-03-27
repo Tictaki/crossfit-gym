@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { checkinsAPI, UPLOAD_URL, getImageUrl } from '@/lib/api';
+import { checkinsAPI, getImageUrl } from '@/lib/api';
 import { timeFormatter, dateFormatter } from '@/lib/utils';
 import { 
   ArrowPathIcon,

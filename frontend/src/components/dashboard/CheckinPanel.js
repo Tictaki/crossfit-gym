@@ -11,7 +11,7 @@ import {
   TicketIcon,
   CalendarIcon
 } from '@heroicons/react/24/outline';
-import { membersAPI, checkinsAPI, UPLOAD_URL } from '@/lib/api';
+import { membersAPI, checkinsAPI, getImageUrl } from '@/lib/api';
 
 export default function CheckinPanel({ isOpen, onClose }) {
   const [search, setSearch] = useState('');
@@ -138,7 +138,7 @@ export default function CheckinPanel({ isOpen, onClose }) {
                       <div className="h-12 w-12 rounded-full overflow-hidden bg-gray-100 dark:bg-dark-800 mr-4 shadow-inner border border-gray-200 dark:border-dark-700 flex items-center justify-center text-gray-400 font-bold">
                         {member.photo ? (
                           <img 
-                            src={`${UPLOAD_URL}${member.photo}`} 
+                            src={getImageUrl(member.photo)} 
                             alt={member.name} 
                             className="h-full w-full object-cover" 
                             onError={(e) => {
@@ -169,7 +169,7 @@ export default function CheckinPanel({ isOpen, onClose }) {
                     <div className="h-28 w-28 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-3xl font-bold mx-auto mb-4 border-4 border-white dark:border-dark-700 shadow-2xl overflow-hidden relative">
                       {selectedMember.photo ? (
                         <img 
-                          src={`${UPLOAD_URL}${selectedMember.photo}`} 
+                          src={getImageUrl(selectedMember.photo)} 
                           alt={selectedMember.name} 
                           className="h-full w-full object-cover" 
                           onError={(e) => {

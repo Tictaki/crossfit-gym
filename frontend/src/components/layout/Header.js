@@ -9,7 +9,7 @@ import {
   Cog6ToothIcon,
   Bars3Icon
 } from '@heroicons/react/24/outline';
-import { UPLOAD_URL, getImageUrl } from '@/lib/api';
+import { getImageUrl } from '@/lib/api';
 import NotificationBell from './NotificationBell';
 
 const Header = ({ user, setSidebarOpen }) => {

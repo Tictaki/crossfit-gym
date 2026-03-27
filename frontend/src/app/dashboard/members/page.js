@@ -10,7 +10,7 @@ import {
   PencilSquareIcon,
   TrashIcon
 } from '@heroicons/react/24/outline';
-import { UPLOAD_URL, getImageUrl } from '@/lib/api';
+import { getImageUrl } from '@/lib/api';
 import { useDebounce } from '@/lib/utils';
 
 export default function MembersPage() {

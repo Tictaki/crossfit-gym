@@ -8,7 +8,7 @@ import {
   TrashIcon,
   UserCircleIcon,
 } from '@heroicons/react/24/outline';
-import { settingsAPI, usersAPI, UPLOAD_URL, getImageUrl } from '@/lib/api';
+import { settingsAPI, usersAPI, getImageUrl } from '@/lib/api';
 import { useTheme } from '@/context/ThemeContext';
 import { useToast } from '@/context/ToastContext';
 import { useConfirm } from '@/context/ConfirmModalContext';

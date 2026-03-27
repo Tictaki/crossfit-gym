@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { reportsAPI, UPLOAD_URL, getImageUrl } from '@/lib/api';
+import { reportsAPI, getImageUrl } from '@/lib/api';
 import { 
   ExclamationTriangleIcon, 
   ChatBubbleLeftRightIcon, 

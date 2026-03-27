@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { membersAPI, UPLOAD_URL, getImageUrl } from '@/lib/api';
+import { membersAPI, getImageUrl } from '@/lib/api';
 import { 
   ArrowLeftIcon, 
   UserIcon, 

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { membersAPI, plansAPI, paymentsAPI, UPLOAD_URL, getImageUrl } from '@/lib/api';
+import { membersAPI, plansAPI, paymentsAPI, getImageUrl } from '@/lib/api';
 import PlanCard from '@/components/dashboard/PlanCard';
 import {
   UserIcon,
@@ -133,7 +133,7 @@ export default function MemberDetailsPage({ params }) {
   const handleDownloadInvoice = (paymentId) => {
     // Get token from localStorage and add to URL for iframe authentication
     const token = localStorage.getItem('token');
-    const pdfUrl = `${UPLOAD_URL}/api/payments/${paymentId}/receipt?token=${token}`;
+    const pdfUrl = `/api/payments/${paymentId}/receipt?token=${token}`;
     
     console.log('Opening Invoice URL:', pdfUrl);
     window.open(pdfUrl, '_blank');
@@ -458,7 +458,7 @@ export default function MemberDetailsPage({ params }) {
                                 e.preventDefault();
                                 e.stopPropagation();
                                 const token = localStorage.getItem('token');
-                                const pdfUrl = `${UPLOAD_URL}/api/payments/${payment.id}/receipt?token=${token}`;
+                                const pdfUrl = `/api/payments/${payment.id}/receipt?token=${token}`;
                                 const message = `Olá *${member.name}*! 💪\n\nAqui está o recibo do seu pagamento na *Crosstraining Gym*. Obrigado pela preferência e bons treinos! 🏋️‍♀️\n\n📄 *Aceda à sua fatura aqui:*\n${pdfUrl}`;
                                 const phone = member.phone.replace(/[^0-9]/g, '');
                                 window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
