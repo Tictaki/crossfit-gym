@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const getBaseURL = () => {
-  // In the browser, always use relative /api so the Next.js proxy handles it
+  // In the browser, always use relative /api so it hits Next.js API routes
   if (typeof window !== 'undefined') {
     if (process.env.NEXT_PUBLIC_API_URL && !process.env.NEXT_PUBLIC_API_URL.includes('your-backend-url')) {
       let url = process.env.NEXT_PUBLIC_API_URL;
@@ -13,16 +13,14 @@ const getBaseURL = () => {
       }
       return url;
     }
-    const { hostname, port } = window.location;
-    if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      return `http://${hostname}:3001/api`;
-    }
-    // On Vercel: use relative path, the proxy route at /api/[...path] handles it
+    // Always return relative path so Next.js App Router API routes can intercept it
     return '/api';
   }
+  
+  // Server-side
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   if (apiUrl && !apiUrl.includes('your-backend-url')) return apiUrl;
-  return 'http://localhost:3001/api';
+  return 'http://localhost:3000/api'; 
 };
 
 const API_URL = getBaseURL();
