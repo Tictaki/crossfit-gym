@@ -5,5 +5,5 @@ compatibility_flags = [ "nodejs_compat" ]
 pages_build_output_dir = ".vercel/output/static"
 
 [[env.production.vars]]
-NEXT_PUBLIC_API_URL = "https://your-backend-url.railway.app"
-NEXT_PUBLIC_SOCKET_URL = "https://your-backend-url.railway.app"
+NEXT_PUBLIC_API_URL = "https://crossfit-gym-production-3f5b.up.railway.app"
+NEXT_PUBLIC_SOCKET_URL = "https://crossfit-gym-production-3f5b.up.railway.app"

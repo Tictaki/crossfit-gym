@@ -18,7 +18,7 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'crossfit-gym-production-944c.up.railway.app',
+        hostname: 'crossfit-gym-production-3f5b.up.railway.app',
       },
     ],
   },

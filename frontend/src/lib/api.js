@@ -50,7 +50,7 @@ const getUploadURL = () => {
 
     // If we're on Vercel or any other production domain
     // Always point directly to the Railway backend
-    return 'https://crossfit-gym-production-944c.up.railway.app';
+    return 'https://crossfit-gym-production-3f5b.up.railway.app';
   }
   return 'http://localhost:3001';
 };

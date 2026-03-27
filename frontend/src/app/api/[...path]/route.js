@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 // Railway backend URL - server-side only (no NEXT_PUBLIC_ prefix needed)
 // Normalize Railway backend URL
 const getBackendUrl = () => {
-  let url = process.env.RAILWAY_API_URL || process.env.NEXT_PUBLIC_API_URL || 'https://crossfit-gym-production-944c.up.railway.app';
+  let url = process.env.RAILWAY_API_URL || process.env.NEXT_PUBLIC_API_URL || 'https://crossfit-gym-production-3f5b.up.railway.app';
   
   // Remove trailing slashes
   url = url.replace(/\/+$/, '');
