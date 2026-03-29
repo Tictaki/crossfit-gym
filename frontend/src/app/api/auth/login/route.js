@@ -28,6 +28,7 @@ export async function POST(request) {
     }
 
     // 2. Sync with Prisma User table
+    const isAdminEmail = email.includes('gerente') || email === 'fauzia@crosstraining.com';
     let dbUser = await prisma.user.findUnique({
       where: { email: authData.user.email }
     });
@@ -40,8 +41,14 @@ export async function POST(request) {
           email: authData.user.email,
           name: authData.user.user_metadata?.name || email.split('@')[0],
           password: '', // We don't store passwords anymore
-          role: email.includes('gerente') ? 'ADMIN' : 'RECEPTIONIST'
+          role: isAdminEmail ? 'ADMIN' : 'RECEPTIONIST'
         }
+      });
+    } else if (isAdminEmail && dbUser.role !== 'ADMIN') {
+      // Elevate to ADMIN if needed
+      dbUser = await prisma.user.update({
+        where: { id: dbUser.id },
+        data: { role: 'ADMIN' }
       });
     }
 
