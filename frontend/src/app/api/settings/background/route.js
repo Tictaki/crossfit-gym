@@ -1,4 +1,5 @@
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
@@ -46,7 +47,7 @@ export async function POST(request) {
 export async function DELETE(request) {
   try { await requireAuth(); } catch { return NextResponse.json({ error: 'Authentication required' }, { status: 401 }); }
   try {
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = request.nextUrl;
     const key = searchParams.get('key') || 'background_image';
     const setting = await prisma.setting.findUnique({ where: { key }, select: { value: true } });
     await prisma.setting.delete({ where: { key } });

@@ -1,4 +1,5 @@
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
@@ -6,7 +7,7 @@ import { requireAuth } from '@/lib/auth';
 export async function GET(request) {
   try { await requireAuth(); } catch { return NextResponse.json({ error: 'Authentication required' }, { status: 401 }); }
   try {
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = request.nextUrl;
     const days = parseInt(searchParams.get('days') || '30');
     const maxCheckins = parseInt(searchParams.get('maxCheckins') || '5');
     const startDate = new Date(); startDate.setDate(startDate.getDate() - days);

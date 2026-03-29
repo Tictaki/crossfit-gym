@@ -1,4 +1,5 @@
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 import { NextResponse } from 'next/server';
 
 // Railway backend URL - server-side only (no NEXT_PUBLIC_ prefix needed)
@@ -22,7 +23,7 @@ const RAILWAY_API = getBackendUrl();
 async function handler(request, { params }) {
   const pathParts = params.path || [];
   const path = pathParts.join('/');
-  const { searchParams } = new URL(request.url);
+  const { searchParams } = request.nextUrl;
   const query = searchParams.toString();
   
   // Construct target URL ensuring exactly one slash between API and path

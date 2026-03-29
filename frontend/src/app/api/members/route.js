@@ -1,4 +1,5 @@
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
@@ -12,7 +13,7 @@ export async function GET(request) {
   try {
     try { await updateMemberStatuses(); } catch {}
 
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = request.nextUrl;
     const search = searchParams.get('search');
     const status = searchParams.get('status');
     const page = parseInt(searchParams.get('page') || '1');
