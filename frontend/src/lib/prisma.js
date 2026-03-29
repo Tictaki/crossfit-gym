@@ -2,15 +2,13 @@ import { PrismaClient } from '@prisma/client';
 
 const globalForPrisma = globalThis;
 
-let prisma;
-
-if (process.env.NODE_ENV === 'production') {
-  prisma = new PrismaClient();
-} else {
-  if (!globalForPrisma.prisma) {
-    globalForPrisma.prisma = new PrismaClient();
+const prismaProxy = new Proxy({}, {
+  get: (target, prop) => {
+    if (!globalForPrisma.prisma) {
+      globalForPrisma.prisma = new PrismaClient();
+    }
+    return globalForPrisma.prisma[prop];
   }
-  prisma = globalForPrisma.prisma;
-}
+});
 
-export default prisma;
+export default prismaProxy;
