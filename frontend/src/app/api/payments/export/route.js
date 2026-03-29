@@ -3,7 +3,7 @@ export const revalidate = 0;
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
-import xlsx from 'xlsx';
+import * as xlsx from 'xlsx';
 
 export async function GET(request) {
   try { await requireAuth(); } catch { return NextResponse.json({ error: 'Authentication required' }, { status: 401 }); }

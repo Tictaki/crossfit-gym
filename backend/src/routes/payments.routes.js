@@ -1,6 +1,6 @@
 import express from 'express';
 import prisma from '../utils/prisma.js';
-import xlsx from 'xlsx';
+import * as xlsx from 'xlsx';
 import jwt from 'jsonwebtoken';
 import { authenticate } from '../middleware/auth.js';
 import { generateReceiptPDF } from '../utils/pdfGenerator.js';
