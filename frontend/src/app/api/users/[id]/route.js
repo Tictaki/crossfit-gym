@@ -12,6 +12,34 @@ async function getUserPhotoUrl(id) {
   return u?.photo;
 }
 
+export async function GET(request, { params }) {
+  try { await requireAuth(); } catch { return NextResponse.json({ error: 'Authentication required' }, { status: 401 }); }
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: params.id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        photo: true,
+        createdAt: true,
+        lastLogin: true,
+        status: true,
+        processedPayments: { take: 5, orderBy: { paymentDate: 'desc' }, include: { member: { select: { name: true } } } },
+        sales: { take: 5, orderBy: { saleDate: 'desc' }, include: { product: { select: { name: true } } } }
+      }
+    });
+
+    if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    return NextResponse.json(user);
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    return NextResponse.json({ error: 'Erro ao carregar utilizador' }, { status: 500 });
+  }
+}
+
 export async function PUT(request, { params }) {
   let user;
   try { user = await requireAuth(); } catch { return NextResponse.json({ error: 'Authentication required' }, { status: 401 }); }

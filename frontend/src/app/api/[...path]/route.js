@@ -5,8 +5,16 @@ import { NextResponse } from 'next/server';
 // Railway backend URL - server-side only (no NEXT_PUBLIC_ prefix needed)
 // Normalize Railway backend URL
 const getBackendUrl = () => {
-  let url = process.env.RAILWAY_API_URL || process.env.NEXT_PUBLIC_API_URL || 'https://crossfit-gym-production-3f5b.up.railway.app';
+  // RAILWAY_API_URL should be the absolute URL for the backend
+  let url = process.env.RAILWAY_API_URL;
   
+  // If RAILWAY_API_URL is not set, we MUST have an absolute fallback.
+  // We ignore NEXT_PUBLIC_API_URL if it's a relative path like "/api"
+  if (!url || url.startsWith('/')) {
+    url = 'https://crossfit-gym-production-3f5b.up.railway.app';
+  }
+  
+  // Normalize Railway backend URL
   // Remove trailing slashes
   url = url.replace(/\/+$/, '');
   

@@ -6,23 +6,40 @@ import { requireAuth } from '@/lib/auth';
 
 export async function GET(request) {
   try { await requireAuth(); } catch { return NextResponse.json({ error: 'Authentication required' }, { status: 401 }); }
+
   try {
     const { searchParams } = request.nextUrl;
     const days = parseInt(searchParams.get('days') || '30');
     const maxCheckins = parseInt(searchParams.get('maxCheckins') || '5');
-    const startDate = new Date(); startDate.setDate(startDate.getDate() - days);
+
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
 
     const activeMembers = await prisma.member.findMany({
       where: { status: 'ACTIVE' },
-      include: { checkins: { where: { checkinDatetime: { gte: startDate } } }, plan: true }
+      include: {
+        checkins: {
+          where: { checkinDatetime: { gte: startDate } },
+          orderBy: { checkinDatetime: 'desc' }
+        },
+        plan: true
+      }
     });
 
     const lowFrequency = activeMembers
       .filter(m => m.checkins.length <= maxCheckins)
-      .map(m => ({ id: m.id, name: m.name, phone: m.phone, plan: m.plan?.name, checkinCount: m.checkins.length, lastCheckin: m.checkins[0]?.checkinDatetime || null }));
+      .map(m => ({
+        id: m.id,
+        name: m.name,
+        phone: m.phone,
+        plan: m.plan?.name,
+        checkinCount: m.checkins.length,
+        lastCheckin: m.checkins[0]?.checkinDatetime || null
+      }));
 
     return NextResponse.json(lowFrequency);
   } catch (error) {
+    console.error('Error fetching low frequency report:', error);
     return NextResponse.json({ error: 'Failed to fetch low frequency report' }, { status: 500 });
   }
 }
