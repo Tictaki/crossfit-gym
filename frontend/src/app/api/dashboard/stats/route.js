@@ -224,11 +224,20 @@ export async function GET() {
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(today.getDate() - 7);
 
-    const [dailyCheckinsRaw, dailyActiveMembers, hourlyActivityRaw] = await Promise.all([
-      prisma.$queryRaw`SELECT DATE("checkinDatetime") as date, COUNT(*) as count FROM "Checkin" WHERE "checkinDatetime" >= ${fourteenDaysAgo}::timestamp GROUP BY DATE("checkinDatetime") ORDER BY date ASC`,
-      prisma.$queryRaw`SELECT DATE(c."checkinDatetime") as date, COUNT(DISTINCT c."memberId") as count FROM "Checkin" c WHERE c."checkinDatetime" >= ${fourteenDaysAgo}::timestamp GROUP BY DATE(c."checkinDatetime") ORDER BY date ASC`,
-      prisma.$queryRaw`SELECT EXTRACT(HOUR FROM "checkinDatetime") as hour, COUNT(*) as count FROM "Checkin" WHERE "checkinDatetime" >= ${sevenDaysAgo}::timestamp GROUP BY hour ORDER BY hour ASC`
-    ]);
+    let dailyCheckinsRaw = [];
+    let dailyActiveMembers = [];
+    let hourlyActivityRaw = [];
+
+    try {
+      [dailyCheckinsRaw, dailyActiveMembers, hourlyActivityRaw] = await Promise.all([
+        prisma.$queryRaw`SELECT DATE("checkinDatetime") as date, COUNT(*) as count FROM "Checkin" WHERE "checkinDatetime" >= ${fourteenDaysAgo}::timestamp GROUP BY DATE("checkinDatetime") ORDER BY date ASC`,
+        prisma.$queryRaw`SELECT DATE(c."checkinDatetime") as date, COUNT(DISTINCT c."memberId") as count FROM "Checkin" c WHERE c."checkinDatetime" >= ${fourteenDaysAgo}::timestamp GROUP BY DATE(c."checkinDatetime") ORDER BY date ASC`,
+        prisma.$queryRaw`SELECT EXTRACT(HOUR FROM "checkinDatetime") as hour, COUNT(*) as count FROM "Checkin" WHERE "checkinDatetime" >= ${sevenDaysAgo}::timestamp GROUP BY hour ORDER BY hour ASC`
+      ]);
+    } catch (rawError) {
+      console.error('CRITICAL: Dashboard raw SQL queries failed:', rawError.message);
+      // Fallback to empty results to avoid crashing the whole dashboard
+    }
 
     const dailyActivityMap = new Map();
     for (let i = 0; i <= 14; i++) {
@@ -255,13 +264,16 @@ export async function GET() {
     });
 
     // Daily financial data
-    const dailyPaymentsRaw = await prisma.$queryRaw`
-      SELECT DATE("paymentDate") as date, SUM(amount) as total FROM "Payment" WHERE "paymentDate" >= ${fourteenDaysAgo}::timestamp GROUP BY DATE("paymentDate")
-    `;
-
-    const dailySalesRaw = await prisma.$queryRaw`
-      SELECT DATE("saleDate") as date, SUM("totalAmount") as total FROM "Sale" WHERE "saleDate" >= ${fourteenDaysAgo}::timestamp GROUP BY DATE("saleDate")
-    `;
+    let dailyPaymentsRaw = [];
+    let dailySalesRaw = [];
+    try {
+      [dailyPaymentsRaw, dailySalesRaw] = await Promise.all([
+        prisma.$queryRaw`SELECT DATE("paymentDate") as date, SUM(amount) as total FROM "Payment" WHERE "paymentDate" >= ${fourteenDaysAgo}::timestamp GROUP BY DATE("paymentDate")`,
+        prisma.$queryRaw`SELECT DATE("saleDate") as date, SUM("totalAmount") as total FROM "Sale" WHERE "saleDate" >= ${fourteenDaysAgo}::timestamp GROUP BY DATE("saleDate")`
+      ]);
+    } catch (finError) {
+      console.error('Dashboard financial raw SQL queries failed:', finError.message);
+    }
 
     dailyPaymentsRaw.forEach(r => {
       const dateStr = new Date(r.date).toISOString().split('T')[0];
