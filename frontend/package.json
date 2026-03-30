@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
-    "@prisma/client": "^5.22.0",
+    "@prisma/client": "5.22.0",
     "@supabase/ssr": "^0.9.0",
     "@supabase/supabase-js": "^2.100.1",
     "autoprefixer": "^10.4.17",
@@ -42,7 +42,7 @@
     "@opennextjs/cloudflare": "^0.6.6",
     "eslint": "^8.56.0",
     "eslint-config-next": "14.2.23",
-    "prisma": "^5.22.0",
+    "prisma": "5.22.0",
     "wrangler": "^3.109.2"
   }
 }
