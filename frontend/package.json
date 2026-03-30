@@ -10,7 +10,7 @@
     "deploy": "npx wrangler pages deploy .open-next/assets",
     "start": "next start",
     "lint": "next lint",
-    "postinstall": "npx prisma generate"
+    "postinstall": "npx prisma@5.22.0 generate"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
