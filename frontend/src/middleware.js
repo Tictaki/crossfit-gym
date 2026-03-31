@@ -8,11 +8,6 @@ export async function middleware(request) {
     },
   })
 
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-    console.warn('⚠️ SUPABASE ENVIRONMENT VARIABLES MISSING - SKIPPING AUTH MIDDLEWARE');
-    return supabaseResponse;
-  }
-
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
@@ -22,6 +17,10 @@ export async function middleware(request) {
           return request.cookies.getAll()
         },
         setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
+          supabaseResponse = NextResponse.next({
+            request,
+          })
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options)
           )
@@ -29,6 +28,16 @@ export async function middleware(request) {
       },
     }
   )
+
+  // IMPORTANT: Avoid calling getUser() on every single static asset
+  // The matcher already handles most of this, but let's be explicit
+  if (
+    request.nextUrl.pathname.startsWith('/_next') ||
+    request.nextUrl.pathname.includes('/api/health') ||
+    request.nextUrl.pathname.includes('/api/debug-auth')
+  ) {
+    return supabaseResponse;
+  }
 
   const {
     data: { user },

@@ -1,33 +1,22 @@
-'use client';
+import { createClient } from '@/utils/supabase/server';
+import { redirect } from 'next/navigation';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+export default async function Home() {
+  const supabase = createClient();
+  
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-export default function Home() {
-  const router = useRouter();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    const token = localStorage.getItem('token');
-    if (token) {
-      router.push('/dashboard');
-    } else {
-      router.push('/login');
-    }
-  }, [router]);
-
-  if (!mounted) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
-      </div>
-    );
+  // If user is logged in, send to dashboard
+  if (user) {
+    redirect('/dashboard');
   }
 
-  return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
-    </div>
-  );
+  // Otherwise, send to login
+  redirect('/login');
+  
+  // This part will never be reached because of the redirects, 
+  // but we return a fragment for valid React component structure
+  return null;
 }
