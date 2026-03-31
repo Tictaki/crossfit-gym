@@ -7,6 +7,8 @@ import prisma from '@/lib/prisma';
  */
 export async function getAuthenticatedUser() {
   const supabase = createClient();
+  if (!supabase) return null;
+  
   const { data: { user: supabaseUser } } = await supabase.auth.getUser();
 
   if (!supabaseUser) return null;
