@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { settingsAPI, getImageUrl } from '@/lib/api';
+import { settingsAPI, authAPI, getImageUrl } from '@/lib/api';
 import Sidebar from '@/components/layout/Sidebar';
 import Header from '@/components/layout/Header';
 import ThemeToggle from '@/components/layout/ThemeToggle';
@@ -22,36 +22,43 @@ export default function DashboardLayout({ children }) {
 
   useEffect(() => {
     const initApp = async () => {
+      // Force a small timeout to prevent permanent spinner if something hangs
+      const timeoutId = setTimeout(() => {
+        if (loading) setLoading(false);
+      }, 5000);
+
       const storedUser = localStorage.getItem('user');
+      const token = localStorage.getItem('token');
       
-      if (!storedUser) {
-        try {
-          // Fallback check for newly authenticated OAuth users
-          // Their localStorage won't be set by the callback route natively
-          const { authAPI } = await import('@/lib/api');
-          const response = await authAPI.me();
-          
-          if (response.data?.user) {
-            localStorage.setItem('user', JSON.stringify(response.data.user));
-            if (response.data.token) {
-              localStorage.setItem('token', response.data.token);
-            }
-            
-            setUser(response.data.user);
-            loadSettings();
-            setLoading(false);
-            return;
-          }
-        } catch (error) {
-          console.warn('Session check failed:', error.message);
-        }
+      try {
+        // Source of truth: check the actual session if token/user might be missing (OAuth)
+        const response = await authAPI.me();
         
-        router.push('/login');
-      } else {
-        setUser(JSON.parse(storedUser));
-        loadSettings();
+        if (response.data?.user) {
+          const fetchedUser = response.data.user;
+          localStorage.setItem('user', JSON.stringify(fetchedUser));
+          setUser(fetchedUser);
+          loadSettings();
+        } else if (storedUser) {
+          // Fallback to local storage if API check specifically didn't return a user but we have one
+          // (Usually happens if offline or dev mode)
+          setUser(JSON.parse(storedUser));
+          loadSettings();
+        } else {
+          router.push('/login');
+        }
+      } catch (error) {
+        console.warn('Session check failed:', error.message);
+        if (storedUser) {
+          setUser(JSON.parse(storedUser));
+          loadSettings();
+        } else {
+          router.push('/login');
+        }
+      } finally {
+        clearTimeout(timeoutId);
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     initApp();
