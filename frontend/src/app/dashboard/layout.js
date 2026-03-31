@@ -21,14 +21,40 @@ export default function DashboardLayout({ children }) {
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (!storedUser) {
-      router.push('/login');
-    } else {
-      setUser(JSON.parse(storedUser));
-      loadSettings();
-    }
-    setLoading(false);
+    const initApp = async () => {
+      const storedUser = localStorage.getItem('user');
+      
+      if (!storedUser) {
+        try {
+          // Fallback check for newly authenticated OAuth users
+          // Their localStorage won't be set by the callback route natively
+          const { authAPI } = await import('@/lib/api');
+          const response = await authAPI.me();
+          
+          if (response.data?.user) {
+            localStorage.setItem('user', JSON.stringify(response.data.user));
+            if (response.data.token) {
+              localStorage.setItem('token', response.data.token);
+            }
+            
+            setUser(response.data.user);
+            loadSettings();
+            setLoading(false);
+            return;
+          }
+        } catch (error) {
+          console.warn('Session check failed:', error.message);
+        }
+        
+        router.push('/login');
+      } else {
+        setUser(JSON.parse(storedUser));
+        loadSettings();
+      }
+      setLoading(false);
+    };
+
+    initApp();
   }, [router]);
 
   useEffect(() => {
