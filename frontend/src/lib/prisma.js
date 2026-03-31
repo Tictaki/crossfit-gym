@@ -1,22 +1,15 @@
 import { PrismaClient } from '@prisma/client';
 
+const prismaClientSingleton = () => {
+  return new PrismaClient({
+    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+  });
+};
+
 const globalForPrisma = globalThis;
 
-const prismaProxy = new Proxy({}, {
-  get: (target, prop) => {
-    if (!globalForPrisma.prisma) {
-      if (!process.env.DATABASE_URL) {
-        // Log to console but don't crash the entire app immediately, 
-        // let the route handler deal with the missing connection error.
-        console.error('❌ CRITICAL: DATABASE_URL is missing in environment variables.');
-        return null;
-      }
-      globalForPrisma.prisma = new PrismaClient({
-        log: ['error', 'warn'],
-      });
-    }
-    return globalForPrisma.prisma ? globalForPrisma.prisma[prop] : undefined;
-  }
-});
+const prisma = globalForPrisma.prisma ?? prismaClientSingleton();
 
-export default prismaProxy;
+export default prisma;
+
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
