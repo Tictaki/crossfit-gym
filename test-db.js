@@ -1,9 +1,9 @@
 const net = require('net');
 
 const configs = [
-  { host: 'aws-0-sa-east-1.pooler.supabase.com', port: 6543, name: 'Pooler (Transaction)' },
-  { host: 'aws-0-sa-east-1.pooler.supabase.com', port: 5432, name: 'Pooler (Session)' },
-  { host: 'db.auqigciynbyivnyavghg.supabase.co', port: 5432, name: 'Direct Connection' }
+  { host: 'aws-1-eu-west-1.pooler.supabase.com', port: 6543, name: 'Pooler (Transaction)' },
+  { host: 'aws-1-eu-west-1.pooler.supabase.com', port: 5432, name: 'Pooler (Session)' },
+  { host: 'aws-1-eu-west-1.pooler.supabase.com', port: 5432, name: 'Direct Connection' }
 ];
 
 async function test(host, port, name) {
