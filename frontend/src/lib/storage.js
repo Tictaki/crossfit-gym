@@ -22,12 +22,18 @@ export async function uploadFile(file, bucket, originalName) {
     fileBody = await file.arrayBuffer();
   }
 
+  const options = {
+    cacheControl: '3600',
+    upsert: false
+  };
+
+  if (file.type) {
+    options.contentType = file.type;
+  }
+
   const { data, error } = await supabase.storage
     .from(bucket)
-    .upload(filePath, fileBody, {
-      cacheControl: '3600',
-      upsert: false
-    });
+    .upload(filePath, fileBody, options);
 
   if (error) {
     console.error(`Error uploading to bucket ${bucket}:`, error);

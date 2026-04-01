@@ -20,6 +20,7 @@ export async function POST(request) {
     if (contentType.includes('multipart/form-data')) {
       const formData = await request.formData();
       body = Object.fromEntries(formData.entries());
+      if (body.key) key = body.key;
       const imageFile = formData.get('background') || formData.get('photo');
       if (imageFile && imageFile.size > 0) {
         try {
