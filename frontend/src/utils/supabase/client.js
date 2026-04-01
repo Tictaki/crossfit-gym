@@ -9,7 +9,10 @@ const mockSupabaseClient = {
     getUser: async () => ({ data: { user: null }, error: null }),
     getSession: async () => ({ data: { session: null }, error: null }),
     onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
-    signInWithOAuth: async () => ({ data: { url: '#' }, error: null }),
+    signInWithOAuth: async () => ({ 
+      data: { url: '#' }, 
+      error: { message: 'Configuração do Supabase ausente. Verifique as variáveis de ambiente.' } 
+    }),
   },
   storage: { from: () => ({ upload: async () => ({ error: new Error('Mock client') }) }) },
   from: () => ({
@@ -25,9 +28,7 @@ export function createClient() {
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!url || !key) {
-    if (process.env.NODE_ENV === 'production') {
-       console.warn('⚠️ Supabase Browser Client: Environment variables missing. Using mock client for build.');
-    }
+    console.warn('⚠️ Supabase Browser Client: Environment variables missing. Using mock client.');
     return mockSupabaseClient;
   }
 

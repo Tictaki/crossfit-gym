@@ -17,7 +17,7 @@ export default function GoogleAuthButton({ isSignup = false }) {
       // get the current origin to build the robust callback URL
       const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000';
       
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           // This must match your authorized redirect URI in Google Console exactly
@@ -33,7 +33,13 @@ export default function GoogleAuthButton({ isSignup = false }) {
         throw error;
       }
       
-      // We don't change loading state back to false here, as the page will redirect to Google!
+      // If we got a URL back, redirect now
+      if (data?.url) {
+        window.location.assign(data.url);
+      } else {
+        // If no URL and no error, something is wrong
+        throw new Error('Não foi possível iniciar a autenticação social.');
+      }
 
     } catch (err) {
       console.error('Google Auth Error:', err);
