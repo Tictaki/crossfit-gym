@@ -119,11 +119,36 @@ router.delete('/background', authenticate, async (req, res) => {
 // Export database (admin only)
 router.get('/export-database', authenticate, requireAdmin, async (req, res) => {
   try {
-    // TODO: Implementar exportação de base de dados
-    // Pode usar pg_dump para PostgreSQL ou exportar para JSON
-    res.status(501).json({ 
-      error: 'Funcionalidade de exportação ainda não implementada' 
+    const backupData = {
+      timestamp: new Date().toISOString(),
+      version: "1.0",
+      data: {
+        users: await prisma.user.findMany(),
+        members: await prisma.member.findMany(),
+        plans: await prisma.plan.findMany(),
+        payments: await prisma.payment.findMany(),
+        invoices: await prisma.invoice.findMany(),
+        paymentAudits: await prisma.paymentAudit.findMany(),
+        expenses: await prisma.expense.findMany(),
+        checkins: await prisma.checkin.findMany(),
+        settings: await prisma.setting.findMany(),
+        products: await prisma.product.findMany(),
+        sales: await prisma.sale.findMany(),
+        notifications: await prisma.notification.findMany(),
+        notificationRecipients: await prisma.notificationRecipient.findMany(),
+        fixedCosts: await prisma.fixedCost.findMany(),
+      }
+    };
+
+    const fileName = `crossfit-gym-backup-${new Date().toISOString().split('T')[0]}.json`;
+    
+    // Set headers to trigger a file download in the browser
+    res.setHeader('Content-disposition', `attachment; filename=${fileName}`);
+    res.setHeader('Content-type', 'application/json');
+    res.write(JSON.stringify(backupData, null, 2), function(err) {
+      res.end();
     });
+
   } catch (error) {
     console.error('Error exporting database:', error);
     res.status(500).json({ error: 'Failed to export database' });

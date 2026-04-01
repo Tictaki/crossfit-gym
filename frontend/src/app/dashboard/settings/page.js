@@ -44,6 +44,7 @@ export default function SettingsPage() {
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
       setUserData(parsedUser);
+      setUserRole(parsedUser.role);
       setProfileData({
         ...profileData,
         name: parsedUser.name || '',
@@ -191,6 +192,33 @@ export default function SettingsPage() {
       toast.error('Erro ao remover imagem.');
     }
   }
+  };
+
+  const handleDownloadBackup = async () => {
+    try {
+      toast.info('A preparar cópia de segurança...');
+      const response = await settingsAPI.exportDatabase();
+      
+      // Create a blob from the response data
+      const blob = new Blob([response.data], { type: 'application/json' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      const date = new Date().toISOString().split('T')[0];
+      
+      link.href = url;
+      link.setAttribute('download', `crossfit-gym-backup-${date}.json`);
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      toast.success('Backup concluído com sucesso!');
+    } catch (error) {
+      console.error('Error downloading backup:', error);
+      toast.error('Erro ao descarregar cópia de segurança.');
+    }
   };
 
   return (
@@ -428,7 +456,12 @@ export default function SettingsPage() {
               <p className="text-sm text-gray-500 dark:text-dark-300 dark:text-dark-400">Baixar cópia de segurança de todos os dados</p>
             </div>
             {userRole === 'ADMIN' && (
-              <button className="btn-secondary text-sm">Download Backup</button>
+              <button 
+                onClick={handleDownloadBackup}
+                className="btn-secondary text-sm"
+              >
+                Download Backup
+              </button>
             )}
           </div>
         </div>
