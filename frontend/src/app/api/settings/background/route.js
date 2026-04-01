@@ -3,7 +3,7 @@ export const revalidate = 0;
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
-import { uploadFile, replaceFile } from '@/lib/storage';
+import { uploadFile, replaceFile, deleteFile } from '@/lib/storage';
 
 // Helper to get current setting value for replacement
 async function getSettingValue(key) {
@@ -20,7 +20,7 @@ export async function POST(request) {
     if (contentType.includes('multipart/form-data')) {
       const formData = await request.formData();
       body = Object.fromEntries(formData.entries());
-      const imageFile = formData.get('photo');
+      const imageFile = formData.get('background') || formData.get('photo');
       if (imageFile && imageFile.size > 0) {
         try {
           const oldUrl = await getSettingValue(key);

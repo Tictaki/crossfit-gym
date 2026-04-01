@@ -20,6 +20,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'crossfit-gym-production-3f5b.up.railway.app',
       },
+      {
+        protocol: 'https',
+        hostname: '*.supabase.co',
+      },
     ],
   },
   eslint: {
