@@ -8,9 +8,18 @@ export async function middleware(request) {
     },
   })
 
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  // Guard: If environment variables are missing, don't crash
+  if (!supabaseUrl || !supabaseKey) {
+    console.warn('⚠️ Middleware: Supabase environment variables missing. Skipping auth check.')
+    return supabaseResponse
+  }
+
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    supabaseUrl,
+    supabaseKey,
     {
       cookies: {
         getAll() {
@@ -35,9 +44,13 @@ export async function middleware(request) {
     return supabaseResponse;
   }
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  let user = null
+  try {
+    const { data: { user: supabaseUser } } = await supabase.auth.getUser()
+    user = supabaseUser
+  } catch (error) {
+    console.error('❌ Middleware: Auth error:', error instanceof Error ? error.message : error)
+  }
 
   const isAuthRoute = request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/register')
   
