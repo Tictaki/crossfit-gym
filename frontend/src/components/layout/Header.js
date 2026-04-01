@@ -17,10 +17,16 @@ const Header = ({ user, setSidebarOpen }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } catch (e) {
+      console.error('Logout API error:', e);
+    }
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     router.push('/login');
+    router.refresh();
   };
 
   // Close dropdown when clicking outside
