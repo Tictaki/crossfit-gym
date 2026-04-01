@@ -1,12 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { 
   BuildingOfficeIcon, 
   CloudArrowUpIcon,
   SwatchIcon,
   TrashIcon,
   UserCircleIcon,
+  ArrowPathIcon,
 } from '@heroicons/react/24/outline';
 import { settingsAPI, usersAPI, getImageUrl } from '@/lib/api';
 import { useTheme } from '@/context/ThemeContext';
@@ -17,6 +19,8 @@ export default function SettingsPage() {
   const { isDarkMode, toggleTheme } = useTheme();
   const toast = useToast();
   const { confirm } = useConfirm();
+  const router = useRouter();
+  const fileInputRef = useRef(null);
   
   // App settings state
   const [backgroundPreview, setBackgroundPreview] = useState(null);
@@ -218,6 +222,43 @@ export default function SettingsPage() {
     } catch (error) {
       console.error('Error downloading backup:', error);
       toast.error('Erro ao descarregar cópia de segurança.');
+    }
+  };
+
+  const handleRestoreBackup = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (await confirm({
+      title: 'Restaurar Base de Dados?',
+      message: 'ATENÇÃO: Todo o conteúdo atual será APAGADO e substituído pelo ficheiro de cópia de segurança. Deseja continuar?',
+      confirmText: 'Sim, Restaurar!',
+      variant: 'danger'
+    })) {
+      try {
+        toast.info('A restaurar cópia de segurança...');
+        
+        // Read file as text
+        const text = await file.text();
+        const data = JSON.parse(text);
+        
+        await settingsAPI.restoreDatabase(data);
+        
+        toast.success('Base de dados restaurada com sucesso!');
+        
+        // Refresh the page after a short delay
+        setTimeout(() => {
+          location.reload();
+        }, 1000);
+      } catch (error) {
+        console.error('Error restoring backup:', error);
+        toast.error('Erro ao restaurar cópia de segurança. Verifique o ficheiro.');
+      } finally {
+        // Clear input to allow same file selection again if needed
+        e.target.value = '';
+      }
+    } else {
+      e.target.value = '';
     }
   };
 
@@ -462,6 +503,31 @@ export default function SettingsPage() {
               >
                 Download Backup
               </button>
+            )}
+          </div>
+
+          <div className="flex items-center justify-between border-t border-gray-100 dark:border-dark-700 pt-4">
+            <div>
+              <p className="font-bold text-dark-900 dark:text-white">Restaurar Base de Dados</p>
+              <p className="text-sm text-gray-500 dark:text-dark-300 dark:text-dark-400">Substituir todos os dados atuais por um ficheiro de backup</p>
+            </div>
+            {userRole === 'ADMIN' && (
+              <div className="flex items-center gap-2">
+                <input 
+                  type="file" 
+                  accept=".json"
+                  className="hidden" 
+                  ref={fileInputRef}
+                  onChange={handleRestoreBackup}
+                />
+                <button 
+                  onClick={() => fileInputRef.current?.click()}
+                  className="btn-outline text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 text-sm border-red-200"
+                >
+                  <ArrowPathIcon className="h-4 w-4 mr-2" />
+                  Restaurar Backup
+                </button>
+              </div>
             )}
           </div>
         </div>

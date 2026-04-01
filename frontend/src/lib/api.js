@@ -142,6 +142,7 @@ export const settingsAPI = {
   removeBackground: (key = 'background_image') => api.delete(`/settings/background?key=${key}`),
   updateSetting: (key, value) => api.post('/settings', { key, value }),
   exportDatabase: () => api.get('/settings/export-database', { responseType: 'blob' }),
+  restoreDatabase: (data) => api.post('/settings/restore-database', data),
 };
 
 // Products API
