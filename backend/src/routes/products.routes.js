@@ -8,6 +8,7 @@ import { networkInterfaces } from 'os';
 import { notify } from '../utils/notifier.js';
 
 import { productStorage } from '../utils/cloudinaryConfig.js';
+import { resolveImageUrl } from '../utils/urlHelpers.js';
 
 const router = express.Router();
 
@@ -73,7 +74,12 @@ router.get('/', authenticate, async (req, res) => {
       where,
       orderBy: { name: 'asc' }
     });
-    res.json(products);
+    const productsWithResolvedPhotos = products.map(product => ({
+      ...product,
+      photo: resolveImageUrl(product.photo)
+    }));
+    
+    res.json(productsWithResolvedPhotos);
   } catch (error) {
     console.error('Error fetching products:', error);
     res.status(500).json({ error: 'Failed to fetch products' });
@@ -97,7 +103,12 @@ router.post('/', authenticate, requireAdmin, upload.single('photo'), async (req,
         photo: req.file ? req.file.path : null
       }
     });
-    res.status(201).json(product);
+    const resolvedProduct = {
+      ...product,
+      photo: resolveImageUrl(product.photo)
+    };
+    
+    res.status(201).json(resolvedProduct);
 
     await notify({
       action: 'CREATE',
@@ -141,7 +152,12 @@ router.put('/:id', authenticate, requireAdmin, upload.single('photo'), async (re
       where: { id: req.params.id },
       data: updateData
     });
-    res.json(product);
+    const resolvedProduct = {
+      ...product,
+      photo: resolveImageUrl(product.photo)
+    };
+    
+    res.json(resolvedProduct);
 
     await notify({
       action: 'UPDATE',

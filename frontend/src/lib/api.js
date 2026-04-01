@@ -5,14 +5,19 @@ const API_URL = '/api';
 
 const getImageUrl = (path) => {
   if (!path) return null;
+  
   // Cloudinary or absolute URLs — return as-is
   if (path.startsWith('http://') || path.startsWith('https://')) {
     return path;
   }
-  // Relative paths (legacy local uploads) — will be handled by Supabase Storage in Phase 4
+  
+  // Relative paths (legacy local uploads)
   let normalizedPath = path.replace(/\\/g, '/');
   if (!normalizedPath.startsWith('/')) normalizedPath = '/' + normalizedPath;
-  return normalizedPath;
+  
+  // Point to Backend for legacy uploads
+  const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:3001';
+  return `${BACKEND_URL}${normalizedPath}`;
 };
 
 const api = axios.create({

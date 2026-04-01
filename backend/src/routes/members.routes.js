@@ -9,6 +9,7 @@ import { notify } from '../utils/notifier.js';
 
 import { memberStorage } from '../utils/cloudinaryConfig.js';
 import { updateMemberStatuses } from '../utils/autoUpdateStatus.js';
+import { resolveImageUrl } from '../utils/urlHelpers.js';
 
 const router = express.Router();
 
@@ -68,8 +69,13 @@ router.get('/', authenticate, async (req, res) => {
       prisma.member.count({ where })
     ]);
     
+    const membersWithResolvedPhotos = members.map(member => ({
+      ...member,
+      photo: resolveImageUrl(member.photo)
+    }));
+    
     res.json({
-      members,
+      members: membersWithResolvedPhotos,
       pagination: {
         total,
         page: parseInt(page),
@@ -110,6 +116,10 @@ router.get('/:id', authenticate, async (req, res) => {
     
     if (!member) {
       return res.status(404).json({ error: 'Member not found' });
+    }
+    
+    if (member.photo) {
+      member.photo = resolveImageUrl(member.photo);
     }
     
     res.json(member);

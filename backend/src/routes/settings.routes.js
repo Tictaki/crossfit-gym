@@ -6,6 +6,7 @@ import fs from 'fs';
 import { authenticate, requireAdmin } from '../middleware/auth.js';
 
 import { backgroundStorage } from '../utils/cloudinaryConfig.js';
+import { resolveImageUrl } from '../utils/urlHelpers.js';
 
 const router = express.Router();
 
@@ -38,7 +39,12 @@ router.get('/', async (req, res) => {
   try {
     const settings = await prisma.setting.findMany();
     const settingsMap = settings.reduce((acc, curr) => {
-      acc[curr.key] = curr.value;
+      let value = curr.value;
+      // Handle known image keys
+      if (curr.key === 'background_image' || curr.key === 'logo') {
+        value = resolveImageUrl(value);
+      }
+      acc[curr.key] = value;
       return acc;
     }, {});
     res.json(settingsMap);
@@ -83,7 +89,10 @@ router.post('/background', authenticate, upload.single('background'), async (req
       create: { key, value: backgroundImagePath }
     });
 
-    res.json({ backgroundImage: backgroundImagePath, key });
+    res.json({ 
+      backgroundImage: resolveImageUrl(backgroundImagePath), 
+      key 
+    });
   } catch (error) {
     console.error('Error updating background:', error);
     res.status(500).json({ error: 'Failed to update background image' });

@@ -8,6 +8,7 @@ import path from 'path';
 import fs from 'fs';
 
 import { profileStorage } from '../utils/cloudinaryConfig.js';
+import { resolveImageUrl } from '../utils/urlHelpers.js';
 
 const router = express.Router();
 const prisma = new PrismaClient();
