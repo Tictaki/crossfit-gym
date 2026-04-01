@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, memo } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { 
   UserIcon, 
@@ -72,10 +73,12 @@ const Header = ({ user, setSidebarOpen }) => {
             <div className="h-9 w-9 md:h-11 md:w-11 rounded-full p-[2px] bg-gradient-to-br from-primary-400 to-primary-600 shadow-premium overflow-hidden transition-transform duration-300 group-active:scale-90">
               <div className="h-full w-full rounded-full bg-white dark:bg-dark-800 flex items-center justify-center overflow-hidden relative">
                 {user?.photo ? (
-                  <img 
+                  <Image 
                     src={getImageUrl(user.photo)} 
                     alt="Profile" 
-                    className="w-full h-full object-cover object-center aspect-square" 
+                    fill
+                    sizes="(max-width: 768px) 36px, 44px"
+                    className="object-cover object-center" 
                   />
                 ) : (
                   <span className="font-bold text-primary-600 dark:text-primary-500 text-base md:text-lg">

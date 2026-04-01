@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+import useSWR from 'swr';
 import { dashboardAPI } from '@/lib/api';
 import Link from 'next/link';
 import {
@@ -76,10 +77,12 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 export default function DashboardPage() {
-  const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { data: response, isLoading } = useSWR('/dashboard/stats', { 
+    refreshInterval: 30000,
+    keepPreviousData: true 
+  });
+  
   const [showYoY, setShowYoY] = useState(false);
-  const [lastUpdated, setLastUpdated] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -92,36 +95,23 @@ export default function DashboardPage() {
     }
   }, [router]);
 
-  useEffect(() => {
-    loadStats();
-    const interval = setInterval(loadStats, 30000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const loadStats = async () => {
-    try {
-      const response = await dashboardAPI.stats();
-      const formattedData = response.data;
-      if (formattedData.dailyActivity && Array.isArray(formattedData.dailyActivity)) {
-        formattedData.dailyActivity = formattedData.dailyActivity.map(d => ({
-          date: new Date(d.date).toLocaleDateString('pt-PT', { month: 'short', day: 'numeric' }),
-          checkIns: d.checkIns || 0,
-          activeMembersCount: d.activeMembersCount || 0,
-          revenue: d.revenue || 0,
-          payments: d.payments || 0,
-          sales: d.sales || 0
-        }));
-      }
-      setStats(formattedData);
-      setLastUpdated(new Date());
-    } catch (error) {
-      console.error('Error loading stats:', error);
-    } finally {
-      setLoading(false);
+  const stats = useMemo(() => {
+    if (!response) return null;
+    const formattedData = { ...response }; // our fetcher returns res.data
+    if (formattedData.dailyActivity && Array.isArray(formattedData.dailyActivity)) {
+      formattedData.dailyActivity = formattedData.dailyActivity.map(d => ({
+        date: new Date(d.date).toLocaleDateString('pt-PT', { month: 'short', day: 'numeric' }),
+        checkIns: d.checkIns || 0,
+        activeMembersCount: d.activeMembersCount || 0,
+        revenue: d.revenue || 0,
+        payments: d.payments || 0,
+        sales: d.sales || 0
+      }));
     }
-  };
+    return formattedData;
+  }, [response]);
 
-  if (loading) {
+  if (isLoading && !stats) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
@@ -141,12 +131,10 @@ export default function DashboardPage() {
           <h1 className="text-2xl md:text-4xl font-bold text-dark-900 dark:text-white leading-tight font-outfit">Dashboard</h1>
           <p className="text-dark-500 dark:text-dark-300 mt-1 md:mt-2 text-sm md:text-base font-medium">Bem-vindo ao painel de controlo do seu ginásio.</p>
         </div>
-        {lastUpdated && (
-          <div className="flex items-center gap-2 text-[10px] font-bold text-dark-400 uppercase tracking-widest pb-1">
-            <span className="inline-block w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-            Atualizado às {lastUpdated.toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-          </div>
-        )}
+        <div className="flex items-center gap-2 text-[10px] font-bold text-dark-400 uppercase tracking-widest pb-1">
+          <span className="inline-block w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+          Sincronizado
+        </div>
       </motion.div>
 
       {/* Stats Cards */}

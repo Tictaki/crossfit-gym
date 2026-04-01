@@ -51,6 +51,7 @@ model Member {
   @@index([status])
   @@index([expirationDate])
   @@index([email])
+  @@index([name]) // Added for fast member search 
 }
 
 model Plan {
@@ -89,6 +90,8 @@ model Payment {
   @@index([memberId])
   @@index([paymentDate])
   @@index([receiptNumber])
+  @@index([memberId, paymentDate]) // Compound index for member history UI
+  @@index([planId, paymentDate])   // Compound index for Revenue By Plan reports
 }
 
 model Invoice {
@@ -150,6 +153,7 @@ model Checkin {
 
   @@index([memberId])
   @@index([checkinDatetime])
+  @@index([memberId, checkinDatetime]) // Compound index for frequency tracking
 }
 
 model Setting {

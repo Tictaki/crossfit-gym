@@ -1,6 +1,7 @@
 import { ThemeProvider } from '@/context/ThemeContext'
 import { ToastProvider } from '@/context/ToastContext'
 import { ConfirmModalProvider } from '@/context/ConfirmModalContext'
+import { SWRProvider } from '@/components/providers/SWRProvider'
 import './globals.css'
 import { Inter } from 'next/font/google'
 
@@ -42,7 +43,9 @@ export default function RootLayout({ children }) {
         <ThemeProvider>
           <ToastProvider>
             <ConfirmModalProvider>
-              {children}
+              <SWRProvider>
+                {children}
+              </SWRProvider>
             </ConfirmModalProvider>
           </ToastProvider>
         </ThemeProvider>
