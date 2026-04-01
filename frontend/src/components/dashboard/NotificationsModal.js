@@ -57,36 +57,40 @@ export default function NotificationsModal({ isOpen, onClose, onUpdate }) {
     }
   };
 
-  const handleMarkAsRead = async (id, entity, entityId) => {
+  const handleMarkAsRead = async (id, entity, entityId, isRead) => {
     try {
-      await notificationService.markAsRead(id);
-      setNotifications(prev => 
-        prev.map(n => n.id === id ? { ...n, read: true } : n)
-      );
-      
-      // Update parent counter if needed
-      const unreadCount = notifications.filter(n => !n.read).length - 1;
-      if (onUpdate) onUpdate(Math.max(0, unreadCount));
-
-      // Navigate if entity provided
-      if (entity && entityId) {
-        onClose();
-        switch (entity) {
-          case 'MEMBER':
-            router.push(`/dashboard/members/${entityId}`);
-            break;
-          case 'PAYMENT':
-            router.push('/dashboard/payments');
-            break;
-          case 'PLAN':
-            router.push('/dashboard/plans');
-            break;
-          default:
-            break;
-        }
+      // 1. Mark as read on backend if not already read
+      if (!isRead) {
+        await notificationService.markAsRead(id);
+        setNotifications(prev => 
+          prev.map(n => n.id === id ? { ...n, read: true } : n)
+        );
+        
+        // Update parent counter
+        const unreadCount = notifications.filter(n => !n.read).length - 1;
+        if (onUpdate) onUpdate(Math.max(0, unreadCount));
       }
     } catch (error) {
       console.error('Error marking as read', error);
+      // We continue to navigation even if markAsRead fails (e.g., if already marked by another session)
+    }
+
+    // 2. Navigate if entity provided
+    if (entity && entityId) {
+      onClose();
+      switch (entity) {
+        case 'MEMBER':
+          router.push(`/dashboard/members/${entityId}`);
+          break;
+        case 'PAYMENT':
+          router.push('/dashboard/payments');
+          break;
+        case 'PLAN':
+          router.push('/dashboard/plans');
+          break;
+        default:
+          break;
+      }
     }
   };
 
@@ -209,7 +213,7 @@ export default function NotificationsModal({ isOpen, onClose, onUpdate }) {
                   {notifications.map((notification) => (
                     <div 
                       key={notification.id}
-                      onClick={() => handleMarkAsRead(notification.id, notification.entity, notification.entityId)}
+                      onClick={() => handleMarkAsRead(notification.id, notification.entity, notification.entityId, notification.read)}
                       className={`
                         p-4 rounded-2xl transition-all cursor-pointer group relative
                         ${!notification.read 

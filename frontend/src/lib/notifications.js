@@ -17,7 +17,7 @@ export const notificationService = {
   // Mark single notification as read
   markAsRead: async (id) => {
     try {
-      await api.put(`/notifications/${id}/read`);
+      await api.put(`/notifications/${id}`);
     } catch (error) {
       console.error('Error marking notification as read:', error);
       throw error;

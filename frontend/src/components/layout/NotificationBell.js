@@ -44,34 +44,38 @@ export default function NotificationBell() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleMarkAsRead = async (id, entity, entityId) => {
+  const handleMarkAsRead = async (id, entity, entityId, isRead) => {
     try {
-      await notificationService.markAsRead(id);
-      setNotifications(prev => 
-        prev.map(n => n.id === id ? { ...n, read: true } : n)
-      );
-      setUnreadCount(prev => Math.max(0, prev - 1));
-
-      // Navigate if entity provided
-      if (entity && entityId) {
-        setIsOpen(false);
-        switch (entity) {
-          case 'MEMBER':
-            router.push(`/dashboard/members/${entityId}`);
-            break;
-          case 'PAYMENT':
-            // Payments usually don't have a detail page, maybe list?
-            router.push('/dashboard/payments');
-            break;
-          case 'PLAN':
-            router.push('/dashboard/plans');
-            break;
-          default:
-            break;
-        }
+      // 1. Mark as read on backend if not already read
+      if (!isRead) {
+        await notificationService.markAsRead(id);
+        setNotifications(prev => 
+          prev.map(n => n.id === id ? { ...n, read: true } : n)
+        );
+        setUnreadCount(prev => Math.max(0, prev - 1));
       }
     } catch (error) {
       console.error('Error marking as read', error);
+      // Continue to navigation even if markAsRead fails
+    }
+
+    // 2. Navigate if entity provided
+    if (entity && entityId) {
+      setIsOpen(false);
+      switch (entity) {
+        case 'MEMBER':
+          router.push(`/dashboard/members/${entityId}`);
+          break;
+        case 'PAYMENT':
+          // Payments usually don't have a detail page, maybe list?
+          router.push('/dashboard/payments');
+          break;
+        case 'PLAN':
+          router.push('/dashboard/plans');
+          break;
+        default:
+          break;
+      }
     }
   };
 
@@ -127,7 +131,7 @@ export default function NotificationBell() {
                 {notifications.map((notification) => (
                   <div 
                     key={notification.id}
-                    onClick={() => !notification.read && handleMarkAsRead(notification.id, notification.entity, notification.entityId)}
+                    onClick={() => handleMarkAsRead(notification.id, notification.entity, notification.entityId, notification.read)}
                     className={`
                       p-4 hover:bg-white/80 dark:hover:bg-dark-800/50 transition-colors cursor-pointer group
                       ${!notification.read ? 'bg-primary-50/50 dark:bg-primary-900/10' : ''}
