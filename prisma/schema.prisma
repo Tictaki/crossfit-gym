@@ -25,6 +25,7 @@ model User {
   payments              Payment[]
   audits                PaymentAudit[]
   sales                 Sale[]
+  status                UserStatus              @default(PENDING)
 }
 
 model Member {
@@ -239,6 +240,12 @@ model FixedCost {
 enum Role {
   ADMIN
   RECEPTIONIST
+}
+
+enum UserStatus {
+  PENDING
+  ACTIVE
+  BANNED
 }
 
 enum Gender {

@@ -15,8 +15,10 @@ export async function getAuthenticatedUser() {
 
   const dbUser = await prisma.user.findUnique({
     where: { email: supabaseUser.email },
-    select: { id: true, name: true, email: true, role: true, photo: true }
+    select: { id: true, name: true, email: true, role: true, photo: true, status: true }
   });
+
+  if (!dbUser || dbUser.status !== 'ACTIVE') return null;
 
   return dbUser;
 }
