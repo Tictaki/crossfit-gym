@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { authAPI } from '@/lib/api';
 import { UserIcon, LockClosedIcon, ArrowRightIcon, SparklesIcon } from '@heroicons/react/24/outline';
-import GoogleAuthButton from '@/components/auth/GoogleAuthButton';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -194,18 +193,6 @@ export default function LoginPage() {
                 </div>
               </button>
             </form>
-
-            {/* Divider */}
-            <div className="mt-8 flex items-center justify-between">
-              <div className="w-1/3 h-px bg-gradient-to-r from-transparent to-white/20"></div>
-              <span className="text-gray-400 text-xs font-medium uppercase tracking-wider">Ou aceda com</span>
-              <div className="w-1/3 h-px bg-gradient-to-l from-transparent to-white/20"></div>
-            </div>
-
-            {/* Google Auth */}
-            <div className="mt-6">
-              <GoogleAuthButton isSignup={false} />
-            </div>
 
           </div>
 
