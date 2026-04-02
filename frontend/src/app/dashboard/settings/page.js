@@ -9,9 +9,6 @@ import {
   TrashIcon,
   UserCircleIcon,
   ArrowPathIcon,
-  UserGroupIcon,
-  CheckIcon,
-  NoSymbolIcon,
 } from '@heroicons/react/24/outline';
 import { settingsAPI, usersAPI, getImageUrl } from '@/lib/api';
 import { useTheme } from '@/context/ThemeContext';
@@ -44,8 +41,6 @@ export default function SettingsPage() {
   const [profilePreview, setProfilePreview] = useState(null);
   const [updatingProfile, setUpdatingProfile] = useState(false);
   const [userRole, setUserRole] = useState(null);
-  const [users, setUsers] = useState([]);
-  const [loadingUsers, setLoadingUsers] = useState(false);
 
   useEffect(() => {
     loadSettings();
@@ -53,11 +48,7 @@ export default function SettingsPage() {
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
       setUserData(parsedUser);
-      const role = parsedUser.role;
-      setUserRole(role);
-      if (role === 'ADMIN') {
-        fetchUsers();
-      }
+      setUserRole(parsedUser.role);
       setProfileData({
         ...profileData,
         name: parsedUser.name || '',
@@ -65,18 +56,6 @@ export default function SettingsPage() {
       });
     }
   }, []);
-
-  const fetchUsers = async () => {
-    try {
-      setLoadingUsers(true);
-      const response = await usersAPI.list();
-      setUsers(response.data || []);
-    } catch (error) {
-      console.error('Error fetching users:', error);
-    } finally {
-      setLoadingUsers(false);
-    }
-  };
 
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
@@ -280,40 +259,6 @@ export default function SettingsPage() {
       }
     } else {
       e.target.value = '';
-    }
-  };
-
-  const handleApproveUser = async (user) => {
-    if (await confirm({
-      title: 'Aprovar Utilizador?',
-      message: `Deseja permitir que ${user.name} aceda ao sistema?`,
-      confirmText: 'Aprovar',
-      variant: 'success'
-    })) {
-      try {
-        await usersAPI.update(user.id, { status: 'ACTIVE' });
-        toast.success(`Utilizador ${user.name} aprovado!`);
-        fetchUsers();
-      } catch (error) {
-        toast.error('Erro ao aprovar utilizador.');
-      }
-    }
-  };
-
-  const handleRejectUser = async (user) => {
-    if (await confirm({
-      title: 'Rejeitar Utilizador?',
-      message: `Tem a certeza que deseja apagar a conta de ${user.name}?`,
-      confirmText: 'Apagar',
-      variant: 'danger'
-    })) {
-      try {
-        await usersAPI.delete(user.id);
-        toast.success('Utilizador removido.');
-        fetchUsers();
-      } catch (error) {
-        toast.error('Erro ao remover utilizador.');
-      }
     }
   };
 
@@ -587,76 +532,6 @@ export default function SettingsPage() {
           </div>
         </div>
       </div>
-
-      {/* User Management Section */}
-      {userRole === 'ADMIN' && (
-        <div className="card-glass">
-          <div className="flex items-center gap-3 mb-6 border-b border-gray-100 dark:border-dark-700 pb-4">
-            <UserGroupIcon className="h-6 w-6 text-orange-600" />
-            <h2 className="text-xl font-bold text-dark-900 dark:text-white">Gestão de Utilizadores</h2>
-          </div>
-          
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-sm font-bold text-gray-500 dark:text-dark-400 uppercase tracking-wider mb-4">Aguardando Aprovação</h3>
-              {users.filter(u => u.status === 'PENDING').length === 0 ? (
-                <p className="text-sm text-gray-400 dark:text-dark-500 italic">Nenhum utilizador pendente.</p>
-              ) : (
-                <div className="space-y-3">
-                  {users.filter(u => u.status === 'PENDING').map(user => (
-                    <div key={user.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-dark-800/40 rounded-2xl border border-gray-100 dark:border-dark-700/50">
-                      <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 btn-secondary rounded-full flex items-center justify-center font-bold text-primary-600">
-                          {user.photo ? <img src={getImageUrl(user.photo)} className="h-full w-full rounded-full object-cover" /> : user.name.charAt(0)}
-                        </div>
-                        <div>
-                          <p className="font-bold text-dark-900 dark:text-white">{user.name}</p>
-                          <p className="text-xs text-gray-500 dark:text-dark-400">{user.email}</p>
-                        </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <button 
-                          onClick={() => handleApproveUser(user)}
-                          className="p-2 bg-green-100 text-green-600 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400 rounded-xl transition-colors"
-                          title="Aprovar"
-                        >
-                          <CheckIcon className="h-5 w-5" />
-                        </button>
-                        <button 
-                          onClick={() => handleRejectUser(user)}
-                          className="p-2 bg-red-100 text-red-600 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 rounded-xl transition-colors"
-                          title="Rejeitar"
-                        >
-                          <NoSymbolIcon className="h-5 w-5" />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className="pt-4 border-t border-gray-100 dark:border-dark-700">
-              <h3 className="text-sm font-bold text-gray-500 dark:text-dark-400 uppercase tracking-wider mb-4">Utilizadores Ativos</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {users.filter(u => u.status === 'ACTIVE').map(user => (
-                  <div key={user.id} className="flex items-center justify-between p-3 bg-white/50 dark:bg-dark-800/20 rounded-xl border border-gray-50 dark:border-dark-800/50">
-                    <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 bg-gray-100 dark:bg-dark-700 rounded-full flex items-center justify-center text-xs font-bold">
-                        {user.photo ? <img src={getImageUrl(user.photo)} className="h-full w-full rounded-full object-cover" /> : user.name.charAt(0)}
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-sm font-bold text-dark-900 dark:text-white truncate">{user.name}</p>
-                        <p className="text-[10px] text-gray-500 dark:text-dark-400 uppercase font-medium">{user.role}</p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

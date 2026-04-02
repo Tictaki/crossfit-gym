@@ -41,8 +41,7 @@ export async function GET(request) {
             name: user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0],
             photo: user.user_metadata?.avatar_url || null,
             password: '', // Password not used for OAuth
-            role: isAdminEmail ? 'ADMIN' : 'RECEPTIONIST',
-            status: isAdminEmail ? 'ACTIVE' : 'PENDING'
+            role: isAdminEmail ? 'ADMIN' : 'RECEPTIONIST'
           }
         });
       } else {
@@ -50,7 +49,7 @@ export async function GET(request) {
         if (isAdminEmail && dbUser.role !== 'ADMIN') {
           dbUser = await prisma.user.update({
             where: { id: dbUser.id },
-            data: { role: 'ADMIN', status: 'ACTIVE' }
+            data: { role: 'ADMIN' }
           });
         }
         // Update photo if we have it from Google and we didn't have one
@@ -60,16 +59,6 @@ export async function GET(request) {
             data: { photo: user.user_metadata?.avatar_url }
            });
         }
-      }
-
-      // Check if user is approved
-      if (dbUser.status === 'PENDING') {
-        console.log(`User ${user.email} is pending approval.`);
-        return NextResponse.redirect(`${origin}/login?error=pending_approval`);
-      }
-
-      if (dbUser.status === 'BANNED') {
-        return NextResponse.redirect(`${origin}/login?error=account_banned`);
       }
 
       // Successful OAuth flow and Sync

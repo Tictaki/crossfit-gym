@@ -65,13 +65,12 @@ export async function PUT(request, { params }) {
       body = await request.json();
     }
 
-    const { name, email, role, password, status } = body;
+    const { name, email, role, password } = body;
     const updateData = { name, email, role };
-    if (status) updateData.status = status;
     if (password) updateData.password = await bcrypt.hash(password, 10);
     if (photoUrl) updateData.photo = photoUrl;
 
-    const updatedUser = await prisma.user.update({ where: { id: params.id }, data: updateData, select: { id: true, name: true, email: true, role: true, photo: true, createdAt: true, status: true } });
+    const updatedUser = await prisma.user.update({ where: { id: params.id }, data: updateData, select: { id: true, name: true, email: true, role: true, photo: true, createdAt: true } });
     return NextResponse.json(updatedUser);
   } catch (error) {
     return NextResponse.json({ error: 'Failed to update user' }, { status: 500 });
