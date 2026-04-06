@@ -153,6 +153,7 @@ export const productsAPI = {
   delete: (id) => api.delete(`/products/${id}`),
   recordSale: (data) => api.post('/products/sales', data),
   listSales: () => api.get('/products/sales'),
+  reverseSale: (id) => api.delete(`/products/sales/${id}`),
 };
 
 // Notifications API

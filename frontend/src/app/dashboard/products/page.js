@@ -15,7 +15,8 @@ import {
   XMarkIcon,
   CameraIcon,
   ArrowsRightLeftIcon,
-  MagnifyingGlassIcon
+  MagnifyingGlassIcon,
+  ArrowUturnLeftIcon
 } from '@heroicons/react/24/outline';
 import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
@@ -227,6 +228,23 @@ export default function ProductsPage() {
     }
   };
 
+  const handleReverseSale = async (sale) => {
+    if (await confirm({
+      title: 'Reverter Venda?',
+      message: `Tem a certeza que deseja reverter a venda de ${sale.quantity}x ${sale.product?.name}? O stock será reposto.`,
+      confirmText: 'Reverter',
+      variant: 'danger'
+    })) {
+      try {
+        await productsAPI.reverseSale(sale.id);
+        loadData();
+        toast.success('Venda revertida com sucesso! Stock reposto.');
+      } catch (error) {
+        toast.error(error.response?.data?.error || 'Erro ao reverter venda');
+      }
+    }
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -383,6 +401,9 @@ export default function ProductsPage() {
                   <th className="px-6 py-4 text-center text-xs font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Qtd</th>
                   <th className="px-6 py-4 text-center text-xs font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Total</th>
                   <th className="px-6 py-4 text-right text-xs font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Método</th>
+                  {userRole === 'ADMIN' && (
+                    <th className="px-6 py-4 text-center text-xs font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest">Ações</th>
+                  )}
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/10 dark:divide-dark-800/50">
@@ -422,12 +443,24 @@ export default function ProductsPage() {
                           {sale.paymentMethod}
                         </span>
                       </td>
+                      {userRole === 'ADMIN' && (
+                        <td className="px-6 py-5 text-center" data-label="Ações">
+                          <button
+                            onClick={() => handleReverseSale(sale)}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 rounded-xl text-red-600 dark:text-red-400 text-[10px] font-bold uppercase tracking-widest hover:bg-red-100 dark:hover:bg-red-900/40 active:scale-95 transition-all"
+                            title="Reverter venda e repor stock"
+                          >
+                            <ArrowUturnLeftIcon className="h-3.5 w-3.5" />
+                            Reverter
+                          </button>
+                        </td>
+                      )}
                     </tr>
                   ))}
                 
                 {sales.filter(s => s.product?.name?.toLowerCase().includes(deferredSearch.toLowerCase())).length === 0 && (
                   <tr>
-                    <td colSpan="5" className="px-6 py-20 text-center text-gray-400 font-medium italic">
+                    <td colSpan={userRole === 'ADMIN' ? 6 : 5} className="px-6 py-20 text-center text-gray-400 font-medium italic">
                       Nenhum registo de venda encontrado
                     </td>
                   </tr>
