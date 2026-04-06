@@ -475,7 +475,7 @@ export default function ProductsPage() {
       {isModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-end md:items-center justify-center">
           <div className="absolute inset-0 bg-dark-950/60 backdrop-blur-md animate-fade-in" onClick={() => setIsModalOpen(false)} />
-          <div className="relative w-full max-w-2xl bg-white dark:bg-dark-900 rounded-t-[2.5rem] md:rounded-[2.5rem] shadow-2xl overflow-hidden animate-slide-up md:animate-scale-in border border-white/20 dark:border-dark-700/50 max-h-[90dvh] md:max-h-[auto] overflow-y-auto">
+          <div className="relative w-full max-w-2xl bg-white/70 dark:bg-dark-900/60 backdrop-blur-3xl rounded-t-[2.5rem] md:rounded-[2.5rem] shadow-glass-premium overflow-hidden animate-slide-up md:animate-scale-in border border-white/40 dark:border-white/10 max-h-[90dvh] md:max-h-[auto] overflow-y-auto">
             {/* Modal Header */}
             <div className="p-8 pb-0 flex items-center justify-between">
               <div>
@@ -709,7 +709,7 @@ export default function ProductsPage() {
       {isSaleModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-end md:items-center justify-center">
           <div className="absolute inset-0 bg-dark-950/60 backdrop-blur-md animate-fade-in" onClick={() => setIsSaleModalOpen(false)} />
-          <div className="relative w-full max-w-md card-glass p-8 animate-slide-up md:animate-scale-in bg-white/95 dark:bg-dark-900/95 rounded-t-[2.5rem] md:rounded-[2.5rem]">
+          <div className="relative w-full max-w-md bg-white/70 dark:bg-dark-900/60 backdrop-blur-3xl rounded-t-[2.5rem] md:rounded-[2.5rem] shadow-glass-premium p-8 animate-slide-up md:animate-scale-in border border-white/40 dark:border-white/10">
             <h2 className="text-2xl font-bold text-dark-900 dark:text-white mb-2">Registar Venda</h2>
             <p className="text-gray-500 dark:text-dark-300 mb-6 font-bold">{selectedProduct?.name}</p>
             
@@ -778,8 +778,8 @@ export default function ProductsPage() {
 
       {/* Pairing Modal */}
       {isPairingOpen && (
-        <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-dark-950/80 backdrop-blur-lg animate-fade-in">
-          <div className="relative w-full max-w-sm bg-white dark:bg-dark-900 rounded-[2.5rem] shadow-2xl p-8 text-center animate-scale-in border border-white/20 dark:border-dark-700/50">
+        <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-dark-950/60 backdrop-blur-md animate-fade-in">
+          <div className="relative w-full max-w-sm bg-white/70 dark:bg-dark-900/60 backdrop-blur-3xl rounded-[2.5rem] shadow-glass-premium p-8 text-center animate-scale-in border border-white/40 dark:border-white/10">
             <button 
               onClick={() => setIsPairingOpen(false)}
               className="absolute top-6 right-6 p-2 rounded-xl bg-dark-100 dark:bg-dark-800 text-dark-500"

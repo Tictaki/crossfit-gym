@@ -105,8 +105,9 @@ export default function BarcodeScanner({ onScanSuccess, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] pt-[calc(1rem+env(safe-area-inset-top,0px))] bg-black animate-fade-in">
-      <div className="relative w-full max-w-md bg-white dark:bg-dark-900 rounded-[2.5rem] shadow-2xl overflow-hidden animate-scale-in border border-white/20 dark:border-dark-700/50 max-h-full flex flex-col">
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] pt-[calc(1rem+env(safe-area-inset-top,0px))]">
+      <div className="absolute inset-0 bg-dark-950/80 backdrop-blur-md animate-fade-in" onClick={onClose} />
+      <div className="relative w-full max-w-md bg-white/70 dark:bg-dark-900/60 backdrop-blur-3xl rounded-[2.5rem] shadow-glass-premium overflow-hidden animate-scale-in border border-white/40 dark:border-white/10 max-h-full flex flex-col">
         
         {/* Header */}
         <div className="p-6 pb-2 flex items-center justify-between">

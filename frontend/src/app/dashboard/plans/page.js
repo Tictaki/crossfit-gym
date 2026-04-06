@@ -159,9 +159,9 @@ export default function PlansPage() {
       {/* Plan Form Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-dark-950/80 backdrop-blur-md animate-fade-in" onClick={handleCloseModal} />
+          <div className="absolute inset-0 bg-dark-950/60 backdrop-blur-md animate-fade-in" onClick={handleCloseModal} />
           
-          <div className="relative w-full max-w-lg bg-white dark:bg-dark-900 rounded-[2.5rem] shadow-2xl overflow-hidden animate-slide-up border border-white/20 dark:border-dark-700/50">
+          <div className="relative w-full max-w-lg bg-white/70 dark:bg-dark-900/60 backdrop-blur-3xl rounded-[2.5rem] shadow-glass-premium overflow-hidden animate-slide-up border border-white/40 dark:border-white/10">
             <div className="p-8 pb-0 flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-bold text-dark-900 dark:text-white">

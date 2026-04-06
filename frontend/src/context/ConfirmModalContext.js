@@ -69,7 +69,7 @@ export function ConfirmModalProvider({ children }) {
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-dark-950/60 backdrop-blur-xl animate-fade-in transition-all" onClick={handleCancel} />
           
-          <div className="relative w-full max-w-md bg-white/90 dark:bg-dark-900/90 backdrop-blur-2xl rounded-[2.5rem] shadow-2xl animate-scale-in border border-white/20 dark:border-dark-700/50 p-8 text-center z-[101]">
+          <div className="relative w-full max-w-md bg-white/70 dark:bg-dark-900/60 backdrop-blur-3xl rounded-[2.5rem] shadow-glass-premium animate-scale-in border border-white/40 dark:border-white/10 p-8 text-center z-[101]">
             <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 ${getIconBg()}`}>
               {getIcon()}
             </div>
