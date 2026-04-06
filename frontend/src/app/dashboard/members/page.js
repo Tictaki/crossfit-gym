@@ -90,17 +90,18 @@ export default function MembersPage() {
             />
           </div>
           <div className="relative group">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary-500/10 to-primary-600/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
-              className="input text-sm h-11 bg-white/50 dark:bg-dark-800/50 border-none appearance-none cursor-pointer rounded-2xl pr-10"
+              className="relative z-[1] w-full text-sm h-11 pl-4 pr-10 bg-white/40 dark:bg-white/[0.04] backdrop-blur-xl border border-white/40 dark:border-white/[0.08] rounded-2xl font-bold text-dark-800 dark:text-white/90 cursor-pointer shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.15),0_4px_16px_rgba(0,0,0,0.06)] hover:border-primary-500/30 dark:hover:border-primary-400/20 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500/40 appearance-none"
             >
-              <option value="">Status: Todos</option>
-              <option value="ACTIVE">Ativos</option>
-              <option value="INACTIVE">Inativos</option>
-              <option value="SUSPENDED">Suspensos</option>
+              <option value="" className="bg-white dark:bg-dark-900">Status: Todos</option>
+              <option value="ACTIVE" className="bg-white dark:bg-dark-900">Ativos</option>
+              <option value="INACTIVE" className="bg-white dark:bg-dark-900">Inativos</option>
+              <option value="SUSPENDED" className="bg-white dark:bg-dark-900">Suspensos</option>
             </select>
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-dark-400 dark:text-dark-300">
+            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-dark-400 dark:text-dark-300 z-10 group-hover:text-primary-500 transition-colors">
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>

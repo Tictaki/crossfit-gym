@@ -755,15 +755,19 @@ export default function AccountingPage() {
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] font-bold text-dark-400 dark:text-dark-300 uppercase tracking-widest px-2">Categoria</label>
-                  <select
-                    className="input-glass"
-                    value={newFixedCost.category}
-                    onChange={(e) => setNewFixedCost({ ...newFixedCost, category: e.target.value })}
-                  >
-                    {EXPENSE_CATEGORIES.map(cat => (
-                      <option key={cat.value} value={cat.value}>{cat.label}</option>
-                    ))}
-                  </select>
+                  <div className="relative group">
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary-500/10 to-primary-600/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                    <select
+                      className="relative z-[1] w-full text-sm h-14 pl-5 pr-10 bg-white/40 dark:bg-white/[0.04] backdrop-blur-xl border border-white/40 dark:border-white/[0.08] rounded-2xl font-bold text-dark-800 dark:text-white/90 cursor-pointer shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.15),0_4px_16px_rgba(0,0,0,0.06)] hover:border-primary-500/30 dark:hover:border-primary-400/20 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500/40 appearance-none"
+                      value={newFixedCost.category}
+                      onChange={(e) => setNewFixedCost({ ...newFixedCost, category: e.target.value })}
+                    >
+                      {EXPENSE_CATEGORIES.map(cat => (
+                        <option key={cat.value} value={cat.value} className="bg-white dark:bg-dark-900 text-dark-900 dark:text-white">{cat.label}</option>
+                      ))}
+                    </select>
+                    <ChevronDownIcon className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-dark-400 pointer-events-none z-10 group-hover:text-primary-500 transition-colors" />
+                  </div>
                 </div>
               </div>
 

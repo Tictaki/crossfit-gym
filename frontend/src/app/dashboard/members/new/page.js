@@ -10,7 +10,8 @@ import {
   CheckCircleIcon,
   ShoppingBagIcon,
   CreditCardIcon,
-  BanknotesIcon
+  BanknotesIcon,
+  ChevronDownIcon
 } from '@heroicons/react/24/outline';
 import { useToast } from '@/context/ToastContext';
 
@@ -216,16 +217,20 @@ export default function NewMemberPage() {
 
               <div>
                 <label className="label text-[10px] uppercase tracking-widest font-bold">Sexo *</label>
-                <select
-                  name="gender"
-                  value={formData.gender}
-                  onChange={handleChange}
-                  className="input-glass h-14 appearance-none"
-                  required
-                >
-                  <option value="MALE" className="bg-dark-900">Masculino</option>
-                  <option value="FEMALE" className="bg-dark-900">Feminino</option>
-                </select>
+                <div className="relative group">
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary-500/10 to-primary-600/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                  <select
+                    name="gender"
+                    value={formData.gender}
+                    onChange={handleChange}
+                    className="relative z-[1] w-full text-sm h-14 pl-5 pr-10 bg-white/40 dark:bg-white/[0.04] backdrop-blur-xl border border-white/40 dark:border-white/[0.08] rounded-2xl font-bold text-dark-800 dark:text-white/90 cursor-pointer shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.15),0_4px_16px_rgba(0,0,0,0.06)] hover:border-primary-500/30 dark:hover:border-primary-400/20 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500/40 appearance-none"
+                    required
+                  >
+                    <option value="MALE" className="bg-white dark:bg-dark-900 text-dark-900 dark:text-white">Masculino</option>
+                    <option value="FEMALE" className="bg-white dark:bg-dark-900 text-dark-900 dark:text-white">Feminino</option>
+                  </select>
+                  <ChevronDownIcon className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-dark-400 pointer-events-none z-10 group-hover:text-primary-500 transition-colors" />
+                </div>
               </div>
             </div>
           </div>
