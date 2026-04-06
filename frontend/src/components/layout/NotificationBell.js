@@ -96,13 +96,17 @@ export default function NotificationBell() {
     <div className="relative" ref={dropdownRef}>
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 rounded-xl text-dark-500 dark:text-dark-300 hover:bg-white/50 dark:hover:bg-dark-800/50 hover:text-primary-600 dark:hover:text-primary-400 transition-all active:scale-95"
+        className="flex items-center justify-center p-1 rounded-[1.25rem] md:rounded-[1.5rem] glass-button hover:bg-white/50 dark:hover:bg-dark-800/70 transition-all duration-300 group"
         aria-label="Notificações"
       >
-        <BellIcon className="h-6 w-6" />
-        {unreadCount > 0 && (
-          <span className="absolute top-1.5 right-1.5 h-2.5 w-2.5 rounded-full bg-red-500 border-2 border-white dark:border-dark-900 animate-pulse" />
-        )}
+        <div className={`h-9 w-9 md:h-11 md:w-11 rounded-full p-[2px] shadow-premium overflow-hidden transition-transform duration-300 group-active:scale-90 ${unreadCount > 0 ? 'bg-gradient-to-br from-red-400 to-primary-600' : 'bg-gradient-to-br from-dark-200 to-dark-400 dark:from-dark-700 dark:to-dark-600'}`}>
+          <div className="h-full w-full rounded-full bg-white dark:bg-dark-800 flex items-center justify-center overflow-hidden relative">
+            <BellIcon className={`h-5 w-5 md:h-6 md:w-6 transition-colors ${unreadCount > 0 ? 'text-primary-600 dark:text-primary-400' : 'text-dark-500 dark:text-dark-300 group-hover:text-primary-600 dark:group-hover:text-primary-400'}`} />
+            {unreadCount > 0 && (
+              <span className="absolute top-2 right-2 h-2.5 w-2.5 rounded-full bg-red-500 border-2 border-white dark:border-dark-800 animate-pulse shadow-glow" />
+            )}
+          </div>
+        </div>
       </button>
 
       {isOpen && (

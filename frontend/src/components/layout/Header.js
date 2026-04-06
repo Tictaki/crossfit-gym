@@ -47,10 +47,14 @@ const Header = ({ user, setSidebarOpen }) => {
         <div className="flex items-center gap-3">
           <button 
             onClick={() => setSidebarOpen(true)}
-            className="lg:hidden p-2.5 rounded-xl glass-button text-dark-800 dark:text-gray-200 active:scale-90"
+            className="lg:hidden flex items-center justify-center p-1 rounded-[1.25rem] md:rounded-[1.5rem] glass-button hover:bg-white/50 dark:hover:bg-dark-800/70 transition-all duration-300 group"
             aria-label="Abrir menu lateral"
           >
-            <Bars3Icon className="h-6 w-6" />
+            <div className="h-9 w-9 md:h-11 md:w-11 rounded-full p-[2px] bg-gradient-to-br from-dark-200 to-dark-400 dark:from-dark-700 dark:to-dark-600 shadow-premium overflow-hidden transition-transform duration-300 group-active:scale-90">
+              <div className="h-full w-full rounded-full bg-white dark:bg-dark-800 flex items-center justify-center overflow-hidden relative">
+                <Bars3Icon className="h-5 w-5 md:h-6 md:w-6 text-dark-500 dark:text-dark-300 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors" />
+              </div>
+            </div>
           </button>
           
           <div className="flex flex-col pl-1 md:pl-0">
