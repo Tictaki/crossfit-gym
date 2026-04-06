@@ -147,6 +147,7 @@ export default function DashboardPage() {
               type="month"
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
+              onClick={(e) => { try { e.target.showPicker(); } catch (err) {} }}
               className="relative w-full text-[11px] h-10 pl-10 pr-4 bg-transparent rounded-2xl font-bold text-dark-800 dark:text-white/90 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500/40"
             />
           </div>
