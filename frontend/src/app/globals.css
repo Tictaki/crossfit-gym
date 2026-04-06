@@ -38,6 +38,11 @@
     background-attachment: fixed;
     background-position: center;
     background-repeat: no-repeat;
+    color-scheme: dark;
+  }
+  
+  html:not(.dark) body {
+    color-scheme: light;
   }
 
   h1,
