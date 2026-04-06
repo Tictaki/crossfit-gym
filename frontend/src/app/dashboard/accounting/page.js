@@ -222,23 +222,23 @@ export default function AccountingPage() {
         <div className="flex items-center gap-3 flex-wrap">
           {/* Month filter */}
           <div className="relative group">
-            <div className="absolute inset-0 bg-gradient-to-r from-primary-500/10 to-primary-600/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="absolute inset-0 bg-gradient-to-r from-primary-500/10 to-primary-600/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
             <CalendarDaysIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-dark-400 dark:text-dark-300 pointer-events-none group-hover:text-primary-500 transition-colors z-10" />
             <input
               type="month"
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
-              className="relative text-[11px] h-10 pl-10 pr-4 bg-white/40 dark:bg-white/[0.04] backdrop-blur-xl border border-white/40 dark:border-white/[0.08] rounded-2xl font-bold text-dark-800 dark:text-white/90 cursor-pointer shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.15),0_4px_16px_rgba(0,0,0,0.06)] hover:border-primary-500/30 dark:hover:border-primary-400/20 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500/40"
+              className="relative z-[1] text-[11px] h-10 pl-10 pr-4 bg-white/40 dark:bg-white/[0.04] backdrop-blur-xl border border-white/40 dark:border-white/[0.08] rounded-2xl font-bold text-dark-800 dark:text-white/90 cursor-pointer shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.15),0_4px_16px_rgba(0,0,0,0.06)] hover:border-primary-500/30 dark:hover:border-primary-400/20 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500/40"
             />
           </div>
           
           <div className="relative group">
-            <div className="absolute inset-0 bg-gradient-to-r from-primary-500/10 to-primary-600/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="absolute inset-0 bg-gradient-to-r from-primary-500/10 to-primary-600/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
             <FunnelIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-dark-400 dark:text-dark-300 pointer-events-none group-hover:text-primary-500 transition-colors z-10" />
             <select
               value={filterSource}
               onChange={(e) => setFilterSource(e.target.value)}
-              className="relative text-[11px] h-10 pl-10 pr-10 bg-white/40 dark:bg-white/[0.04] backdrop-blur-xl border border-white/40 dark:border-white/[0.08] rounded-2xl font-bold text-dark-800 dark:text-white/90 cursor-pointer shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.15),0_4px_16px_rgba(0,0,0,0.06)] hover:border-primary-500/30 dark:hover:border-primary-400/20 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500/40 appearance-none"
+              className="relative z-[1] text-[11px] h-10 pl-10 pr-10 bg-white/40 dark:bg-white/[0.04] backdrop-blur-xl border border-white/40 dark:border-white/[0.08] rounded-2xl font-bold text-dark-800 dark:text-white/90 cursor-pointer shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[inset_0_1px_1px_rgba(255,255,255,0.15),0_4px_16px_rgba(0,0,0,0.06)] hover:border-primary-500/30 dark:hover:border-primary-400/20 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500/40 appearance-none"
             >
               <option value="all" className="bg-white dark:bg-dark-900">Visão Geral (Tudo)</option>
               <option value="gym" className="bg-white dark:bg-dark-900">Apenas Ginásio</option>
