@@ -16,6 +16,7 @@ import {
   Cog6ToothIcon,
   ShoppingBagIcon,
   ArchiveBoxIcon,
+  CalendarDaysIcon,
 } from '@heroicons/react/24/outline';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell, PieChart, Pie, RadialBarChart, RadialBar, Legend } from 'recharts';
 import { motion } from 'framer-motion';
@@ -77,13 +78,19 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 export default function DashboardPage() {
-  const { data: response, isLoading } = useSWR('/dashboard/stats', { 
-    refreshInterval: 30000,
-    keepPreviousData: true 
-  });
-  
+  const currentMonthStr = new Date().toISOString().slice(0, 7);
+  const [selectedMonth, setSelectedMonth] = useState(currentMonthStr);
   const [showYoY, setShowYoY] = useState(false);
   const router = useRouter();
+
+  const swrKey = selectedMonth === currentMonthStr
+    ? '/dashboard/stats'
+    : `/dashboard/stats?month=${selectedMonth}`;
+
+  const { data: response, isLoading } = useSWR(swrKey, { 
+    refreshInterval: selectedMonth === currentMonthStr ? 30000 : 0,
+    keepPreviousData: true 
+  });
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -131,9 +138,20 @@ export default function DashboardPage() {
           <h1 className="text-2xl md:text-4xl font-bold text-dark-900 dark:text-white leading-tight font-outfit">Dashboard</h1>
           <p className="text-dark-500 dark:text-dark-300 mt-1 md:mt-2 text-sm md:text-base font-medium">Bem-vindo ao painel de controlo do seu ginásio.</p>
         </div>
-        <div className="flex items-center gap-2 text-[10px] font-bold text-dark-400 uppercase tracking-widest pb-1">
-          <span className="inline-block w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
-          Sincronizado
+        <div className="flex items-center gap-3">
+          <div className="relative group">
+            <CalendarDaysIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-dark-400 pointer-events-none" />
+            <input
+              type="month"
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              className="input text-xs h-9 pl-9 pr-3 bg-white/60 dark:bg-dark-800/60 border border-white/30 dark:border-dark-700/50 rounded-xl font-bold text-dark-900 dark:text-white cursor-pointer"
+            />
+          </div>
+          <div className="flex items-center gap-2 text-[10px] font-bold text-dark-400 uppercase tracking-widest pb-1">
+            <span className="inline-block w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+            Sincronizado
+          </div>
         </div>
       </motion.div>
 
@@ -163,7 +181,7 @@ export default function DashboardPage() {
         <motion.div whileHover={{ y: -5 }} className="stat-card group !p-4 md:!p-6">
           <div className="flex flex-col md:flex-row md:items-start justify-between gap-2">
             <div>
-              <p className="text-[10px] md:text-xs text-dark-400 dark:text-dark-300 font-medium">Receita (Mês)</p>
+              <p className="text-[10px] md:text-xs text-dark-400 dark:text-dark-300 font-medium">Receita ({new Date(selectedMonth + '-01').toLocaleDateString('pt-PT', { month: 'long', year: 'numeric' })})</p>
               <p className="text-2xl md:text-3xl font-bold text-primary-600 mt-1">{formatCurrency(stats?.monthlyRevenue || 0)}</p>
               <div className={`flex items-center mt-2 text-[9px] md:text-xs font-bold px-2 py-0.5 rounded-full w-fit ${stats?.revenueTrend >= 0 ? 'text-green-600 bg-green-50 dark:bg-green-900/30' : 'text-red-600 bg-red-50 dark:bg-red-900/30'}`}>
                  <span>{stats?.revenueTrend > 0 ? `+${stats.revenueTrend}%` : `${stats?.revenueTrend || 0}%`} vs anterior</span>

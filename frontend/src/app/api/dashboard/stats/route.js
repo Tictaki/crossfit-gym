@@ -5,7 +5,7 @@ import prisma from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
 import { updateMemberStatuses } from '@/lib/autoUpdateStatus';
 
-export async function GET() {
+export async function GET(request) {
   try {
     await requireAuth();
   } catch {
@@ -17,10 +17,22 @@ export async function GET() {
     try { await updateMemberStatuses(); } catch {}
 
     const today = new Date();
-    const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-    const firstDayOfLastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
     const sevenDaysLater = new Date();
     sevenDaysLater.setDate(today.getDate() + 7);
+
+    // Optional month filter (e.g. ?month=2026-03)
+    const { searchParams } = new URL(request.url);
+    const monthParam = searchParams.get('month');
+    let firstDayOfMonth, firstDayOfLastMonth;
+    if (monthParam) {
+      const [y, m] = monthParam.split('-').map(Number);
+      firstDayOfMonth = new Date(y, m - 1, 1);
+      firstDayOfLastMonth = new Date(y, m - 2, 1);
+    } else {
+      firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+      firstDayOfLastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+    }
+    const firstDayOfNextMonth = new Date(firstDayOfMonth.getFullYear(), firstDayOfMonth.getMonth() + 1, 1);
 
     // Total members by status
     const [activeMembers, inactiveMembers, totalMembers] = await Promise.all([
@@ -35,7 +47,7 @@ export async function GET() {
 
     // Revenue this month
     const paymentsThisMonth = await prisma.payment.aggregate({
-      where: { paymentDate: { gte: firstDayOfMonth } },
+      where: { paymentDate: { gte: firstDayOfMonth, lt: firstDayOfNextMonth } },
       _sum: { amount: true }, _count: true
     });
 
@@ -45,7 +57,7 @@ export async function GET() {
     });
 
     const salesThisMonth = await prisma.sale.aggregate({
-      where: { saleDate: { gte: firstDayOfMonth } },
+      where: { saleDate: { gte: firstDayOfMonth, lt: firstDayOfNextMonth } },
       _sum: { totalAmount: true }
     });
 
@@ -59,7 +71,7 @@ export async function GET() {
 
     // New members this month vs last
     const [newMembersCount, newMembersLastMonth] = await Promise.all([
-      prisma.member.count({ where: { createdAt: { gte: firstDayOfMonth } } }),
+      prisma.member.count({ where: { createdAt: { gte: firstDayOfMonth, lt: firstDayOfNextMonth } } }),
       prisma.member.count({ where: { createdAt: { gte: firstDayOfLastMonth, lt: firstDayOfMonth } } })
     ]);
 
@@ -105,7 +117,7 @@ export async function GET() {
     // Top products
     const topProductsRaw = await prisma.sale.groupBy({
       by: ['productId'],
-      where: { saleDate: { gte: firstDayOfMonth } },
+      where: { saleDate: { gte: firstDayOfMonth, lt: firstDayOfNextMonth } },
       _sum: { quantity: true },
       orderBy: { _sum: { quantity: 'desc' } },
       take: 5

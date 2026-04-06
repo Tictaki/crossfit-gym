@@ -128,7 +128,7 @@ export default function AccountingPage() {
       });
       setIsCustomCategory(false);
       setCustomCategory('');
-      loadData();
+      loadData(selectedMonth, filterSource);
       toast.success('Despesa registada com sucesso!');
     } catch (err) {
       console.error('Error adding expense:', err);
@@ -151,7 +151,7 @@ export default function AccountingPage() {
         invoiceNumber: '',
         dueDate: ''
       });
-      loadData();
+      loadData(selectedMonth, filterSource);
       toast.success('Custo fixo registado com sucesso!');
     } catch (err) {
       console.error('Error adding fixed cost:', err);
@@ -171,7 +171,7 @@ export default function AccountingPage() {
     })) {
       try {
         await expensesAPI.delete(id);
-        loadData();
+        loadData(selectedMonth, filterSource);
         toast.success('Despesa eliminada com sucesso!');
       } catch (err) {
         console.error('Error deleting expense:', err);
@@ -190,7 +190,7 @@ export default function AccountingPage() {
     })) {
       try {
         await fixedCostsAPI.delete(id);
-        loadData();
+        loadData(selectedMonth, filterSource);
         toast.success('Custo fixo removido com sucesso!');
       } catch (err) {
         console.error('Error deleting fixed cost:', err);
