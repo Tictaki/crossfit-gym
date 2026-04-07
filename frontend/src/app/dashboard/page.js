@@ -148,8 +148,7 @@ export default function DashboardPage() {
               type="month"
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(e.target.value)}
-              onClick={(e) => { try { e.target.showPicker(); } catch (err) {} }}
-              className="appearance-none relative w-full text-[11px] h-full pl-2.5 pr-4 bg-transparent font-bold text-dark-800 dark:text-white/90 cursor-pointer focus:outline-none z-[5]"
+              className="relative w-full text-[11px] h-full pl-2.5 pr-2 bg-transparent font-bold text-dark-800 dark:text-white/90 cursor-pointer focus:outline-none z-[5] [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full"
             />
           </div>
           <div className="flex items-center gap-2 text-[10px] font-bold text-dark-400 uppercase tracking-widest px-3 py-2 bg-white/30 dark:bg-white/[0.03] backdrop-blur-md rounded-xl border border-white/20 dark:border-white/[0.06]">
